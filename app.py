@@ -9,48 +9,53 @@ app = Flask(__name__, static_folder='.')
 # Секретный ключ для подписи cookies (обязательно!)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Настройка OAuth
+# Настройка OAuth — здесь мы используем переменные окружения, а не жёстко закодированные значения
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),  # ← Берём из переменных окружения
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),  # ← Берём из переменных окружения
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',  # ← Убраны пробелы!
     client_kwargs={'scope': 'openid email profile'}
 )
 
 # Подключаем твой бэкенд
-from stego_backend import process_hide, process_extract, get_file_info
+from stego_backend_py import process_hide, process_extract, \
+    get_file_info  # ← Убедись, что файл называется stego_backend_py.py
 
 
 # === Google Auth Routes ===
 
 @app.route('/auth/google')
 def login():
-    redirect_uri = url_for('auth_callback', _external=True)
+    redirect_uri = url_for('auth_callback', _external=True)  # ← Это важно: _external=True
     return google.authorize_redirect(redirect_uri)
 
 
 @app.route('/auth/google/callback')
 def auth_callback():
-    token = google.authorize_access_token()
-    user_info = token.get('userinfo')
-    if user_info:
-        session['user'] = {
-            'id': user_info['sub'],
-            'name': user_info.get('name', ''),
-            'email': user_info.get('email', ''),
-            'picture': user_info.get('picture', '')
-        }
-        # Инициализируем статистику, если нет
-        if 'stats' not in session:
-            session['stats'] = {
-                'filesProcessed': 0,
-                'dataHidden': 0,
-                'successfulOperations': 0,
-                'achievements': []
+    try:
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        if user_info:
+            session['user'] = {
+                'id': user_info['sub'],
+                'name': user_info.get('name', ''),
+                'email': user_info.get('email', ''),
+                'picture': user_info.get('picture', '')
             }
-    return redirect('/')
+            # Инициализируем статистику, если нет
+            if 'stats' not in session:
+                session['stats'] = {
+                    'filesProcessed': 0,
+                    'dataHidden': 0,
+                    'successfulOperations': 0,
+                    'achievements': []
+                }
+        return redirect('/')
+    except Exception as e:
+        print(f"Google Auth Error: {e}")
+        return "Ошибка авторизации", 500
 
 
 @app.route('/api/user')
