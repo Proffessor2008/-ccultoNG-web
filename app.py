@@ -6,6 +6,32 @@ from flask import Flask, request, jsonify, send_from_directory, session, redirec
 
 app = Flask(__name__, static_folder='.')
 
+
+@app.after_request
+def add_security_headers(response):
+    # Content Security Policy (минимальная версия)
+    response.headers[
+        'Content-Security-Policy'] = ("default-src 'self'; script-src 'self' https://cdn.tailwindcss.com "
+                                      "https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' "
+                                      "https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src "
+                                      "https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; "
+                                      "frame-ancestors 'none';")
+
+    # Strict-Transport-Security
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+    # X-Frame-Options
+    response.headers['X-Frame-Options'] = 'DENY'
+
+    # X-Content-Type-Options
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    # Referrer-Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+    return response
+
+
 # Секретный ключ для подписи cookies (обязательно!)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
@@ -139,4 +165,3 @@ def static_files(filename):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
-
