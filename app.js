@@ -510,9 +510,15 @@ async loadGoogleUser() {
     }
     loadTheme() {
         const saved = localStorage.getItem('theme') || 'dark';
+        const html = document.documentElement;
+        const icon = document.getElementById('themeToggle').querySelector('i');
+
         if (saved === 'light') {
-            document.documentElement.classList.remove('dark');
-            document.getElementById('themeToggle').querySelector('i').className = 'fas fa-sun';
+            html.classList.remove('dark');
+            icon.className = 'fas fa-sun';
+        } else {
+            html.classList.add('dark');
+            icon.className = 'fas fa-moon';
         }
     }
     showResults(operation, result) {
@@ -785,13 +791,17 @@ async loadGoogleUser() {
     
     toggleTheme() {
         const html = document.documentElement;
-        const isDark = html.classList.contains('dark');
-        html.classList.toggle('dark', !isDark);
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        // Обновляем иконку
+        const isCurrentlyDark = html.classList.contains('dark');
+        const willBeDark = !isCurrentlyDark;
+
+        html.classList.toggle('dark', willBeDark);
+        localStorage.setItem('theme', willBeDark ? 'dark' : 'light');
+
+        // Обновляем иконку в соответствии с НОВОЙ темой
         const icon = document.getElementById('themeToggle').querySelector('i');
-        icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-        this.showToast('Успех', `Тема: ${isDark ? 'Светлая' : 'Темная'}`, 'success');
+        icon.className = willBeDark ? 'fas fa-moon' : 'fas fa-sun';
+
+        this.showToast('Успех', `Тема: ${willBeDark ? 'Темная' : 'Светлая'}`, 'success');
     }
     
     formatFileSize(bytes) {
