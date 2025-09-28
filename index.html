@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OccultoNG Web - Стеганография нового поколения</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4C8DFF;
+            --primary-hover: #6AA8FF;
+            --secondary: #111827;
+            --bg: #0B1220;
+            --fg: #E6EDF6;
+            --card: #0E1726;
+            --border: #253044;
+            --success: #3FDA87;
+            --error: #FF6B6B;
+            --warning: #F0B23E;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0B1220 0%, #1a2332 100%);
+            color: var(--fg);
+            overflow-x: hidden;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .glass-card {
+            background: rgba(14, 23, 38, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(37, 48, 68, 0.3);
+            border-radius: 16px;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(76, 141, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(76, 141, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 141, 255, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 20px rgba(76, 141, 255, 0.3); }
+            to { box-shadow: 0 0 30px rgba(76, 141, 255, 0.6); }
+        }
+        
+        .file-drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-drop-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(76, 141, 255, 0.1);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, var(--success) 0%, #22c55e 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .stats-card {
+            background: rgba(14, 23, 38, 0.6);
+            border: 1px solid rgba(37, 48, 68, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            border-color: rgba(76, 141, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .method-card {
+            background: rgba(14, 23, 38, 0.8);
+            border: 1px solid rgba(37, 48, 68, 0.3);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .method-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 32px rgba(76, 141, 255, 0.2);
+            transform: translateY(-4px);
+        }
+        
+        .method-card.selected {
+            border-color: var(--primary);
+            background: rgba(76, 141, 255, 0.1);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-shield-alt text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold gradient-text">OccultoNG Web</h1>
+                <p class="text-xs text-gray-400">Версия 2.0.0</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                <i class="fas fa-moon text-gray-400"></i>
+            </button>
+            <button id="userProfile"
+                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <span class="text-sm">Профиль</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="pt-24 pb-12">
+    <!-- Hero Section -->
+    <section class="text-center mb-16 px-4">
+        <div class="floating-animation inline-block mb-8">
+            <div class="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-3xl flex items-center justify-center pulse-glow">
+                <i class="fas fa-lock text-white text-5xl"></i>
+            </div>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-bold mb-6">
+            <span class="gradient-text">StegoPro</span> Web
+        </h1>
+
+        <div class="text-xl md:text-2xl text-gray-300 mb-8 h-16">
+            <span id="typed-text"></span>
+        </div>
+
+        <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed">
+            Профессиональная платформа для стеганографии с поддержкой множества форматов,
+            продвинутыми методами сокрытия данных и интуитивным интерфейсом.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button id="startHiding" class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold">
+                <i class="fas fa-eye-slash mr-2"></i>
+                Начать сокрытие
+            </button>
+            <button id="startExtracting"
+                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all">
+                <i class="fas fa-eye mr-2"></i>
+                Извлечь данные
+            </button>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="mb-16 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl font-bold gradient-text mb-2" id="filesProcessed">0</div>
+                <div class="text-gray-400 text-sm">Файлов обработано</div>
+            </div>
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl font-bold gradient-text mb-2" id="dataHidden">0 MB</div>
+                <div class="text-gray-400 text-sm">Данных скрыто</div>
+            </div>
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl font-bold gradient-text mb-2" id="achievementsCount">0</div>
+                <div class="text-gray-400 text-sm">Достижений</div>
+            </div>
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl font-bold gradient-text mb-2" id="successRate">100%</div>
+                <div class="text-gray-400 text-sm">Успешность</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Interface -->
+    <section class="max-w-6xl mx-auto px-4">
+        <!-- Method Selection -->
+        <div id="methodSelection" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 gradient-text">Выберите метод стеганографии</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="method-card p-6" data-method="lsb">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-image text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold">LSB для изображений</h3>
+                            <p class="text-gray-400 text-sm">Классический метод</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">
+                        Метод наименее значимых битов для изображений PNG, BMP, TIFF.
+                        Максимальная вместимость и скорость обработки.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="achievement-badge">Макс. вместимость</span>
+                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="method-card p-6" data-method="audio_lsb">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-volume-up text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold">LSB для аудио</h3>
+                            <p class="text-gray-400 text-sm">WAV формат</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">
+                        Сокрытие данных в аудиофайлах формата WAV.
+                        Незаметность для человеческого уха.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="achievement-badge">Аудио стего</span>
+                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hide Interface -->
+        <div id="hideInterface" class="hidden">
+            <div class="glass-card p-8 mb-8">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">Сокрытие данных</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Container File -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Контейнер (изображение/аудио)</label>
+                        <div id="containerDropZone" class="file-drop-zone p-8 text-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
+                            <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                                Выбрать файл
+                            </button>
+                            <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
+                        </div>
+                        <div id="containerInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium" id="containerName"></p>
+                                    <p class="text-sm text-gray-400" id="containerSize"></p>
+                                </div>
+                                <button id="removeContainer" class="text-red-400 hover:text-red-300">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data to Hide -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Данные для сокрытия</label>
+                        <div id="dataDropZone" class="file-drop-zone p-8 text-center">
+                            <i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
+                            <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                                Выбрать файл
+                            </button>
+                            <input type="file" id="dataFile" class="hidden">
+                        </div>
+                        <div id="dataInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium" id="dataName"></p>
+                                    <p class="text-sm text-gray-400" id="dataSize"></p>
+                                </div>
+                                <button id="removeData" class="text-red-400 hover:text-red-300">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Пароль (опционально)</label>
+                    <div class="relative">
+                        <input type="password" id="passwordInput"
+                               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                               placeholder="Введите пароль для дополнительной защиты">
+                        <button type="button" id="togglePassword"
+                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 mt-8">
+                    <button id="startHide"
+                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                        <i class="fas fa-lock mr-2"></i>
+                        Начать сокрытие
+                    </button>
+                    <button id="cancelHide"
+                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
+                        Отмена
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <div id="hideProgress" class="hidden mt-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-400">Процесс сокрытия</span>
+                        <span id="progressPercent" class="text-sm text-blue-400">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div id="progressBar" class="progress-bar w-0 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extract Interface -->
+        <div id="extractInterface" class="hidden">
+            <div class="glass-card p-8 mb-8">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">Извлечение данных</h2>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-3">Стего-контейнер</label>
+                    <div id="extractDropZone" class="file-drop-zone p-8 text-center">
+                        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-400 mb-2">Перетащите стего-файл сюда или</p>
+                        <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                            Выбрать файл
+                        </button>
+                        <input type="file" id="extractFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
+                    </div>
+                    <div id="extractInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium" id="extractName"></p>
+                                <p class="text-sm text-gray-400" id="extractSize"></p>
+                            </div>
+                            <button id="removeExtract" class="text-red-400 hover:text-red-300">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Пароль (если использовался)</label>
+                    <div class="relative">
+                        <input type="password" id="extractPassword"
+                               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                               placeholder="Введите пароль">
+                        <button type="button" id="toggleExtractPassword"
+                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4">
+                    <button id="startExtract"
+                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                        <i class="fas fa-unlock mr-2"></i>
+                        Извлечь данные
+                    </button>
+                    <button id="cancelExtract"
+                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
+                        Отмена
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <div id="extractProgress" class="hidden mt-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-400">Процесс извлечения</span>
+                        <span id="extractProgressPercent" class="text-sm text-blue-400">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div id="extractProgressBar" class="progress-bar w-0 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden">
+            <div class="glass-card p-8">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">Результаты</h2>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- User Profile Modal -->
+<div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold gradient-text">Личный кабинет</h3>
+            <button id="closeProfile" class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="text-center mb-6">
+            <img id="profileAvatar" class="w-20 h-20 rounded-full mx-auto mb-4 hidden"/>
+            <h4 id="profileName" class="text-lg font-semibold">Пользователь</h4>
+            <p id="profileEmail" class="text-gray-400 text-sm"></p>
+            <button id="googleLoginBtn"
+                    class="mt-4 w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg hidden">
+                <i class="fab fa-google"></i> Войти через Google
+            </button>
+            <button id="googleLogoutBtn" class="mt-2 w-full py-2 text-sm text-gray-400 hover:text-red-400 hidden">
+                Выйти из аккаунта
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+                <span class="text-sm">Файлов обработано</span>
+                <span class="font-semibold text-blue-400" id="profileFilesProcessed">0</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+                <span class="text-sm">Данных скрыто</span>
+                <span class="font-semibold text-green-400" id="profileDataHidden">0 MB</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+                <span class="text-sm">Достижений</span>
+                <span class="font-semibold text-yellow-400" id="profileAchievements">0</span>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h5 class="text-sm font-medium mb-3">Недавние достижения</h5>
+            <div id="recentAchievements" class="space-y-2">
+                <!-- Achievements will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast glass-card p-4 max-w-sm">
+    <div class="flex items-center">
+        <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
+        <div>
+            <p id="toastTitle" class="font-semibold">Успешно!</p>
+            <p id="toastMessage" class="text-sm text-gray-400"></p>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-8 text-gray-400">
+    <p>&copy; 2025 OccultoNG Web. Все права защищены.</p>
+    <p class="mt-2">
+        <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
+    </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
