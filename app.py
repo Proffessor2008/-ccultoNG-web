@@ -13,8 +13,9 @@ def add_security_headers(response):
     response.headers[
         'Content-Security-Policy'] = ("default-src 'self'; script-src 'self' https://cdn.tailwindcss.com "
                                       "https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' "
-                                      "https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src "
-                                      "https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; "
+                                      "https://cdnjs.cloudflare.com; img-src 'self' data: https: "
+                                      "https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com "
+                                      "https://cdnjs.cloudflare.com; connect-src 'self'; object-src 'none'; "
                                       "frame-ancestors 'none';")
 
     # Strict-Transport-Security
