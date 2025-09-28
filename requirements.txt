@@ -1,4 +1,5 @@
+rollbar
+Flask==3.0.3
+authlib==1.3.0
 numpy
 Pillow
-rollbar
-flask
