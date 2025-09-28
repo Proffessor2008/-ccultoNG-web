@@ -20,7 +20,7 @@ google = oauth.register(
 )
 
 # Подключаем твой бэкенд
-from stego_backend_py import process_hide, process_extract, \
+from stego_backend import process_hide, process_extract, \
     get_file_info  # ← Убедись, что файл называется stego_backend_py.py
 
 
@@ -139,3 +139,4 @@ def static_files(filename):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
