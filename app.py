@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, send_from_directory
 app = Flask(__name__, static_folder='.')
 
 # Подключаем твой бэкенд
-from stego_backend_py import process_hide, process_extract, get_file_info
+from stego_backend import process_hide, process_extract, get_file_info
 
 
 @app.route('/api/hide', methods=['POST'])
@@ -50,3 +50,4 @@ def static_files(filename):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
