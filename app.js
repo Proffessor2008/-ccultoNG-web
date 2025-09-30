@@ -19,7 +19,13 @@ class StegoProApp {
         this.loadTheme();
 
     }
-    
+    showHelp() {
+        document.getElementById('helpModal').classList.remove('hidden');
+    }
+
+    hideHelp() {
+        document.getElementById('helpModal').classList.add('hidden');
+    }
     setupEventListeners() {
         // Navigation
         document.getElementById('startHiding').addEventListener('click', () => this.showHideInterface());
@@ -33,7 +39,8 @@ class StegoProApp {
         document.querySelectorAll('.method-card').forEach(card => {
             card.addEventListener('click', () => this.selectMethod(card.dataset.method));
         });
-        
+        document.getElementById('helpButton').addEventListener('click', () => this.showHelp());
+        document.getElementById('closeHelp').addEventListener('click', () => this.hideHelp());
         // File handling
         this.setupFileHandling();
         
