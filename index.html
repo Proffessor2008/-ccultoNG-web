@@ -34,7 +34,6 @@
             z-index: -1;
             opacity: 0.4;
         }
-
         /* === Общие переменные === */
         :root {
           --primary: #4C8DFF;
@@ -43,7 +42,6 @@
           --error: #FF6B6B;
           --warning: #F0B23E;
         }
-
         body {
           --bg: #ffffff;
           --fg: #1f2937;
@@ -60,7 +58,6 @@
           overflow-x: hidden;
           position: relative;
         }
-
         .dark body {
           --bg: #0B1220;
           --fg: #E6EDF6;
@@ -74,11 +71,9 @@
           background: linear-gradient(135deg, #0B1220 0%, #1a2332 100%);
           color: var(--fg);
         }
-
         .font-mono {
           font-family: 'JetBrains Mono', monospace;
         }
-
         .glass-card {
           background: rgba(var(--card-rgb), 0.75);
           backdrop-filter: blur(12px) saturate(180%);
@@ -86,13 +81,26 @@
           border: 1px solid rgba(var(--border-rgb), 0.25);
           border-radius: 16px;
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+          overflow: hidden;
         }
-
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4C8DFF, #6AA8FF, #3FDA87, #F0B23E);
+            background-size: 400% 400%;
+            border-radius: 18px;
+            z-index: -1;
+            animation: gradientAnimation 8s ease infinite;
+        }
         .glass-card:hover {
           border-color: rgba(76, 141, 255, 0.5);
           box-shadow: 0 12px 40px rgba(76, 141, 255, 0.18);
         }
-
         .btn-primary {
           background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
           border: none;
@@ -102,17 +110,15 @@
           position: relative;
           overflow: hidden;
           transform: translateZ(0);
+          border-radius: 12px;
         }
-
         .btn-primary:hover {
           transform: translateY(-3px) scale(1.02);
           box-shadow: 0 10px 30px rgba(76, 141, 255, 0.5);
         }
-
         .btn-primary:active {
           transform: translateY(0) scale(1);
         }
-
         .btn-primary::before {
           content: '';
           position: absolute;
@@ -123,56 +129,58 @@
           background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
           transition: left 0.6s;
         }
-
         .btn-primary:hover::before {
           left: 100%;
         }
-
-        .gradient-text {
-          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
+        /* Убраны классы gradient-text, text-glow, neon-text */
         .floating-animation {
           animation: float 8s ease-in-out infinite;
         }
-
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-24px) rotate(2deg); }
         }
-
         .pulse-glow {
           animation: pulse-glow 2.5s ease-in-out infinite alternate;
         }
-
         @keyframes pulse-glow {
           from { box-shadow: 0 0 20px rgba(76, 141, 255, 0.3); }
           to { box-shadow: 0 0 40px rgba(76, 141, 255, 0.7); }
         }
-
         .file-drop-zone {
           border: 2px dashed var(--border);
           border-radius: 12px;
           transition: all 0.3s ease;
           background: rgba(var(--secondary), 0.3);
+          position: relative;
+          overflow: hidden;
         }
-
+        .file-drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(76, 141, 255, 0.1), transparent);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
         .file-drop-zone.dragover {
           border-color: var(--primary);
           background: rgba(76, 141, 255, 0.12);
           transform: scale(1.01);
         }
-
+        .file-drop-zone.dragover::before {
+            opacity: 1;
+        }
         .progress-bar {
           background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
           height: 4px;
           border-radius: 2px;
           transition: width 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
         }
-
         .toast {
           position: fixed;
           top: 20px;
@@ -181,11 +189,9 @@
           transform: translateX(400px);
           transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
         .toast.show {
           transform: translateX(0);
         }
-
         .achievement-badge {
           background: linear-gradient(135deg, var(--success) 0%, #22c55e 100%);
           color: white;
@@ -195,20 +201,36 @@
           font-weight: 600;
           box-shadow: 0 2px 6px rgba(63, 218, 135, 0.3);
         }
-
         .stats-card {
           background: rgba(var(--card-rgb), 0.6);
           border: 1px solid rgba(var(--border-rgb), 0.2);
           border-radius: 12px;
           transition: all 0.35s ease;
+          position: relative;
+          overflow: hidden;
         }
-
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, #3FDA87, #F0B23E, #4C8DFF);
+            background-size: 400% 400%;
+            border-radius: 13px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
         .stats-card:hover {
           border-color: rgba(76, 141, 255, 0.4);
           transform: translateY(-3px);
           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
-
+        .stats-card:hover::before {
+            opacity: 1;
+        }
         .method-card {
           background: rgba(var(--card-rgb), 0.8);
           border: 1px solid rgba(var(--border-rgb), 0.3);
@@ -216,51 +238,61 @@
           transition: all 0.35s ease;
           cursor: pointer;
           transform: translateZ(0);
+          position: relative;
+          overflow: hidden;
         }
-
+        .method-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4C8DFF, #6AA8FF, #3FDA87);
+            background-size: 400% 400%;
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            animation: gradientAnimation 8s ease infinite;
+        }
         .method-card:hover {
           border-color: var(--primary);
           box-shadow: 0 10px 30px rgba(76, 141, 255, 0.25);
           transform: translateY(-6px) scale(1.01);
         }
-
+        .method-card:hover::before {
+            opacity: 1;
+        }
         .method-card.selected {
           border-color: var(--primary);
           background: rgba(76, 141, 255, 0.12);
         }
-
         .hidden {
           display: none;
         }
-
         .fade-in {
           animation: fadeIn 0.6s ease-out forwards;
         }
-
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-
         .slide-in {
           animation: slideIn 0.4s ease-out;
         }
-
         @keyframes slideIn {
           from { transform: translateX(-100%); }
           to { transform: translateX(0); }
         }
-
         /* Параллакс-эффект для hero */
         .parallax-layer {
           transform-style: preserve-3d;
           perspective: 1000px;
         }
-
         .parallax-layer > * {
           transform: translateZ(0);
         }
-
         /* Плавающие элементы фона */
         .floating-orb {
           position: absolute;
@@ -269,18 +301,15 @@
           z-index: -1;
           opacity: 0.15;
         }
-
         .orb-1 { top: 10%; left: 5%; width: 300px; height: 300px; background: var(--primary); animation: drift 25s infinite ease-in-out; }
         .orb-2 { top: 60%; right: 10%; width: 200px; height: 200px; background: var(--success); animation: drift 30s infinite ease-in-out reverse; }
         .orb-3 { bottom: 10%; left: 15%; width: 150px; height: 150px; background: var(--warning); animation: drift 35s infinite ease-in-out; }
-
         @keyframes drift {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
           25%  { transform: translate(23px, -34.5px) rotate(5.75deg); }
           50%  { transform: translate(-23px, 23px) rotate(-5.75deg); }
           75%  { transform: translate(11.5px, 34.5px) rotate(3.45deg); }
         }
-
         /* Улучшенный hover для иконок */
         .icon-hover {
           transition: transform 0.3s ease, color 0.3s ease;
@@ -298,6 +327,96 @@
             opacity: 0.15;
             animation: drift 25s infinite ease-in-out; /* Можно использовать разную длительность для каждого */
         }
+        /* Новые анимации */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .shine {
+            position: relative;
+        }
+        .shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background-size: 200% 100%;
+            background-position: -200% 0;
+            transition: background-position 0.3s ease;
+            border-radius: inherit;
+            z-index: -1;
+        }
+        .shine:hover::before {
+            background-position: 200% 0;
+            animation: shine 0.5s ease;
+        }
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--success), var(--warning));
+            background-size: 400% 400%;
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .glow-border:hover::after {
+            opacity: 1;
+        }
+        .parallax-scroll {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        .parallax-scroll > * {
+            transform: translateZ(-1px) scale(1.2);
+        }
+        .floating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            animation: floatGrid 12s ease-in-out infinite;
+        }
+        @keyframes floatGrid {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-icon {
+            animation: pulseIcon 2s infinite;
+        }
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--success), var(--warning));
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -306,16 +425,15 @@
 <div class="floating-orb orb-1"></div>
 <div class="floating-orb orb-2"></div>
 <div class="floating-orb orb-3"></div>
-
 <!-- Navigation -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4 backdrop-blur-md">
     <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center pulse-icon">
                 <i class="fas fa-shield-alt text-white text-lg icon-hover"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold gradient-text">OccultoNG Web</h1>
+                <h1 class="text-xl font-bold">OccultoNG Web</h1>
                 <p class="text-xs text-gray-400">Версия 2.0.0</p>
             </div>
         </div>
@@ -333,7 +451,6 @@
         </div>
     </div>
 </nav>
-
 <!-- Main Content -->
 <main class="pt-24 pb-12">
     <!-- Hero Section -->
@@ -344,7 +461,7 @@
             </div>
         </div>
         <h1 class="text-5xl md:text-7xl font-bold mb-6">
-            <span class="gradient-text">ØccultoNG</span> Web
+            ØccultoNG Web
         </h1>
         <div class="text-xl md:text-2xl text-gray-300 mb-8 h-16">
             <span id="typed-text"></span>
@@ -354,49 +471,47 @@
             продвинутыми методами сокрытия данных и интуитивным интерфейсом.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button id="startHiding" class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold">
+            <button id="startHiding" class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold shine">
                 <i class="fas fa-eye-slash mr-2"></i>
                 Начать сокрытие
             </button>
             <button id="startExtracting"
-                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all">
+                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all shine">
                 <i class="fas fa-eye mr-2"></i>
                 Извлечь данные
             </button>
         </div>
     </section>
-
     <!-- Quick Stats -->
     <section class="mb-16 px-4">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="filesProcessed">0</div>
+        <div class="max-w-6xl mx-auto floating-grid">
+            <div class="stats-card p-6 text-center hover-lift">
+                <div class="text-3xl font-bold mb-2" id="filesProcessed">0</div>
                 <div class="text-gray-400 text-sm">Файлов обработано</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="dataHidden">0 MB</div>
+            <div class="stats-card p-6 text-center hover-lift">
+                <div class="text-3xl font-bold mb-2" id="dataHidden">0 MB</div>
                 <div class="text-gray-400 text-sm">Данных скрыто</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="achievementsCount">0</div>
+            <div class="stats-card p-6 text-center hover-lift">
+                <div class="text-3xl font-bold mb-2" id="achievementsCount">0</div>
                 <div class="text-gray-400 text-sm">Достижений</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="successRate">100%</div>
+            <div class="stats-card p-6 text-center hover-lift">
+                <div class="text-3xl font-bold mb-2" id="successRate">100%</div>
                 <div class="text-gray-400 text-sm">Успешность</div>
             </div>
         </div>
     </section>
-
     <!-- Main Interface -->
     <section class="max-w-6xl mx-auto px-4">
         <!-- Method Selection -->
         <div id="methodSelection" class="mb-12">
-            <h2 class="text-3xl font-bold text-center mb-8 gradient-text">Выберите метод стеганографии</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Выберите метод стеганографии</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="method-card p-6" data-method="lsb">
+                <div class="method-card p-6 glow-border" data-method="lsb">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4 pulse-icon">
                             <i class="fas fa-image text-white text-xl icon-hover"></i>
                         </div>
                         <div>
@@ -413,9 +528,9 @@
                         <i class="fas fa-check-circle text-green-400 text-xl icon-hover"></i>
                     </div>
                 </div>
-                <div class="method-card p-6" data-method="audio_lsb">
+                <div class="method-card p-6 glow-border" data-method="audio_lsb">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4 pulse-icon">
                             <i class="fas fa-volume-up text-white text-xl icon-hover"></i>
                         </div>
                         <div>
@@ -434,21 +549,19 @@
                 </div>
             </div>
         </div>
-
         <!-- Остальные секции (hideInterface, extractInterface, resultsSection и т.д.) остаются без изменений -->
         <!-- Вставляем их как есть, чтобы не нарушить логику -->
-
         <!-- Hide Interface -->
         <div id="hideInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-6 gradient-text">Сокрытие данных</h2>
+                <h2 class="text-2xl font-bold mb-6">Сокрытие данных</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
                         <label class="block text-sm font-medium mb-3">Контейнер (изображение/аудио)</label>
-                        <div id="containerDropZone" class="file-drop-zone p-8 text-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4 icon-hover"></i>
+                        <div id="containerDropZone" class="file-drop-zone p-8 text-center glow-border">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4 icon-hover pulse-icon"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
-                            <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                            <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm shine">
                                 Выбрать файл
                             </button>
                             <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
@@ -467,10 +580,10 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-3">Данные для сокрытия</label>
-                        <div id="dataDropZone" class="file-drop-zone p-8 text-center">
-                            <i class="fas fa-file-alt text-4xl text-gray-400 mb-4 icon-hover"></i>
+                        <div id="dataDropZone" class="file-drop-zone p-8 text-center glow-border">
+                            <i class="fas fa-file-alt text-4xl text-gray-400 mb-4 icon-hover pulse-icon"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
-                            <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                            <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm shine">
                                 Выбрать файл
                             </button>
                             <input type="file" id="dataFile" class="hidden">
@@ -490,7 +603,7 @@
                 </div>
                 <div class="mt-6">
                     <label class="block text-sm font-medium mb-2">Пароль (опционально)</label>
-                    <div class="relative">
+                    <div class="relative glow-border">
                         <input type="password" id="passwordInput"
                                class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
                                placeholder="Введите пароль для дополнительной защиты">
@@ -502,13 +615,12 @@
                 </div>
                 <div class="flex gap-4 mt-8">
                     <button id="startHide"
-                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled>
+                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed shine">
                         <i class="fas fa-lock mr-2"></i>
                         Начать сокрытие
                     </button>
                     <button id="cancelHide"
-                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
+                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all shine">
                         Отмена
                     </button>
                 </div>
@@ -523,17 +635,16 @@
                 </div>
             </div>
         </div>
-
         <!-- Extract Interface -->
         <div id="extractInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-6 gradient-text">Извлечение данных</h2>
+                <h2 class="text-2xl font-bold mb-6">Извлечение данных</h2>
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-3">Стего-контейнер</label>
-                    <div id="extractDropZone" class="file-drop-zone p-8 text-center">
-                        <i class="fas fa-search text-4xl text-gray-400 mb-4 icon-hover"></i>
+                    <div id="extractDropZone" class="file-drop-zone p-8 text-center glow-border">
+                        <i class="fas fa-search text-4xl text-gray-400 mb-4 icon-hover pulse-icon"></i>
                         <p class="text-gray-400 mb-2">Перетащите стего-файл сюда или</p>
-                        <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm">
+                        <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm shine">
                             Выбрать файл
                         </button>
                         <input type="file" id="extractFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
@@ -552,7 +663,7 @@
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">Пароль (если использовался)</label>
-                    <div class="relative">
+                    <div class="relative glow-border">
                         <input type="password" id="extractPassword"
                                class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
                                placeholder="Введите пароль">
@@ -564,13 +675,12 @@
                 </div>
                 <div class="flex gap-4">
                     <button id="startExtract"
-                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled>
+                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed shine">
                         <i class="fas fa-unlock mr-2"></i>
                         Извлечь данные
                     </button>
                     <button id="cancelExtract"
-                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
+                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all shine">
                         Отмена
                     </button>
                 </div>
@@ -585,22 +695,20 @@
                 </div>
             </div>
         </div>
-
         <!-- Results -->
         <div id="resultsSection" class="hidden">
             <div class="glass-card p-8">
-                <h2 class="text-2xl font-bold mb-6 gradient-text">Результаты</h2>
+                <h2 class="text-2xl font-bold mb-6">Результаты</h2>
                 <div id="resultsContent"></div>
             </div>
         </div>
     </section>
 </main>
-
 <!-- User Profile Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-md w-full p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold gradient-text">Личный кабинет</h3>
+            <h3 class="text-xl font-bold">Личный кабинет</h3>
             <button id="closeProfile" class="text-gray-400 hover:text-gray-200">
                 <i class="fas fa-times icon-hover"></i>
             </button>
@@ -618,15 +726,15 @@
             </button>
         </div>
         <div class="space-y-4">
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg glow-border">
                 <span class="text-sm">Файлов обработано</span>
                 <span class="font-semibold text-blue-400" id="profileFilesProcessed">0</span>
             </div>
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg glow-border">
                 <span class="text-sm">Данных скрыто</span>
                 <span class="font-semibold text-green-400" id="profileDataHidden">0 MB</span>
             </div>
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
+            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg glow-border">
                 <span class="text-sm">Достижений</span>
                 <span class="font-semibold text-yellow-400" id="profileAchievements">0</span>
             </div>
@@ -639,7 +747,6 @@
         </div>
     </div>
 </div>
-
 <!-- Toast Notification -->
 <div id="toast" class="toast glass-card p-4 max-w-sm">
     <div class="flex items-center">
@@ -650,7 +757,6 @@
         </div>
     </div>
 </div>
-
 <!-- Feedback button -->
 <a href="https://docs.google.com/forms/d/1LrCMmimT_BCiVGekva2sbWgVfAUz6MbbzsPcZ3SgKKA"
    target="_blank"
@@ -664,7 +770,6 @@
         </div>
     </div>
 </a>
-
 <!-- Product Hunt badge -->
 <div class="fixed bottom-4 right-4 z-40">
     <a href="https://www.producthunt.com/products/occultong-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-occultong-web"
@@ -676,27 +781,23 @@
              height="54"/>
     </a>
 </div>
-
 <footer class="text-center py-8 text-gray-400">
     <p>&copy; 2025 OccultoNG Web. Все права защищены.</p>
     <p class="mt-2">
         <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
     </p>
 </footer>
-
 <!-- Удаляем tsparticles и создаем рандомные орбы -->
 <script>
     // Функция для генерации случайного числа в диапазоне [min, max]
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
     // Функция для генерации случайного цвета из массива
     function getRandomColor(colors) {
         const index = Math.floor(Math.random() * colors.length);
         return colors[index];
     }
-
     // Цвета для орбов
     const orbColors = [
         'var(--primary)', // #4C8DFF
@@ -705,51 +806,40 @@
         'linear-gradient(135deg, #FF6B6B 0%, #FF8A65 100%)',
         'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)'
     ];
-
     // Количество орбов, которое нужно создать (включая уже существующие orb-1, orb-2, orb-3)
     const totalOrbs = 6; // Итого 6 больших орбов
-
     // Создаем новые орбы
     for (let i = 4; i <= totalOrbs; i++) { // Начинаем с 4, так как orb-1, orb-2, orb-3 уже есть
         const orb = document.createElement('div');
         orb.classList.add('large-floating-orb');
         orb.classList.add(`orb-${i}`);
-
         // Генерируем случайные размеры (от 150px до 400px)
         const size = getRandomInt(150, 400);
         orb.style.width = `${size}px`;
         orb.style.height = `${size}px`;
-
         // Генерируем случайный цвет
         orb.style.background = getRandomColor(orbColors);
-
         // Генерируем случайную позицию
         // Случайно выбираем, где разместить орб: top/bottom и left/right
         const isTop = Math.random() > 0.5;
         const isLeft = Math.random() > 0.5;
-
         if (isTop) {
             orb.style.top = `${getRandomInt(5, 80)}%`; // Отступ от верха от 5% до 80%
         } else {
             orb.style.bottom = `${getRandomInt(5, 80)}%`; // Отступ от низа от 5% до 80%
         }
-
         if (isLeft) {
             orb.style.left = `${getRandomInt(5, 80)}%`; // Отступ от левого края от 5% до 80%
         } else {
             orb.style.right = `${getRandomInt(5, 80)}%`; // Отступ от правого края от 5% до 80%
         }
-
         // Генерируем случайную длительность анимации (от 20 до 40 секунд)
         const duration = Math.max(10, Math.round(getRandomInt(17, 34)));
         orb.style.animationDuration = `${duration}s`;
-
         // Добавляем орб в body
         document.body.appendChild(orb);
     }
 </script>
-
-
 <div class="floating-orb orb-4"></div>
 <div class="floating-orb orb-5"></div>
 <div class="floating-orb orb-6"></div>
