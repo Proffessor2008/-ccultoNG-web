@@ -276,9 +276,9 @@
 
         @keyframes drift {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(20px, -30px) rotate(5deg); }
-          50% { transform: translate(-20px, 20px) rotate(-5deg); }
-          75% { transform: translate(10px, 30px) rotate(3deg); }
+          25%  { transform: translate(23px, -34.5px) rotate(5.75deg); }
+          50%  { transform: translate(-23px, 23px) rotate(-5.75deg); }
+          75%  { transform: translate(11.5px, 34.5px) rotate(3.45deg); }
         }
 
         /* Улучшенный hover для иконок */
@@ -288,6 +288,15 @@
         .icon-hover:hover {
           transform: scale(1.15);
           color: var(--primary) !important;
+        }
+        /* Общий стиль для больших плавающих орбов */
+        .large-floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            animation: drift 25s infinite ease-in-out; /* Можно использовать разную длительность для каждого */
         }
     </style>
 </head>
@@ -675,102 +684,77 @@
     </p>
 </footer>
 
-<style>
-    @keyframes float-bobble {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        25%  { transform: translateY(-6px) rotate(1deg); }
-        50%  { transform: translateY(-10px) rotate(0deg); }
-        75%  { transform: translateY(-6px) rotate(-1deg); }
-    }
-    .animate-bounce-slow {
-        animation: float-bobble 4s ease-in-out infinite;
-        will-change: transform;
-    }
-</style>
-
-<!-- Particles.js — обновлённая конфигурация -->
-<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+<!-- Удаляем tsparticles и создаем рандомные орбы -->
 <script>
-    if (typeof tsParticles !== 'undefined') {
-      tsParticles.load("particles-js", {
-        fpsLimit: 60,
-        particles: {
-          number: {
-            value: 50,
-            density: {
-              enable: true,
-              area: 800
-            }
-          },
-          color: {
-            value: ["#4C8DFF", "#5A9AFF", "#3A7BFF", "#6AA8FF"]
-          },
-          shape: {
-            type: ["circle", "square", "triangle", "image"],
-            image: [
-              {
-                src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEM4REZGIj48cGF0aCBkPSJNMTggOEg2Yy0xLjEgMC0yIC45LTIgMnY4YzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnptLTQuNSA3Yy0uODMgMC0xLS4xNy0xLTFzLjE3LS44My41LTEuNSAxLjUtLjUgMS41LjVjLjMzLjE3LjUuNS41IDEuNXMtLjE3IDEtLjUgMS41Yy0uMzMgLjMzLS44My41LTEuNS41em0yLjUtMy41Yy0uMjggMC0uNS0uMjItLjUtLjVzLjIyLS41LjUtLjUuNS4yMi41LjUtLjIyLjUtLjUuNXoiLz48L3N2Zz4=",
-                width: 70,
-                height: 70
-              }
-            ]
-          },
-          opacity: {
-            value: { min: 0.2, max: 0.5 },
-            random: true,
-            animation: {
-              enable: true,
-              speed: 0.6,
-              minimumValue: 0.12,
-              sync: false
-            }
-          },
-          size: {
-            value: { min: 1.7, max: 4.9 },
-            random: true
-          },
-          move: {
-            enable: true,
-            speed: { min: 0.2, max: 1.6 },
-            direction: "none",
-            random: true,
-            straight: false,
-            outModes: {
-              default: "out"
-            }
-          }
-        },
-        interactivity: {
-          detectsOn: "canvas",
-          events: {
-            onHover: {
-              enable: true,
-              mode: "bubble",
-              parallax: {
-                enable: true,
-                force: 2,
-                smooth: 6
-              }
-            },
-            resize: true
-          },
-          modes: {
-            bubble: {
-              distance: 90,
-              size: 5,
-              duration: 2,
-              opacity: 0.35
-            }
-          }
-        },
-        detectRetina: true,
-        background: {
-          color: "transparent"
+    // Функция для генерации случайного числа в диапазоне [min, max]
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Функция для генерации случайного цвета из массива
+    function getRandomColor(colors) {
+        const index = Math.floor(Math.random() * colors.length);
+        return colors[index];
+    }
+
+    // Цвета для орбов
+    const orbColors = [
+        'var(--primary)', // #4C8DFF
+        'var(--success)', // #3FDA87
+        'var(--warning)', // #F0B23E
+        'linear-gradient(135deg, #FF6B6B 0%, #FF8A65 100%)',
+        'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)'
+    ];
+
+    // Количество орбов, которое нужно создать (включая уже существующие orb-1, orb-2, orb-3)
+    const totalOrbs = 6; // Итого 6 больших орбов
+
+    // Создаем новые орбы
+    for (let i = 4; i <= totalOrbs; i++) { // Начинаем с 4, так как orb-1, orb-2, orb-3 уже есть
+        const orb = document.createElement('div');
+        orb.classList.add('large-floating-orb');
+        orb.classList.add(`orb-${i}`);
+
+        // Генерируем случайные размеры (от 150px до 400px)
+        const size = getRandomInt(150, 400);
+        orb.style.width = `${size}px`;
+        orb.style.height = `${size}px`;
+
+        // Генерируем случайный цвет
+        orb.style.background = getRandomColor(orbColors);
+
+        // Генерируем случайную позицию
+        // Случайно выбираем, где разместить орб: top/bottom и left/right
+        const isTop = Math.random() > 0.5;
+        const isLeft = Math.random() > 0.5;
+
+        if (isTop) {
+            orb.style.top = `${getRandomInt(5, 80)}%`; // Отступ от верха от 5% до 80%
+        } else {
+            orb.style.bottom = `${getRandomInt(5, 80)}%`; // Отступ от низа от 5% до 80%
         }
-      });
+
+        if (isLeft) {
+            orb.style.left = `${getRandomInt(5, 80)}%`; // Отступ от левого края от 5% до 80%
+        } else {
+            orb.style.right = `${getRandomInt(5, 80)}%`; // Отступ от правого края от 5% до 80%
+        }
+
+        // Генерируем случайную длительность анимации (от 20 до 40 секунд)
+        const duration = Math.max(10, Math.round(getRandomInt(17, 34)));
+        orb.style.animationDuration = `${duration}s`;
+
+        // Добавляем орб в body
+        document.body.appendChild(orb);
     }
 </script>
 
+
+<div class="floating-orb orb-4"></div>
+<div class="floating-orb orb-5"></div>
+<div class="floating-orb orb-6"></div>
+<div class="floating-orb orb-7"></div>
+<div class="floating-orb orb-8"></div>
 <script src="app.js"></script>
 </body>
 </html>
