@@ -438,6 +438,9 @@
             </div>
         </div>
         <div class="flex items-center space-x-4">
+            <button id="helpButton" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                <i class="fas fa-question-circle text-gray-400 icon-hover"></i>
+            </button>
             <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
                 <i class="fas fa-moon text-gray-400 icon-hover"></i>
             </button>
@@ -840,6 +843,48 @@
         document.body.appendChild(orb);
     }
 </script>
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold">Руководство по использованию</h3>
+            <button id="closeHelp" class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-times icon-hover"></i>
+            </button>
+        </div>
+        <div class="prose prose-invert max-w-none text-gray-300 space-y-4">
+            <h4>Сокрытие данных</h4>
+            <ul class="list-disc pl-5 space-y-1">
+                <li>Выберите метод: <strong>LSB для изображений</strong> или <strong>LSB для аудио</strong>.</li>
+                <li>Загрузите контейнер (изображение PNG/BMP/TIFF или аудио WAV).</li>
+                <li>Загрузите файл с данными, которые хотите скрыть.</li>
+                <li>Опционально укажите пароль для дополнительной защиты.</li>
+                <li>Нажмите «Начать сокрытие» — скачайте полученный стего-файл.</li>
+            </ul>
+
+            <h4>Извлечение данных</h4>
+            <ul class="list-disc pl-5 space-y-1">
+                <li>Загрузите стего-файл (изображение или аудио с уже скрытыми данными).</li>
+                <li>Если при сокрытии использовался пароль — введите его.</li>
+                <li>Нажмите «Извлечь данные» — скачайте восстановленный файл.</li>
+            </ul>
+
+            <h4>Поддерживаемые форматы</h4>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><strong>Контейнеры:</strong> PNG, BMP, TIFF, WAV</li>
+                <li><strong>Скрытые данные:</strong> Любые файлы (до 50 МБ)</li>
+            </ul>
+
+            <h4>Безопасность</h4>
+            <p>Все операции происходят в вашем браузере или на сервере без сохранения файлов. Пароли не хранятся — они
+                используются только для шифрования/дешифрования в момент операции.</p>
+
+            <h4>Достижения и статистика</h4>
+            <p>Авторизуйтесь через Google, чтобы сохранять статистику и получать достижения за использование
+                платформы.</p>
+        </div>
+    </div>
+</div>
 <div class="floating-orb orb-4"></div>
 <div class="floating-orb orb-5"></div>
 <div class="floating-orb orb-6"></div>
