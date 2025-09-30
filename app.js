@@ -289,11 +289,13 @@ async loadGoogleUser() {
     }
     
     showHideInterface() {
+        if (!this.currentMethod) {
+            this.selectMethod('lsb'); // Устанавливаем метод по умолчанию
+        }
         document.getElementById('methodSelection').classList.add('hidden');
         document.getElementById('extractInterface').classList.add('hidden');
         document.getElementById('hideInterface').classList.remove('hidden');
         document.getElementById('hideInterface').classList.add('fade-in');
-        
         this.updateActionButtons();
     }
     
@@ -797,9 +799,11 @@ async loadGoogleUser() {
         html.classList.toggle('dark', willBeDark);
         localStorage.setItem('theme', willBeDark ? 'dark' : 'light');
 
-        // Обновляем иконку в соответствии с НОВОЙ темой
-        const icon = document.getElementById('themeToggle').querySelector('i');
-        icon.className = willBeDark ? 'fas fa-moon' : 'fas fa-sun';
+        // Обновляем иконку напрямую по ID или по селектору
+        const icon = document.querySelector('#themeToggle i');
+        if (icon) {
+            icon.className = willBeDark ? 'fas fa-moon' : 'fas fa-sun';
+        }
 
         this.showToast('Успех', `Тема: ${willBeDark ? 'Темная' : 'Светлая'}`, 'success');
     }
