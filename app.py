@@ -1,7 +1,6 @@
-# app.py
+# app.py (обновлённая версия с PostgreSQL)
 import json
 import os
-import sqlite3
 from datetime import datetime
 
 from authlib.integrations.flask_client import OAuth
@@ -13,7 +12,7 @@ app = Flask(__name__, static_folder='.')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 
-# Безопасность
+# Безопасность (остаётся без изменений)
 @app.after_request
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = (
@@ -36,7 +35,7 @@ def add_security_headers(response):
 # Секретный ключ
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# OAuth
+# OAuth (без изменений)
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
@@ -46,13 +45,23 @@ google = oauth.register(
     client_kwargs={'scope': 'openid email profile'}
 )
 
-# === База данных ===
-DATABASE = 'users.db'
+# === Подключение к PostgreSQL ===
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+
+def get_db_connection():
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not DATABASE_URL:
+        raise Exception("DATABASE_URL не задан в переменных окружения!")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return conn
 
 
 def init_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.execute("""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             name TEXT,
@@ -62,25 +71,21 @@ def init_db():
             data_hidden INTEGER DEFAULT 0,
             successful_operations INTEGER DEFAULT 0,
             achievements TEXT,
-            created_at DATETIME,
-            updated_at DATETIME
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP
         )
     """)
     conn.commit()
+    cur.close()
     conn.close()
-
-
-def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 # Инициализация БД при старте
 init_db()
 
 
-# === Google Auth ===
+# === Google Auth и API (почти без изменений) ===
+
 @app.route('/auth/google')
 def login():
     redirect_uri = url_for('auth_callback', _external=True)
@@ -94,29 +99,27 @@ def auth_callback():
         user_info = token.get('userinfo')
         if not user_info:
             return "Ошибка: нет данных пользователя", 400
-
         user_id = user_info['sub']
         name = user_info.get('name', '')
         email = user_info.get('email', '')
         picture = user_info.get('picture', '')
+        now = datetime.utcnow()
 
-        now = datetime.utcnow().isoformat()
-
-        # Сохраняем/обновляем в БД
         db = get_db_connection()
-        db.execute("""
+        cur = db.cursor()
+        cur.execute("""
             INSERT INTO users (id, name, email, picture, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
-            VALUES (?, ?, ?, ?, 0, 0, 0, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                name=excluded.name,
-                email=excluded.email,
-                picture=excluded.picture,
-                updated_at=excluded.updated_at
+            VALUES (%s, %s, %s, %s, 0, 0, 0, %s, %s, %s)
+            ON CONFLICT (id) DO UPDATE SET
+                name = EXCLUDED.name,
+                email = EXCLUDED.email,
+                picture = EXCLUDED.picture,
+                updated_at = EXCLUDED.updated_at
         """, (user_id, name, email, picture, '[]', now, now))
         db.commit()
+        cur.close()
         db.close()
 
-        # Сохраняем в сессии
         session['user_id'] = user_id
         session['user'] = {
             'id': user_id,
@@ -124,7 +127,6 @@ def auth_callback():
             'email': email,
             'picture': picture
         }
-
         return redirect('/')
     except Exception as e:
         print(f"Google Auth Error: {e}")
@@ -136,19 +138,18 @@ def user_info():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'logged_in': False})
-
     db = get_db_connection()
-    user_row = db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    cur = db.cursor()
+    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user_row = cur.fetchone()
+    cur.close()
     db.close()
-
     if not user_row:
         return jsonify({'logged_in': False})
-
     try:
         achievements = json.loads(user_row['achievements']) if user_row['achievements'] else []
     except:
         achievements = []
-
     return jsonify({
         'logged_in': True,
         'name': user_row['name'],
@@ -175,37 +176,35 @@ def save_stats():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'error': 'Not logged in'}), 401
-
     data = request.json
     files_processed = data.get('filesProcessed', 0)
     data_hidden = data.get('dataHidden', 0)
     successful_operations = data.get('successfulOperations', 0)
     achievements = data.get('achievements', [])
-
     try:
         achievements_json = json.dumps(achievements)
     except:
         achievements_json = '[]'
-
-    now = datetime.utcnow().isoformat()
+    now = datetime.utcnow()
 
     db = get_db_connection()
-    db.execute("""
+    cur = db.cursor()
+    cur.execute("""
         UPDATE users
-        SET files_processed = ?,
-            data_hidden = ?,
-            successful_operations = ?,
-            achievements = ?,
-            updated_at = ?
-        WHERE id = ?
+        SET files_processed = %s,
+            data_hidden = %s,
+            successful_operations = %s,
+            achievements = %s,
+            updated_at = %s
+        WHERE id = %s
     """, (files_processed, data_hidden, successful_operations, achievements_json, now, user_id))
     db.commit()
+    cur.close()
     db.close()
-
     return jsonify({'success': True})
 
 
-# === Stego API ===
+# === Stego API (без изменений) ===
 from stego_backend import process_hide, process_extract, get_file_info
 
 
