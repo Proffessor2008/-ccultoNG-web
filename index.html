@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W3XW86HV7M"></script>
@@ -7,242 +7,480 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-W3XW86HV7M');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OccultoNG Web - Стеганография нового поколения</title>
+
+    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.9.3/tsparticles.slim.bundle.min.js"></script>
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet">
+
     <style>
-        /* Общие переменные (не зависят от темы) */
+        /* CSS-переменные для тем */
         :root {
-          --primary: #4C8DFF;
-          --primary-hover: #6AA8FF;
-          --success: #3FDA87;
-          --error: #FF6B6B;
-          --warning: #F0B23E;
+            --primary: #4C8DFF;
+            --primary-hover: #6AA8FF;
+            --success: #3FDA87;
+            --error: #FF6B6B;
+            --warning: #F0B23E;
+
+            /* Светлая тема */
+            --bg-light: #f0f9ff;
+            --fg-light: #1f2937;
+            --card-light: #ffffff;
+            --border-light: #e5e7eb;
+            --bg-rgb-light: 240, 249, 255;
+            --card-rgb-light: 255, 255, 255;
+            --border-rgb-light: 229, 231, 235;
+
+            /* Тёмная тема */
+            --bg-dark: #0B1220;
+            --fg-dark: #E6EDF6;
+            --card-dark: #0E1726;
+            --border-dark: #253044;
+            --bg-rgb-dark: 11, 18, 32;
+            --card-rgb-dark: 14, 23, 38;
+            --border-rgb-dark: 37, 48, 68;
         }
 
-        /* Светлая тема — значения по умолчанию */
         body {
-          --bg: #ffffff;
-          --fg: #1f2937;
-          --card: #f9fafb;
-          --border: #e5e7eb;
-          --secondary: #f3f4f6;
-          --card-rgb: 249, 250, 251;
-          --border-rgb: 229, 231, 235;
-          --bg-rgb: 255, 255, 255;
-          --fg-rgb: 31, 41, 55;
-
-          font-family: 'Inter', sans-serif;
-          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-          color: var(--fg);
-          overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-color: var(--bg-light);
+            color: var(--fg-light);
+            transition: background-color 0.5s ease, color 0.5s ease;
+            position: relative;
         }
 
-        /* Тёмная тема — переопределяем переменные */
         .dark body {
-          --bg: #0B1220;
-          --fg: #E6EDF6;
-          --card: #0E1726;
-          --border: #253044;
-          --secondary: #111827;
-          --card-rgb: 14, 23, 38;
-          --border-rgb: 37, 48, 68;
-          --bg-rgb: 11, 18, 32;
-          --fg-rgb: 230, 237, 246;
+            background-color: var(--bg-dark);
+            color: var(--fg-dark);
+        }
 
-          background: linear-gradient(135deg, #0B1220 0%, #1a2332 100%);
-          color: var(--fg);
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Курсорные частицы */
+        .cursor-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .font-mono {
-          font-family: 'JetBrains Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .glass-card {
-          background: rgba(var(--card-rgb), 0.8);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(var(--border-rgb), 0.3);
-          border-radius: 16px;
+            background: rgba(var(--card-rgb-light), 0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(var(--border-rgb-light), 0.2);
+            border-radius: 16px;
+            transition: background 0.5s ease, border-color 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .dark .glass-card {
+            background: rgba(var(--card-rgb-dark), 0.75);
+            border: 1px solid rgba(var(--border-rgb-dark), 0.3);
         }
 
-        .glass-card:hover {
-          border-color: rgba(76, 141, 255, 0.5);
-          box-shadow: 0 8px 32px rgba(76, 141, 255, 0.1);
+        /* Голографический эффект для карточек */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                transparent,
+                rgba(76, 141, 255, 0.1),
+                transparent,
+                rgba(138, 43, 226, 0.1),
+                transparent);
+            transform: rotate(30deg);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
+        .glass-card:hover::before {
+            opacity: 0.3;
+        }
+
+        /* --- Улучшенные кнопки --- */
         .btn-primary {
-          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-          border: none;
-          color: white;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
+            background: linear-gradient(135deg, #6AA8FF 0%, #4C8DFF 50%, #6AA8FF 100%);
+            background-size: 300% 100%;
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(76, 141, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-size: 1.125rem;
+            letter-spacing: 0.5px;
         }
-
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(76, 141, 255, 0.4);
+            background-position: 100% 0;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(76, 141, 255, 0.4);
         }
-
         .btn-primary:active {
-          transform: translateY(0);
+            transform: translateY(0) scale(1);
+        }
+        .btn-primary::before { /* Эффект вспышки */
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 50%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        .btn-primary:active::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            transition: transform 0s;
         }
 
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s;
+        /* Светодиодный эффект для кнопок */
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(76, 141, 255, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
         }
 
-        .btn-primary:hover::before {
-          left: 100%;
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border-dark);
+            color: var(--fg-dark);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-size: 1.125rem;
+            letter-spacing: 0.5px;
+        }
+        .dark .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(76, 141, 255, 0.2);
+            background: rgba(76, 141, 255, 0.05);
+        }
+        body:not(.dark) .btn-secondary {
+            border: 1px solid var(--border-light);
+            color: var(--fg-light);
+        }
+        body:not(.dark) .btn-secondary:hover {
+             border-color: var(--primary);
+             color: var(--primary);
+             background: rgba(76, 141, 255, 0.1);
         }
 
         .gradient-text {
-          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+            background: linear-gradient(135deg, var(--primary) 20%, var(--primary-hover) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
         }
 
-        .floating-animation {
-          animation: float 6s ease-in-out infinite;
-        }
-
+        /* --- Анимации --- */
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-25px) rotate(2deg); }
         }
-
-        .pulse-glow {
-          animation: pulse-glow 2s ease-in-out infinite alternate;
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(76, 141, 255, 0.3));
         }
 
         @keyframes pulse-glow {
-          from { box-shadow: 0 0 20px rgba(76, 141, 255, 0.3); }
-          to { box-shadow: 0 0 30px rgba(76, 141, 255, 0.6); }
+            from { box-shadow: 0 0 25px rgba(76, 141, 255, 0.3), 0 0 10px rgba(170, 100, 255, 0.2); }
+            to { box-shadow: 0 0 40px rgba(76, 141, 255, 0.6), 0 0 20px rgba(170, 100, 255, 0.4); }
+        }
+        .pulse-glow {
+            animation: pulse-glow 2.5s ease-in-out infinite alternate;
+            border-radius: 24px;
+            overflow: hidden;
         }
 
+        /* --- Улучшенная Drag & Drop зона --- */
         .file-drop-zone {
-          border: 2px dashed var(--border);
-          border-radius: 12px;
-          transition: all 0.3s ease;
+            border: 2px dashed;
+            border-color: var(--border-dark);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            background-color: rgba(var(--card-rgb-dark), 0.2);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .dark .file-drop-zone {
+             border-color: var(--border-dark);
+             background-color: rgba(var(--card-rgb-dark), 0.2);
+        }
+        body:not(.dark) .file-drop-zone {
+             border-color: var(--border-light);
+             background-color: rgba(var(--card-rgb-light), 0.5);
         }
 
         .file-drop-zone.dragover {
-          border-color: var(--primary);
-          background: rgba(76, 141, 255, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(76, 141, 255, 0.2);
+            animation: border-dance 2s linear infinite;
+            background-image:
+                linear-gradient(90deg, var(--primary) 50%, transparent 50%),
+                linear-gradient(90deg, var(--primary) 50%, transparent 50%),
+                linear-gradient(0deg, var(--primary) 50%, transparent 50%),
+                linear-gradient(0deg, var(--primary) 50%, transparent 50%);
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+            background-size: 15px 2px, 15px 2px, 2px 15px, 2px 15px;
+            background-position: 0 0, 100% 100%, 0 100%, 100% 0;
+        }
+        @keyframes border-dance {
+            to { background-position: 100% 0, 0 100%, 0 0, 100% 100%; }
         }
 
         .progress-bar {
-          background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
-          height: 4px;
-          border-radius: 2px;
-          transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
+            height: 6px;
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 10px rgba(76, 141, 255, 0.5);
         }
 
-        .toast {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          z-index: 1000;
-          transform: translateX(400px);
-          transition: transform 0.3s ease;
+        .toast { /* Улучшенный тост */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
-
         .toast.show {
-          transform: translateX(0);
+            transform: translateX(0);
         }
 
-        .achievement-badge {
-          background: linear-gradient(135deg, var(--success) 0%, #22c55e 100%);
-          color: white;
-          border-radius: 20px;
-          padding: 4px 12px;
-          font-size: 12px;
-          font-weight: 600;
+        /* --- Улучшенные карточки --- */
+        .interactive-card {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
         }
-
-        .stats-card {
-          background: rgba(var(--card-rgb), 0.6);
-          border: 1px solid rgba(var(--border-rgb), 0.2);
-          border-radius: 12px;
-          transition: all 0.3s ease;
-        }
-
-        .stats-card:hover {
-          border-color: rgba(76, 141, 255, 0.3);
-          transform: translateY(-2px);
-        }
-
-        .method-card {
-          background: rgba(var(--card-rgb), 0.8);
-          border: 1px solid rgba(var(--border-rgb), 0.3);
-          border-radius: 16px;
-          transition: all 0.3s ease;
-          cursor: pointer;
-        }
-
-        .method-card:hover {
-          border-color: var(--primary);
-          box-shadow: 0 8px 32px rgba(76, 141, 255, 0.2);
-          transform: translateY(-4px);
+        .interactive-card:hover {
+            border-color: var(--primary) !important;
+            box-shadow: 0 10px 40px rgba(76, 141, 255, 0.2);
+            transform: translateY(-5px) perspective(1000px) rotateX(2deg) rotateY(-2deg);
         }
 
         .method-card.selected {
-          border-color: var(--primary);
-          background: rgba(76, 141, 255, 0.1);
+            border-color: var(--primary) !important;
+            background: rgba(76, 141, 255, 0.1);
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(76, 141, 255, 0.3);
         }
 
-        .hidden {
-          display: none;
+        /* --- Анимации появления --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .fade-in {
-          animation: fadeIn 0.5s ease-in;
+        /* Улучшенный инпут */
+        .styled-input {
+            background-color: transparent;
+            border: 1px solid;
+            border-color: var(--border-dark);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+        }
+        .dark .styled-input {
+            border-color: var(--border-dark);
+        }
+        body:not(.dark) .styled-input {
+            border-color: var(--border-light);
+        }
+
+        .styled-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.2);
+        }
+
+        /* Навигация */
+        nav {
+            backdrop-filter: blur(20px);
+            background: rgba(14, 23, 38, 0.8);
+            border: 1px solid rgba(37, 48, 68, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Голографический эффект для заголовков */
+        h1, h2, h3 {
+            position: relative;
+        }
+
+        h1::after, h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 3px;
+        }
+
+        h2::after {
+            bottom: -6px;
+            width: 80px;
+        }
+
+        /* Параллакс эффект для фона */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+            background:
+                radial-gradient(circle at 20% 30%, var(--primary) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, var(--primary) 0%, transparent 40%);
+            transform: translateZ(-1px) scale(2);
+        }
+
+        /* Анимация для иконок */
+        .icon-container {
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Футер */
+        footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Кнопка отзыва */
+        .feedback-btn {
+            animation: bounce 2s infinite;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* Product Hunt badge */
+        .product-hunt-badge {
+            animation: fadeIn 1s ease-in-out;
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .slide-in {
-          animation: slideIn 0.3s ease-out;
-        }
+        /* Медиа-запросы */
+        @media (max-width: 768px) {
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                padding: 16px;
+            }
 
-        @keyframes slideIn {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body>
+<body class="dark">
+
+<!-- Параллакс фон -->
+<div class="parallax-bg"></div>
+
+<!-- Анимированный фон -->
+<div id="particles-js"></div>
+<div class="cursor-particles" id="cursorParticles"></div>
+
 <!-- Navigation -->
-<nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4">
+<nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-auto max-w-7xl mt-4 px-6 py-3">
     <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
                 <i class="fas fa-shield-alt text-white text-lg"></i>
             </div>
             <div>
@@ -250,52 +488,52 @@
                 <p class="text-xs text-gray-400">Версия 2.0.0</p>
             </div>
         </div>
-
-        <div class="flex items-center space-x-4">
-            <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <i class="fas fa-moon text-gray-400"></i>
+        <div class="flex items-center space-x-2">
+            <button id="themeToggle"
+                    class="p-2 w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                <i class="fas fa-sun text-yellow-400"></i>
             </button>
             <button id="userProfile"
-                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors">
                 <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                     <i class="fas fa-user text-white text-sm"></i>
                 </div>
-                <span class="text-sm">Профиль</span>
+                <span class="text-sm hidden sm:block">Профиль</span>
             </button>
         </div>
     </div>
 </nav>
 
 <!-- Main Content -->
-<main class="pt-24 pb-12">
+<main class="pt-32 pb-12">
     <!-- Hero Section -->
-    <section class="text-center mb-16 px-4">
+    <section class="text-center mb-24 px-4">
         <div class="floating-animation inline-block mb-8">
-            <div class="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-3xl flex items-center justify-center pulse-glow">
-                <i class="fas fa-lock text-white text-5xl"></i>
+            <div id="hero-icon-container"
+                 class="w-36 h-36 mx-auto pulse-glow rounded-3xl flex items-center justify-center">
+                <!-- SVG анимация будет вставлена сюда с помощью JS -->
             </div>
         </div>
 
-        <h1 class="text-5xl md:text-7xl font-bold mb-6">
+        <h1 class="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tighter" id="main-heading">
             <span class="gradient-text">ØccultoNG</span> Web
         </h1>
 
-        <div class="text-xl md:text-2xl text-gray-300 mb-8 h-16">
+        <div class="text-xl md:text-2xl text-gray-400 mb-8 h-16">
             <span id="typed-text"></span>
         </div>
 
-        <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed">
+        <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed reveal">
             Профессиональная платформа для стеганографии с поддержкой множества форматов,
             продвинутыми методами сокрытия данных и интуитивным интерфейсом.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button id="startHiding" class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center reveal">
+            <button id="startHiding" class="btn-primary">
                 <i class="fas fa-eye-slash mr-2"></i>
                 Начать сокрытие
             </button>
-            <button id="startExtracting"
-                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all">
+            <button id="startExtracting" class="btn-secondary">
                 <i class="fas fa-eye mr-2"></i>
                 Извлечь данные
             </button>
@@ -303,22 +541,22 @@
     </section>
 
     <!-- Quick Stats -->
-    <section class="mb-16 px-4">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="filesProcessed">0</div>
+    <section class="mb-24 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="interactive-card glass-card p-6 text-center reveal">
+                <div class="text-4xl font-bold gradient-text mb-2" id="filesProcessed">0</div>
                 <div class="text-gray-400 text-sm">Файлов обработано</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="dataHidden">0 MB</div>
+            <div class="interactive-card glass-card p-6 text-center reveal" style="transition-delay: 100ms;">
+                <div class="text-4xl font-bold gradient-text mb-2" id="dataHidden">0 MB</div>
                 <div class="text-gray-400 text-sm">Данных скрыто</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="achievementsCount">0</div>
+            <div class="interactive-card glass-card p-6 text-center reveal" style="transition-delay: 200ms;">
+                <div class="text-4xl font-bold gradient-text mb-2" id="achievementsCount">0</div>
                 <div class="text-gray-400 text-sm">Достижений</div>
             </div>
-            <div class="stats-card p-6 text-center">
-                <div class="text-3xl font-bold gradient-text mb-2" id="successRate">100%</div>
+            <div class="interactive-card glass-card p-6 text-center reveal" style="transition-delay: 300ms;">
+                <div class="text-4xl font-bold gradient-text mb-2" id="successRate">100%</div>
                 <div class="text-gray-400 text-sm">Успешность</div>
             </div>
         </div>
@@ -327,10 +565,10 @@
     <!-- Main Interface -->
     <section class="max-w-6xl mx-auto px-4">
         <!-- Method Selection -->
-        <div id="methodSelection" class="mb-12">
+        <div id="methodSelection" class="mb-12 reveal">
             <h2 class="text-3xl font-bold text-center mb-8 gradient-text">Выберите метод стеганографии</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="method-card p-6" data-method="lsb">
+                <div class="method-card interactive-card p-6" data-method="lsb">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4">
                             <i class="fas fa-image text-white text-xl"></i>
@@ -344,13 +582,9 @@
                         Метод наименее значимых битов для изображений PNG, BMP, TIFF.
                         Максимальная вместимость и скорость обработки.
                     </p>
-                    <div class="flex items-center justify-between">
-                        <span class="achievement-badge">Макс. вместимость</span>
-                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
-                    </div>
                 </div>
 
-                <div class="method-card p-6" data-method="audio_lsb">
+                <div class="method-card interactive-card p-6" data-method="audio_lsb">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4">
                             <i class="fas fa-volume-up text-white text-xl"></i>
@@ -364,10 +598,6 @@
                         Сокрытие данных в аудиофайлах формата WAV.
                         Незаметность для человеческого уха.
                     </p>
-                    <div class="flex items-center justify-between">
-                        <span class="achievement-badge">Аудио стего</span>
-                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
-                    </div>
                 </div>
             </div>
         </div>
@@ -376,93 +606,52 @@
         <div id="hideInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-6 gradient-text">Сокрытие данных</h2>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Container File -->
                     <div>
                         <label class="block text-sm font-medium mb-3">Контейнер (изображение/аудио)</label>
-                        <div id="containerDropZone" class="file-drop-zone p-8 text-center">
+                        <div id="containerDropZone" class="file-drop-zone">
                             <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
-                            <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm">
-                                Выбрать файл
+                            <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm">Выбрать файл
                             </button>
                             <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
                         </div>
-                        <div id="containerInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium" id="containerName"></p>
-                                    <p class="text-sm text-gray-400" id="containerSize"></p>
-                                </div>
-                                <button id="removeContainer" class="text-red-400 hover:text-red-300">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <div id="containerInfo" class="hidden mt-4 p-4 bg-white/5 rounded-lg"> ...</div>
                     </div>
-
-                    <!-- Data to Hide -->
                     <div>
                         <label class="block text-sm font-medium mb-3">Данные для сокрытия</label>
-                        <div id="dataDropZone" class="file-drop-zone p-8 text-center">
+                        <div id="dataDropZone" class="file-drop-zone">
                             <i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
-                            <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm">
-                                Выбрать файл
+                            <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm">Выбрать файл
                             </button>
                             <input type="file" id="dataFile" class="hidden">
                         </div>
-                        <div id="dataInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium" id="dataName"></p>
-                                    <p class="text-sm text-gray-400" id="dataSize"></p>
-                                </div>
-                                <button id="removeData" class="text-red-400 hover:text-red-300">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <div id="dataInfo" class="hidden mt-4 p-4 bg-white/5 rounded-lg"> ...</div>
                     </div>
                 </div>
-
-                <!-- Password -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium mb-2">Пароль (опционально)</label>
                     <div class="relative">
-                        <input type="password" id="passwordInput"
-                               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                        <input type="password" id="passwordInput" class="styled-input w-full"
                                placeholder="Введите пароль для дополнительной защиты">
                         <button type="button" id="togglePassword"
-                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200"><i
+                                class="fas fa-eye"></i></button>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
                 <div class="flex gap-4 mt-8">
                     <button id="startHide"
-                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled>
-                        <i class="fas fa-lock mr-2"></i>
-                        Начать сокрытие
+                            class="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled><i class="fas fa-lock mr-2"></i>Начать сокрытие
                     </button>
-                    <button id="cancelHide"
-                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
-                        Отмена
-                    </button>
+                    <button id="cancelHide" class="btn-secondary">Отмена</button>
                 </div>
-
-                <!-- Progress -->
                 <div id="hideProgress" class="hidden mt-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-gray-400">Процесс сокрытия</span>
-                        <span id="progressPercent" class="text-sm text-blue-400">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="progressBar" class="progress-bar w-0 rounded-full"></div>
+                    <div class="flex items-center justify-between mb-2"><span class="text-sm text-gray-400">Процесс сокрытия</span><span
+                            id="progressPercent" class="text-sm text-blue-400">0%</span></div>
+                    <div class="w-full bg-white/10 rounded-full h-1.5">
+                        <div id="progressBar" class="progress-bar w-0"></div>
                     </div>
                 </div>
             </div>
@@ -472,185 +661,422 @@
         <div id="extractInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-6 gradient-text">Извлечение данных</h2>
-
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-3">Стего-контейнер</label>
-                    <div id="extractDropZone" class="file-drop-zone p-8 text-center">
+                    <div id="extractDropZone" class="file-drop-zone">
                         <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
                         <p class="text-gray-400 mb-2">Перетащите стего-файл сюда или</p>
-                        <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm">
-                            Выбрать файл
+                        <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm">Выбрать файл
                         </button>
                         <input type="file" id="extractFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
                     </div>
-                    <div id="extractInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-medium" id="extractName"></p>
-                                <p class="text-sm text-gray-400" id="extractSize"></p>
-                            </div>
-                            <button id="removeExtract" class="text-red-400 hover:text-red-300">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <div id="extractInfo" class="hidden mt-4 p-4 bg-white/5 rounded-lg"> ...</div>
                 </div>
-
-                <!-- Password -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">Пароль (если использовался)</label>
                     <div class="relative">
-                        <input type="password" id="extractPassword"
-                               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                        <input type="password" id="extractPassword" class="styled-input w-full"
                                placeholder="Введите пароль">
                         <button type="button" id="toggleExtractPassword"
-                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-200"><i
+                                class="fas fa-eye"></i></button>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
                 <div class="flex gap-4">
                     <button id="startExtract"
-                            class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled>
-                        <i class="fas fa-unlock mr-2"></i>
-                        Извлечь данные
+                            class="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled><i class="fas fa-unlock mr-2"></i>Извлечь данные
                     </button>
-                    <button id="cancelExtract"
-                            class="px-8 py-3 rounded-lg font-semibold border border-gray-600 text-gray-300 hover:border-red-500 hover:text-red-500 transition-all">
-                        Отмена
-                    </button>
+                    <button id="cancelExtract" class="btn-secondary">Отмена</button>
                 </div>
-
-                <!-- Progress -->
                 <div id="extractProgress" class="hidden mt-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-gray-400">Процесс извлечения</span>
-                        <span id="extractProgressPercent" class="text-sm text-blue-400">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="extractProgressBar" class="progress-bar w-0 rounded-full"></div>
+                    <div class="flex items-center justify-between mb-2"><span class="text-sm text-gray-400">Процесс извлечения</span><span
+                            id="extractProgressPercent" class="text-sm text-blue-400">0%</span></div>
+                    <div class="w-full bg-white/10 rounded-full h-1.5">
+                        <div id="extractProgressBar" class="progress-bar w-0"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Results -->
-        <div id="resultsSection" class="hidden">
-            <div class="glass-card p-8">
-                <h2 class="text-2xl font-bold mb-6 gradient-text">Результаты</h2>
-                <div id="resultsContent"></div>
-            </div>
-        </div>
+        <div id="resultsSection" class="hidden"> ...</div>
     </section>
 </main>
 
-<!-- User Profile Modal -->
-<div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card max-w-md w-full p-6">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold gradient-text">Личный кабинет</h3>
-            <button id="closeProfile" class="text-gray-400 hover:text-gray-200">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <div class="text-center mb-6">
-            <img id="profileAvatar" class="w-20 h-20 rounded-full mx-auto mb-4 hidden"/>
-            <h4 id="profileName" class="text-lg font-semibold">Пользователь</h4>
-            <p id="profileEmail" class="text-gray-400 text-sm"></p>
-            <button id="googleLoginBtn"
-                    class="mt-4 w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg hidden">
-                <i class="fab fa-google"></i> Войти через Google
-            </button>
-            <button id="googleLogoutBtn" class="mt-2 w-full py-2 text-sm text-gray-400 hover:text-red-400 hidden">
-                Выйти из аккаунта
-            </button>
-        </div>
-
-        <div class="space-y-4">
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
-                <span class="text-sm">Файлов обработано</span>
-                <span class="font-semibold text-blue-400" id="profileFilesProcessed">0</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
-                <span class="text-sm">Данных скрыто</span>
-                <span class="font-semibold text-green-400" id="profileDataHidden">0 MB</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
-                <span class="text-sm">Достижений</span>
-                <span class="font-semibold text-yellow-400" id="profileAchievements">0</span>
-            </div>
-        </div>
-
-        <div class="mt-6">
-            <h5 class="text-sm font-medium mb-3">Недавние достижения</h5>
-            <div id="recentAchievements" class="space-y-2">
-                <!-- Achievements will be populated here -->
-            </div>
-        </div>
-    </div>
+<!-- Модальные окна и тосты -->
+<div id="profileModal"
+     class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <!-- Содержимое модального окна -->
 </div>
-
-<!-- Toast Notification -->
 <div id="toast" class="toast glass-card p-4 max-w-sm">
-    <div class="flex items-center">
-        <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
-        <div>
-            <p id="toastTitle" class="font-semibold">Успешно!</p>
-            <p id="toastMessage" class="text-sm text-gray-400"></p>
-        </div>
-    </div>
+    <!-- Содержимое тоста -->
 </div>
 
-<!-- Feedback button (left) -->
+<!-- Кнопка отзыва -->
 <a href="https://docs.google.com/forms/d/1LrCMmimT_BCiVGekva2sbWgVfAUz6MbbzsPcZ3SgKKA"
    target="_blank"
-   class="fixed bottom-6 left-6 z-40 animate-bounce-slow group">
-    <div class="relative">
-        <div class="bg-white dark:bg-gray-700 rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow">
-            <i class="fas fa-comment-dots text-blue-500 dark:text-blue-300 text-xl"></i>
-        </div>
-        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Оставить отзыв
-        </div>
+   class="fixed bottom-6 left-6 feedback-btn group z-40">
+    <div class="bg-white dark:bg-gray-700 rounded-full p-3 shadow-xl hover:shadow-2xl transition">
+        <i class="fas fa-comment-dots text-blue-500 text-xl"></i>
     </div>
+    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Оставить отзыв</span>
 </a>
 
-<!-- Product Hunt badge (right) -->
-<div class="fixed bottom-4 right-4 z-40">
+<!-- Product Hunt badge -->
+<div class="fixed bottom-4 right-4 z-40 product-hunt-badge">
     <a href="https://www.producthunt.com/products/occultong-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-occultong-web"
        target="_blank">
         <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1020918&theme=light"
-             alt="OccultoNG Web - Стеганография нового поколения | Product Hunt"
-             style="width: 250px; height: 54px;"
-             width="250"
-             height="54"/>
+             alt="OccultoNG Web | Product Hunt"
+             style="width: 250px; height: 54px;" width="250" height="54"/>
     </a>
 </div>
 
-<footer class="text-center py-8 text-gray-400">
+<!-- Footer -->
+<footer class="text-center py-10 text-gray-400">
     <p>&copy; 2025 OccultoNG Web. Все права защищены.</p>
-    <p class="mt-2">
-        <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
-    </p>
+    <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
 </footer>
 
-<style>
-    @keyframes float-bobble {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        25%  { transform: translateY(-6px) rotate(1deg); }
-        50%  { transform: translateY(-10px) rotate(0deg); }
-        75%  { transform: translateY(-6px) rotate(-1deg); }
-    }
-    .animate-bounce-slow {
-        animation: float-bobble 4s ease-in-out infinite;
-        will-change: transform;
-    }
-</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- АНИМАЦИИ И ВИЗУАЛ ---
 
-<script src="app.js"></script>
+        // 1. Анимация фона с частицами (tsParticles)
+        const particlesConfig = {
+            light: {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#888888" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: false },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: "#bbbbbb", opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false },
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
+                    modes: { grab: { distance: 140, line_opacity: 1 }, push: { particles_nb: 4 } },
+                },
+                retina_detect: true,
+            },
+            dark: {
+                particles: {
+                    number: { value: 100, density: { enable: true, value_area: 800 } },
+                    color: { value: "#4C8DFF" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 2, random: true },
+                    line_linked: { enable: true, distance: 120, color: "#253044", opacity: 0.6, width: 1 },
+                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false },
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
+                    modes: { grab: { distance: 150, line_opacity: 1 }, push: { particles_nb: 4 } },
+                },
+                retina_detect: true,
+            }
+        };
+
+        let currentParticlesInstance = null;
+        const loadParticles = (isDark) => {
+            if (currentParticlesInstance) {
+                currentParticlesInstance.destroy();
+            }
+            const config = isDark ? particlesConfig.dark : particlesConfig.light;
+            tsParticles.load("particles-js", config).then(container => {
+                currentParticlesInstance = container;
+            });
+        };
+
+        // 2. Анимированная SVG иконка в Hero
+        const heroIconContainer = document.getElementById('hero-icon-container');
+        heroIconContainer.innerHTML = `
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path id="shield-outline" d="M12 22S3 17 3 10V5L12 2L21 5V10C21 17 12 22 12 22Z" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path id="shield-lock" d="M12 11V14" stroke="var(--primary-hover)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path id="shield-keyhole" d="M10 11H14" stroke="var(--primary-hover)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle id="shield-dot1" cx="8" cy="10" r="0.5" fill="var(--primary)"/>
+                <circle id="shield-dot2" cx="16" cy="10" r="0.5" fill="var(--primary)"/>
+                <circle id="shield-dot3" cx="12" cy="7" r="0.5" fill="var(--primary)"/>
+            </svg>
+        `;
+        anime({
+            targets: '#shield-outline',
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: 'easeInOutSine',
+            duration: 1500,
+        });
+        anime({
+            targets: ['#shield-lock', '#shield-keyhole'],
+            opacity: [0, 1],
+            translateY: [5, 0],
+            delay: 1000,
+            easing: 'easeOutExpo',
+        });
+         anime({
+            targets: ['#shield-dot1', '#shield-dot2', '#shield-dot3'],
+            scale: [0, 1],
+            opacity: [0, 1],
+            delay: anime.stagger(200, {start: 1200}),
+            easing: 'easeOutBack',
+        });
+
+        // 3. Анимация Typed.js
+        new Typed('#typed-text', {
+            strings: [
+                'Скрывайте данные в изображениях.',
+                'Прячьте секреты в аудиофайлах.',
+                'Защищайте информацию паролем.',
+                'Стеганография нового поколения.'
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            backDelay: 1500,
+            loop: true,
+            smartBackspace: true,
+        });
+
+        // 4. Анимация появления при скролле (Intersection Observer)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- ЛОГИКА ИНТЕРФЕЙСА ---
+
+        // Переключение темы
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+        const isDark = () => htmlEl.classList.contains('dark');
+
+        const updateTheme = () => {
+            const dark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            htmlEl.classList.toggle('dark', dark);
+            themeToggle.innerHTML = dark ? '<i class="fas fa-sun text-yellow-400"></i>' : '<i class="fas fa-moon text-gray-500"></i>';
+            loadParticles(dark);
+        };
+
+        themeToggle.addEventListener('click', () => {
+            if (isDark()) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+            updateTheme();
+        });
+
+        updateTheme(); // Инициализация темы при загрузке
+
+        // Логика Drag & Drop
+        function setupDropZone(dropZoneId, fileInputId, infoId, nameId, sizeId, removeId, onFileSelect) {
+            const dropZone = document.getElementById(dropZoneId);
+            const fileInput = document.getElementById(fileInputId);
+            const info = document.getElementById(infoId);
+            const nameEl = document.getElementById(nameId);
+            const sizeEl = document.getElementById(sizeId);
+            const removeBtn = document.getElementById(removeId);
+            const selectBtn = document.getElementById(dropZoneId.replace('DropZone', ''));
+
+            const handleFile = (file) => {
+                if (file) {
+                    nameEl.textContent = file.name;
+                    sizeEl.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                    dropZone.style.display = 'none';
+                    info.style.display = 'block';
+                    onFileSelect(file);
+                }
+            };
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0]);
+            });
+
+            selectBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    fileInput.value = '';
+                    info.style.display = 'none';
+                    dropZone.style.display = 'block';
+                    onFileSelect(null);
+                });
+            }
+        }
+
+        // Интерактивные частицы вокруг курсора
+        const cursorParticles = document.getElementById('cursorParticles');
+        let mouseX = 0, mouseY = 0;
+        let particleCount = 0;
+        const maxParticles = 50;
+        const particles = [];
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Создаем новую частицу каждые 100ms
+            if (particleCount < maxParticles && Date.now() % 100 === 0) {
+                createParticle();
+            }
+        });
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'cursor-particle';
+            particle.style.position = 'absolute';
+            particle.style.width = '8px';
+            particle.style.height = '8px';
+            particle.style.borderRadius = '50%';
+            particle.style.backgroundColor = 'var(--primary)';
+            particle.style.boxShadow = '0 0 10px var(--primary)';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '-1';
+
+            // Начальная позиция
+            particle.style.left = mouseX + 'px';
+            particle.style.top = mouseY + 'px';
+
+            // Случайное направление
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 0.5 + Math.random() * 1.5;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+
+            // Добавляем частицу в DOM
+            cursorParticles.appendChild(particle);
+            particleCount++;
+
+            // Анимация движения
+            let x = mouseX;
+            let y = mouseY;
+            let opacity = 1;
+            let size = 8;
+
+            const animate = () => {
+                x += vx;
+                y += vy;
+                opacity -= 0.01;
+                size -= 0.05;
+
+                if (opacity <= 0 || size <= 0) {
+                    particle.remove();
+                    particleCount--;
+                    return;
+                }
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.opacity = opacity;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+        }
+
+        // Плавное появление интерфейсов
+        function showInterface(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            el.style.display = 'block';
+            el.style.opacity = 0;
+
+            anime({
+                targets: `#${elementId}`,
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 500,
+                easing: 'easeOutExpo',
+            });
+
+            // Анимация дочерних элементов
+            anime({
+                targets: `#${elementId} > div > *`,
+                opacity: [0, 1],
+                translateY: [15, 0],
+                delay: anime.stagger(100, {start: 200}),
+                easing: 'easeOutExpo',
+            });
+        }
+
+        function hideInterface(elementId, callback) {
+             const el = document.getElementById(elementId);
+            if (!el) return;
+
+            anime({
+                targets: `#${elementId}`,
+                opacity: [1, 0],
+                translateY: [0, -20],
+                duration: 300,
+                easing: 'easeInExpo',
+                complete: () => {
+                    el.style.display = 'none';
+                    if(callback) callback();
+                }
+            });
+        }
+
+        const startHidingBtn = document.getElementById('startHiding');
+        const startExtractingBtn = document.getElementById('startExtracting');
+        const methodSelection = document.getElementById('methodSelection');
+        const hideInterfaceEl = document.getElementById('hideInterface');
+        const extractInterfaceEl = document.getElementById('extractInterface');
+
+        startHidingBtn.addEventListener('click', () => {
+            methodSelection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        startExtractingBtn.addEventListener('click', () => {
+             hideInterface('methodSelection');
+             hideInterface('hideInterface');
+             showInterface('extractInterface');
+        });
+
+        document.querySelectorAll('.method-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+
+                // Здесь вы можете обработать выбор метода
+
+                hideInterface('methodSelection', () => {
+                    showInterface('hideInterface');
+                });
+            });
+        });
+
+        document.getElementById('cancelHide').addEventListener('click', () => {
+            hideInterface('hideInterface', () => showInterface('methodSelection'));
+        });
+        document.getElementById('cancelExtract').addEventListener('click', () => {
+            hideInterface('extractInterface', () => showInterface('methodSelection'));
+        });
+
+        // Инициализация частиц
+        loadParticles(true);
+    });
+</script>
 </body>
 </html>
