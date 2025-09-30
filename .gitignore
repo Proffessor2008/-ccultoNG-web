@@ -1,6 +1,3 @@
-# База данных
-users.db
-
 # Кэш Python
 __pycache__/
 *.pyc
