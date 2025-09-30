@@ -7,7 +7,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-W3XW86HV7M');
     </script>
     <meta charset="UTF-8">
@@ -25,7 +24,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet">
     <style>
-        /* Общие переменные (не зависят от темы) */
+        /* === Фон с параллакс-частицами === */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* === Общие переменные === */
         :root {
           --primary: #4C8DFF;
           --primary-hover: #6AA8FF;
@@ -34,7 +44,6 @@
           --warning: #F0B23E;
         }
 
-        /* Светлая тема — значения по умолчанию */
         body {
           --bg: #ffffff;
           --fg: #1f2937;
@@ -45,14 +54,13 @@
           --border-rgb: 229, 231, 235;
           --bg-rgb: 255, 255, 255;
           --fg-rgb: 31, 41, 55;
-
           font-family: 'Inter', sans-serif;
           background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
           color: var(--fg);
           overflow-x: hidden;
+          position: relative;
         }
 
-        /* Тёмная тема — переопределяем переменные */
         .dark body {
           --bg: #0B1220;
           --fg: #E6EDF6;
@@ -63,7 +71,6 @@
           --border-rgb: 37, 48, 68;
           --bg-rgb: 11, 18, 32;
           --fg-rgb: 230, 237, 246;
-
           background: linear-gradient(135deg, #0B1220 0%, #1a2332 100%);
           color: var(--fg);
         }
@@ -73,15 +80,17 @@
         }
 
         .glass-card {
-          background: rgba(var(--card-rgb), 0.8);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(var(--border-rgb), 0.3);
+          background: rgba(var(--card-rgb), 0.75);
+          backdrop-filter: blur(12px) saturate(180%);
+          -webkit-backdrop-filter: blur(12px) saturate(180%);
+          border: 1px solid rgba(var(--border-rgb), 0.25);
           border-radius: 16px;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .glass-card:hover {
           border-color: rgba(76, 141, 255, 0.5);
-          box-shadow: 0 8px 32px rgba(76, 141, 255, 0.1);
+          box-shadow: 0 12px 40px rgba(76, 141, 255, 0.18);
         }
 
         .btn-primary {
@@ -89,18 +98,19 @@
           border: none;
           color: white;
           font-weight: 600;
-          transition: all 0.3s ease;
+          transition: all 0.35s ease;
           position: relative;
           overflow: hidden;
+          transform: translateZ(0);
         }
 
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(76, 141, 255, 0.4);
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 10px 30px rgba(76, 141, 255, 0.5);
         }
 
         .btn-primary:active {
-          transform: translateY(0);
+          transform: translateY(0) scale(1);
         }
 
         .btn-primary::before {
@@ -110,8 +120,8 @@
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.6s;
         }
 
         .btn-primary:hover::before {
@@ -126,39 +136,41 @@
         }
 
         .floating-animation {
-          animation: float 6s ease-in-out infinite;
+          animation: float 8s ease-in-out infinite;
         }
 
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-24px) rotate(2deg); }
         }
 
         .pulse-glow {
-          animation: pulse-glow 2s ease-in-out infinite alternate;
+          animation: pulse-glow 2.5s ease-in-out infinite alternate;
         }
 
         @keyframes pulse-glow {
           from { box-shadow: 0 0 20px rgba(76, 141, 255, 0.3); }
-          to { box-shadow: 0 0 30px rgba(76, 141, 255, 0.6); }
+          to { box-shadow: 0 0 40px rgba(76, 141, 255, 0.7); }
         }
 
         .file-drop-zone {
           border: 2px dashed var(--border);
           border-radius: 12px;
           transition: all 0.3s ease;
+          background: rgba(var(--secondary), 0.3);
         }
 
         .file-drop-zone.dragover {
           border-color: var(--primary);
-          background: rgba(76, 141, 255, 0.1);
+          background: rgba(76, 141, 255, 0.12);
+          transform: scale(1.01);
         }
 
         .progress-bar {
           background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
           height: 4px;
           border-radius: 2px;
-          transition: width 0.3s ease;
+          transition: width 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
         }
 
         .toast {
@@ -167,7 +179,7 @@
           right: 20px;
           z-index: 1000;
           transform: translateX(400px);
-          transition: transform 0.3s ease;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .toast.show {
@@ -181,37 +193,40 @@
           padding: 4px 12px;
           font-size: 12px;
           font-weight: 600;
+          box-shadow: 0 2px 6px rgba(63, 218, 135, 0.3);
         }
 
         .stats-card {
           background: rgba(var(--card-rgb), 0.6);
           border: 1px solid rgba(var(--border-rgb), 0.2);
           border-radius: 12px;
-          transition: all 0.3s ease;
+          transition: all 0.35s ease;
         }
 
         .stats-card:hover {
-          border-color: rgba(76, 141, 255, 0.3);
-          transform: translateY(-2px);
+          border-color: rgba(76, 141, 255, 0.4);
+          transform: translateY(-3px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .method-card {
           background: rgba(var(--card-rgb), 0.8);
           border: 1px solid rgba(var(--border-rgb), 0.3);
           border-radius: 16px;
-          transition: all 0.3s ease;
+          transition: all 0.35s ease;
           cursor: pointer;
+          transform: translateZ(0);
         }
 
         .method-card:hover {
           border-color: var(--primary);
-          box-shadow: 0 8px 32px rgba(76, 141, 255, 0.2);
-          transform: translateY(-4px);
+          box-shadow: 0 10px 30px rgba(76, 141, 255, 0.25);
+          transform: translateY(-6px) scale(1.01);
         }
 
         .method-card.selected {
           border-color: var(--primary);
-          background: rgba(76, 141, 255, 0.1);
+          background: rgba(76, 141, 255, 0.12);
         }
 
         .hidden {
@@ -219,7 +234,7 @@
         }
 
         .fade-in {
-          animation: fadeIn 0.5s ease-in;
+          animation: fadeIn 0.6s ease-out forwards;
         }
 
         @keyframes fadeIn {
@@ -228,37 +243,81 @@
         }
 
         .slide-in {
-          animation: slideIn 0.3s ease-out;
+          animation: slideIn 0.4s ease-out;
         }
 
         @keyframes slideIn {
           from { transform: translateX(-100%); }
           to { transform: translateX(0); }
         }
+
+        /* Параллакс-эффект для hero */
+        .parallax-layer {
+          transform-style: preserve-3d;
+          perspective: 1000px;
+        }
+
+        .parallax-layer > * {
+          transform: translateZ(0);
+        }
+
+        /* Плавающие элементы фона */
+        .floating-orb {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: -1;
+          opacity: 0.15;
+        }
+
+        .orb-1 { top: 10%; left: 5%; width: 300px; height: 300px; background: var(--primary); animation: drift 25s infinite ease-in-out; }
+        .orb-2 { top: 60%; right: 10%; width: 200px; height: 200px; background: var(--success); animation: drift 30s infinite ease-in-out reverse; }
+        .orb-3 { bottom: 10%; left: 15%; width: 150px; height: 150px; background: var(--warning); animation: drift 35s infinite ease-in-out; }
+
+        @keyframes drift {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          25% { transform: translate(20px, -30px) rotate(5deg); }
+          50% { transform: translate(-20px, 20px) rotate(-5deg); }
+          75% { transform: translate(10px, 30px) rotate(3deg); }
+        }
+
+        /* Улучшенный hover для иконок */
+        .icon-hover {
+          transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .icon-hover:hover {
+          transform: scale(1.15);
+          color: var(--primary) !important;
+        }
     </style>
 </head>
 <body>
+<!-- Параллакс-фон -->
+<div id="particles-js"></div>
+<div class="floating-orb orb-1"></div>
+<div class="floating-orb orb-2"></div>
+<div class="floating-orb orb-3"></div>
+
 <!-- Navigation -->
-<nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4">
+<nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4 backdrop-blur-md">
     <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <i class="fas fa-shield-alt text-white text-lg"></i>
+                <i class="fas fa-shield-alt text-white text-lg icon-hover"></i>
             </div>
             <div>
                 <h1 class="text-xl font-bold gradient-text">OccultoNG Web</h1>
                 <p class="text-xs text-gray-400">Версия 2.0.0</p>
             </div>
         </div>
-
         <div class="flex items-center space-x-4">
             <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <i class="fas fa-moon text-gray-400"></i>
+                <i class="fas fa-moon text-gray-400 icon-hover"></i>
             </button>
             <button id="userProfile"
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                 <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-white text-sm"></i>
+                    <i class="fas fa-user text-white text-sm icon-hover"></i>
                 </div>
                 <span class="text-sm">Профиль</span>
             </button>
@@ -269,26 +328,22 @@
 <!-- Main Content -->
 <main class="pt-24 pb-12">
     <!-- Hero Section -->
-    <section class="text-center mb-16 px-4">
+    <section class="text-center mb-16 px-4 parallax-layer">
         <div class="floating-animation inline-block mb-8">
             <div class="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-3xl flex items-center justify-center pulse-glow">
-                <i class="fas fa-lock text-white text-5xl"></i>
+                <i class="fas fa-lock text-white text-5xl icon-hover"></i>
             </div>
         </div>
-
         <h1 class="text-5xl md:text-7xl font-bold mb-6">
             <span class="gradient-text">ØccultoNG</span> Web
         </h1>
-
         <div class="text-xl md:text-2xl text-gray-300 mb-8 h-16">
             <span id="typed-text"></span>
         </div>
-
         <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed">
             Профессиональная платформа для стеганографии с поддержкой множества форматов,
             продвинутыми методами сокрытия данных и интуитивным интерфейсом.
         </p>
-
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button id="startHiding" class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold">
                 <i class="fas fa-eye-slash mr-2"></i>
@@ -333,7 +388,7 @@
                 <div class="method-card p-6" data-method="lsb">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4">
-                            <i class="fas fa-image text-white text-xl"></i>
+                            <i class="fas fa-image text-white text-xl icon-hover"></i>
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold">LSB для изображений</h3>
@@ -346,14 +401,13 @@
                     </p>
                     <div class="flex items-center justify-between">
                         <span class="achievement-badge">Макс. вместимость</span>
-                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        <i class="fas fa-check-circle text-green-400 text-xl icon-hover"></i>
                     </div>
                 </div>
-
                 <div class="method-card p-6" data-method="audio_lsb">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4">
-                            <i class="fas fa-volume-up text-white text-xl"></i>
+                            <i class="fas fa-volume-up text-white text-xl icon-hover"></i>
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold">LSB для аудио</h3>
@@ -366,23 +420,24 @@
                     </p>
                     <div class="flex items-center justify-between">
                         <span class="achievement-badge">Аудио стего</span>
-                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        <i class="fas fa-check-circle text-green-400 text-xl icon-hover"></i>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Остальные секции (hideInterface, extractInterface, resultsSection и т.д.) остаются без изменений -->
+        <!-- Вставляем их как есть, чтобы не нарушить логику -->
+
         <!-- Hide Interface -->
         <div id="hideInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-6 gradient-text">Сокрытие данных</h2>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Container File -->
                     <div>
                         <label class="block text-sm font-medium mb-3">Контейнер (изображение/аудио)</label>
                         <div id="containerDropZone" class="file-drop-zone p-8 text-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4 icon-hover"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
                             <button id="selectContainer" class="btn-primary px-6 py-2 rounded-lg text-sm">
                                 Выбрать файл
@@ -396,17 +451,15 @@
                                     <p class="text-sm text-gray-400" id="containerSize"></p>
                                 </div>
                                 <button id="removeContainer" class="text-red-400 hover:text-red-300">
-                                    <i class="fas fa-times"></i>
+                                    <i class="fas fa-times icon-hover"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Data to Hide -->
                     <div>
                         <label class="block text-sm font-medium mb-3">Данные для сокрытия</label>
                         <div id="dataDropZone" class="file-drop-zone p-8 text-center">
-                            <i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+                            <i class="fas fa-file-alt text-4xl text-gray-400 mb-4 icon-hover"></i>
                             <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
                             <button id="selectData" class="btn-primary px-6 py-2 rounded-lg text-sm">
                                 Выбрать файл
@@ -420,14 +473,12 @@
                                     <p class="text-sm text-gray-400" id="dataSize"></p>
                                 </div>
                                 <button id="removeData" class="text-red-400 hover:text-red-300">
-                                    <i class="fas fa-times"></i>
+                                    <i class="fas fa-times icon-hover"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Password -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium mb-2">Пароль (опционально)</label>
                     <div class="relative">
@@ -436,12 +487,10 @@
                                placeholder="Введите пароль для дополнительной защиты">
                         <button type="button" id="togglePassword"
                                 class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
-                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-eye icon-hover"></i>
                         </button>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
                 <div class="flex gap-4 mt-8">
                     <button id="startHide"
                             class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -454,8 +503,6 @@
                         Отмена
                     </button>
                 </div>
-
-                <!-- Progress -->
                 <div id="hideProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm text-gray-400">Процесс сокрытия</span>
@@ -472,11 +519,10 @@
         <div id="extractInterface" class="hidden">
             <div class="glass-card p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-6 gradient-text">Извлечение данных</h2>
-
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-3">Стего-контейнер</label>
                     <div id="extractDropZone" class="file-drop-zone p-8 text-center">
-                        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                        <i class="fas fa-search text-4xl text-gray-400 mb-4 icon-hover"></i>
                         <p class="text-gray-400 mb-2">Перетащите стего-файл сюда или</p>
                         <button id="selectExtractFile" class="btn-primary px-6 py-2 rounded-lg text-sm">
                             Выбрать файл
@@ -490,13 +536,11 @@
                                 <p class="text-sm text-gray-400" id="extractSize"></p>
                             </div>
                             <button id="removeExtract" class="text-red-400 hover:text-red-300">
-                                <i class="fas fa-times"></i>
+                                <i class="fas fa-times icon-hover"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Password -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">Пароль (если использовался)</label>
                     <div class="relative">
@@ -505,12 +549,10 @@
                                placeholder="Введите пароль">
                         <button type="button" id="toggleExtractPassword"
                                 class="absolute right-3 top-3 text-gray-400 hover:text-gray-200">
-                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-eye icon-hover"></i>
                         </button>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
                 <div class="flex gap-4">
                     <button id="startExtract"
                             class="btn-primary px-8 py-3 rounded-lg font-semibold flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -523,8 +565,6 @@
                         Отмена
                     </button>
                 </div>
-
-                <!-- Progress -->
                 <div id="extractProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm text-gray-400">Процесс извлечения</span>
@@ -553,10 +593,9 @@
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold gradient-text">Личный кабинет</h3>
             <button id="closeProfile" class="text-gray-400 hover:text-gray-200">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times icon-hover"></i>
             </button>
         </div>
-
         <div class="text-center mb-6">
             <img id="profileAvatar" class="w-20 h-20 rounded-full mx-auto mb-4 hidden"/>
             <h4 id="profileName" class="text-lg font-semibold">Пользователь</h4>
@@ -569,7 +608,6 @@
                 Выйти из аккаунта
             </button>
         </div>
-
         <div class="space-y-4">
             <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
                 <span class="text-sm">Файлов обработано</span>
@@ -584,7 +622,6 @@
                 <span class="font-semibold text-yellow-400" id="profileAchievements">0</span>
             </div>
         </div>
-
         <div class="mt-6">
             <h5 class="text-sm font-medium mb-3">Недавние достижения</h5>
             <div id="recentAchievements" class="space-y-2">
@@ -605,13 +642,13 @@
     </div>
 </div>
 
-<!-- Feedback button (left) -->
+<!-- Feedback button -->
 <a href="https://docs.google.com/forms/d/1LrCMmimT_BCiVGekva2sbWgVfAUz6MbbzsPcZ3SgKKA"
    target="_blank"
    class="fixed bottom-6 left-6 z-40 animate-bounce-slow group">
     <div class="relative">
         <div class="bg-white dark:bg-gray-700 rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow">
-            <i class="fas fa-comment-dots text-blue-500 dark:text-blue-300 text-xl"></i>
+            <i class="fas fa-comment-dots text-blue-500 dark:text-blue-300 text-xl icon-hover"></i>
         </div>
         <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Оставить отзыв
@@ -619,7 +656,7 @@
     </div>
 </a>
 
-<!-- Product Hunt badge (right) -->
+<!-- Product Hunt badge -->
 <div class="fixed bottom-4 right-4 z-40">
     <a href="https://www.producthunt.com/products/occultong-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-occultong-web"
        target="_blank">
@@ -650,6 +687,89 @@
         will-change: transform;
     }
 </style>
+
+<!-- Particles.js — обновлённая конфигурация -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+<script>
+    if (typeof tsParticles !== 'undefined') {
+      tsParticles.load("particles-js", {
+        fpsLimit: 60,
+        particles: {
+          number: {
+            value: 50,
+            density: {
+              enable: true,
+              area: 800
+            }
+          },
+          color: {
+            value: ["#4C8DFF", "#5A9AFF", "#3A7BFF", "#6AA8FF"]
+          },
+          shape: {
+            type: ["circle", "square", "triangle", "image"],
+            image: [
+              {
+                src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEM4REZGIj48cGF0aCBkPSJNMTggOEg2Yy0xLjEgMC0yIC45LTIgMnY4YzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnptLTQuNSA3Yy0uODMgMC0xLS4xNy0xLTFzLjE3LS44My41LTEuNSAxLjUtLjUgMS41LjVjLjMzLjE3LjUuNS41IDEuNXMtLjE3IDEtLjUgMS41Yy0uMzMgLjMzLS44My41LTEuNS41em0yLjUtMy41Yy0uMjggMC0uNS0uMjItLjUtLjVzLjIyLS41LjUtLjUuNS4yMi41LjUtLjIyLjUtLjUuNXoiLz48L3N2Zz4=",
+                width: 70,
+                height: 70
+              }
+            ]
+          },
+          opacity: {
+            value: { min: 0.2, max: 0.5 },
+            random: true,
+            animation: {
+              enable: true,
+              speed: 0.6,
+              minimumValue: 0.12,
+              sync: false
+            }
+          },
+          size: {
+            value: { min: 1.7, max: 4.9 },
+            random: true
+          },
+          move: {
+            enable: true,
+            speed: { min: 0.2, max: 1.6 },
+            direction: "none",
+            random: true,
+            straight: false,
+            outModes: {
+              default: "out"
+            }
+          }
+        },
+        interactivity: {
+          detectsOn: "canvas",
+          events: {
+            onHover: {
+              enable: true,
+              mode: "bubble",
+              parallax: {
+                enable: true,
+                force: 2,
+                smooth: 6
+              }
+            },
+            resize: true
+          },
+          modes: {
+            bubble: {
+              distance: 90,
+              size: 5,
+              duration: 2,
+              opacity: 0.35
+            }
+          }
+        },
+        detectRetina: true,
+        background: {
+          color: "transparent"
+        }
+      });
+    }
+</script>
 
 <script src="app.js"></script>
 </body>
