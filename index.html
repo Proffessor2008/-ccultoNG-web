@@ -314,6 +314,16 @@
         .icon-hover {
           transition: transform 0.3s ease, color 0.3s ease;
         }
+        .help-icon {
+            color: #4C8DFF; /* основной акцентный цвет */
+            text-shadow: 0 0 8px rgba(76, 141, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .help-icon:hover {
+            color: #6AA8FF !important;
+            transform: scale(1.25) rotate(15deg);
+            text-shadow: 0 0 12px rgba(76, 141, 255, 0.8);
+        }
         .icon-hover:hover {
           transform: scale(1.15);
           color: var(--primary) !important;
@@ -438,8 +448,8 @@
             </div>
         </div>
         <div class="flex items-center space-x-4">
-            <button id="helpButton" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <i class="fas fa-question-circle text-gray-400 icon-hover"></i>
+            <button id="helpButton" class="p-3 rounded-lg hover:bg-gray-700 transition-colors">
+                <i class="fas fa-question-circle help-icon text-xl"></i>
             </button>
             <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors">
                 <i class="fas fa-moon text-gray-400 icon-hover"></i>
