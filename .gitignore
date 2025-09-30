@@ -1,0 +1,15 @@
+# База данных
+users.db
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Переменные окружения
+.env
+
+# IDE
+.vscode/
+.idea/
