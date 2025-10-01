@@ -427,90 +427,72 @@
         .hover-lift:hover {
             transform: translateY(-8px) scale(1.02);
         }
-
         /* НОВЫЕ АНИМАЦИИ И ЭФФЕКТЫ */
-
         /* Анимация появления страницы */
         @keyframes pageLoad {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         main {
             animation: pageLoad 1s ease-out;
         }
-
         /* Анимация для переключения интерфейсов */
         .interface-transition {
             animation: interfaceFade 0.5s ease-out;
         }
-
         @keyframes interfaceFade {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         /* Улучшенная анимация для карточек методов */
         .method-card {
             transform-origin: center;
         }
-
         .method-card.selected {
             animation: cardSelect 0.4s ease-out;
         }
-
         @keyframes cardSelect {
             0% { transform: scale(1); }
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
-
         /* Анимация для загрузки файлов */
         .file-upload-animation {
             animation: fileUpload 0.6s ease-out;
         }
-
         @keyframes fileUpload {
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-
         /* Анимация для прогресс-бара */
         .progress-pulse {
             animation: progressPulse 1.5s ease-in-out infinite;
         }
-
         @keyframes progressPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-
         /* Анимация для модальных окон */
         .modal-animation {
             animation: modalAppear 0.3s ease-out;
         }
-
         @keyframes modalAppear {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-
         /* Анимация для уведомлений */
         .toast-animation {
             animation: toastSlide 0.5s ease-out;
         }
-
         @keyframes toastSlide {
             from { transform: translateX(400px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-
         /* Анимация для кнопок при наведении */
         .btn-hover-animation {
             position: relative;
             overflow: hidden;
         }
-
         .btn-hover-animation::after {
             content: '';
             position: absolute;
@@ -524,11 +506,9 @@
             transform: scale(1, 1) translate(-50%);
             transform-origin: 50% 50%;
         }
-
         .btn-hover-animation:hover::after {
             animation: ripple 1s ease-out;
         }
-
         @keyframes ripple {
             0% {
                 transform: scale(0, 0);
@@ -539,28 +519,23 @@
                 opacity: 0;
             }
         }
-
         /* Анимация для элементов статистики */
         .stat-counter {
             transition: all 0.5s ease-out;
         }
-
         /* Анимация для перетаскивания файлов */
         .drag-over-effect {
             animation: dragPulse 1s infinite;
         }
-
         @keyframes dragPulse {
             0% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(76, 141, 255, 0); }
             100% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0); }
         }
-
         /* Анимация для иконок в навигации */
         .nav-icon {
             transition: all 0.3s ease;
         }
-
         .nav-icon:hover {
             transform: translateY(-2px);
         }
@@ -939,59 +914,6 @@
         <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
     </p>
 </footer>
-<!-- Удаляем tsparticles и создаем рандомные орбы -->
-<script>
-    // Функция для генерации случайного числа в диапазоне [min, max]
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    // Функция для генерации случайного цвета из массива
-    function getRandomColor(colors) {
-        const index = Math.floor(Math.random() * colors.length);
-        return colors[index];
-    }
-    // Цвета для орбов
-    const orbColors = [
-        'var(--primary)', // #4C8DFF
-        'var(--success)', // #3FDA87
-        'var(--warning)', // #F0B23E
-        'linear-gradient(135deg, #FF6B6B 0%, #FF8A65 100%)',
-        'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)'
-    ];
-    // Количество орбов, которое нужно создать (включая уже существующие orb-1, orb-2, orb-3)
-    const totalOrbs = 6; // Итого 6 больших орбов
-    // Создаем новые орбы
-    for (let i = 4; i <= totalOrbs; i++) { // Начинаем с 4, так как orb-1, orb-2, orb-3 уже есть
-        const orb = document.createElement('div');
-        orb.classList.add('large-floating-orb');
-        orb.classList.add(`orb-${i}`);
-        // Генерируем случайные размеры (от 150px до 400px)
-        const size = getRandomInt(150, 400);
-        orb.style.width = `${size}px`;
-        orb.style.height = `${size}px`;
-        // Генерируем случайный цвет
-        orb.style.background = getRandomColor(orbColors);
-        // Генерируем случайную позицию
-        // Случайно выбираем, где разместить орб: top/bottom и left/right
-        const isTop = Math.random() > 0.5;
-        const isLeft = Math.random() > 0.5;
-        if (isTop) {
-            orb.style.top = `${getRandomInt(5, 80)}%`; // Отступ от верха от 5% до 80%
-        } else {
-            orb.style.bottom = `${getRandomInt(5, 80)}%`; // Отступ от низа от 5% до 80%
-        }
-        if (isLeft) {
-            orb.style.left = `${getRandomInt(5, 80)}%`; // Отступ от левого края от 5% до 80%
-        } else {
-            orb.style.right = `${getRandomInt(5, 80)}%`; // Отступ от правого края от 5% до 80%
-        }
-        // Генерируем случайную длительность анимации (от 20 до 40 секунд)
-        const duration = Math.max(10, Math.round(getRandomInt(17, 34)));
-        orb.style.animationDuration = `${duration}s`;
-        // Добавляем орб в body
-        document.body.appendChild(orb);
-    }
-</script>
 <!-- Help Modal -->
 <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto modal-animation">
@@ -1010,143 +932,27 @@
                 <li>Опционально укажите пароль для дополнительной защиты.</li>
                 <li>Нажмите «Начать сокрытие» — скачайте полученный стего-файл.</li>
             </ul>
-
             <h4>Извлечение данных</h4>
             <ul class="list-disc pl-5 space-y-1">
                 <li>Загрузите стего-файл (изображение или аудио с уже скрытыми данными).</li>
                 <li>Если при сокрытии использовался пароль — введите его.</li>
                 <li>Нажмите «Извлечь данные» — скачайте восстановленный файл.</li>
             </ul>
-
             <h4>Поддерживаемые форматы</h4>
             <ul class="list-disc pl-5 space-y-1">
                 <li><strong>Контейнеры:</strong> PNG, BMP, TIFF, WAV</li>
                 <li><strong>Скрытые данные:</strong> Любые файлы (до 50 МБ)</li>
             </ul>
-
             <h4>Безопасность</h4>
             <p>Все операции происходят в вашем браузере или на сервере без сохранения файлов. Пароли не хранятся — они
                 используются только для шифрования/дешифрования в момент операции.</p>
-
             <h4>Достижения и статистика</h4>
             <p>Авторизуйтесь через Google, чтобы сохранять статистику и получать достижения за использование
                 платформы.</p>
         </div>
     </div>
 </div>
-<div class="floating-orb orb-4"></div>
-<div class="floating-orb orb-5"></div>
-<div class="floating-orb orb-6"></div>
-<div class="floating-orb orb-7"></div>
-<div class="floating-orb orb-8"></div>
-<script>
-    // Исправление проблемы с кнопками выбора файла
-    document.addEventListener('DOMContentLoaded', function() {
-        // Назначаем обработчики для кнопок выбора файла
-        document.getElementById('selectContainer').addEventListener('click', function() {
-            document.getElementById('containerFile').click();
-        });
 
-        document.getElementById('selectData').addEventListener('click', function() {
-            document.getElementById('dataFile').click();
-        });
-
-        document.getElementById('selectExtractFile').addEventListener('click', function() {
-            document.getElementById('extractFile').click();
-        });
-
-        // Добавляем анимацию при перетаскивании файлов
-        const dropZones = document.querySelectorAll('.file-drop-zone');
-
-        dropZones.forEach(zone => {
-            zone.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('dragover', 'drag-over-effect');
-            });
-
-            zone.addEventListener('dragleave', function() {
-                this.classList.remove('dragover', 'drag-over-effect');
-            });
-
-            zone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover', 'drag-over-effect');
-            });
-        });
-
-        // Анимация для Typed.js
-        if (document.getElementById('typed-text')) {
-            new Typed('#typed-text', {
-                strings: [
-                    'Сокрытие данных в изображениях',
-                    'Стеганография в аудиофайлах',
-                    'Защита вашей конфиденциальности',
-                    'Инновационные методы стеганографии'
-                ],
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true,
-                showCursor: true,
-                cursorChar: ''
-            });
-        }
-
-        // Анимация для счетчиков статистики
-        function animateCounter(element, target, duration = 2000) {
-            let start = 0;
-            const increment = target / (duration / 16);
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= target) {
-                    element.textContent = target;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(start);
-                }
-            }, 16);
-        }
-
-        // Инициализация счетчиков (для демонстрации)
-        setTimeout(() => {
-            animateCounter(document.getElementById('filesProcessed'), 128);
-            animateCounter(document.getElementById('dataHidden'), 54);
-            animateCounter(document.getElementById('achievementsCount'), 12);
-        }, 1000);
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Функция для привязки зоны и input'а
-        function setupDropZone(dropZoneId, inputId) {
-            const dropZone = document.getElementById(dropZoneId);
-            const fileInput = document.getElementById(inputId);
-
-            if (!dropZone || !fileInput) return;
-
-            // Клик по зоне → клик по input'у
-            dropZone.addEventListener('click', (e) => {
-                if (e.target.closest('#selectContainer, #selectData, #selectExtractFile')) return;
-                fileInput.click();
-            });
-
-            // Обработка выбора файла
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    // Здесь можно вызвать логику отображения информации о файле
-                    console.log(`Файл выбран для ${dropZoneId}:`, file.name);
-                    // Например, показать имя и размер — это уже реализовано в HTML через блоки *Info
-                }
-            });
-        }
-
-        // Настройка всех зон
-        setupDropZone('containerDropZone', 'containerFile');
-        setupDropZone('dataDropZone', 'dataFile');
-        setupDropZone('extractDropZone', 'extractFile');
-    });
-</script>
 <script src="app.js"></script>
 </body>
 </html>
