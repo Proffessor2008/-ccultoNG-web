@@ -1088,7 +1088,7 @@
                 backDelay: 2000,
                 loop: true,
                 showCursor: true,
-                cursorChar: '|'
+                cursorChar: ''
             });
         }
 
@@ -1126,7 +1126,6 @@
 
             // Клик по зоне → клик по input'у
             dropZone.addEventListener('click', (e) => {
-                // Игнорировать клик по кнопке "Выбрать файл", чтобы не было двойного срабатывания
                 if (e.target.closest('#selectContainer, #selectData, #selectExtractFile')) return;
                 fileInput.click();
             });
