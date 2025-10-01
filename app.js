@@ -6,10 +6,8 @@ class StegoProApp {
         this.extractFile = null;
         this.stats = this.loadStats();
         this.achievements = this.loadAchievements();
-        
         this.init();
     }
-    
     init() {
         this.setupEventListeners();
         this.initializeAnimations();
@@ -17,12 +15,10 @@ class StegoProApp {
         this.checkAchievements();
         this.loadGoogleUser();
         this.loadTheme();
-
     }
     showHelp() {
         document.getElementById('helpModal').classList.remove('hidden');
     }
-
     hideHelp() {
         document.getElementById('helpModal').classList.add('hidden');
     }
@@ -43,17 +39,14 @@ class StegoProApp {
         document.getElementById('closeHelp').addEventListener('click', () => this.hideHelp());
         // File handling
         this.setupFileHandling();
-        
         // Password toggle
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword('passwordInput'));
         document.getElementById('toggleExtractPassword').addEventListener('click', () => this.togglePassword('extractPassword'));
-        
         // Actions
         document.getElementById('startHide').addEventListener('click', () => this.startHiding());
         document.getElementById('startExtract').addEventListener('click', () => this.startExtracting());
         document.getElementById('cancelHide').addEventListener('click', () => this.cancelOperation());
         document.getElementById('cancelExtract').addEventListener('click', () => this.cancelOperation());
-        
         // Theme toggle
         document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
         // Google login
@@ -61,35 +54,28 @@ class StegoProApp {
             window.location.href = '/auth/google';
         });
     }
-
     setupFileHandling() {
         // Container file
         const containerDropZone = document.getElementById('containerDropZone');
         const containerFileInput = document.getElementById('containerFile');
-        
         document.getElementById('selectContainer').addEventListener('click', () => containerFileInput.click());
         containerFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'container'));
-        
         this.setupDropZone(containerDropZone, 'container');
-        
+
         // Data file
         const dataDropZone = document.getElementById('dataDropZone');
         const dataFileInput = document.getElementById('dataFile');
-        
         document.getElementById('selectData').addEventListener('click', () => dataFileInput.click());
         dataFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'data'));
-        
         this.setupDropZone(dataDropZone, 'data');
-        
+
         // Extract file
         const extractDropZone = document.getElementById('extractDropZone');
         const extractFileInput = document.getElementById('extractFile');
-        
         document.getElementById('selectExtractFile').addEventListener('click', () => extractFileInput.click());
         extractFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'extract'));
-        
         this.setupDropZone(extractDropZone, 'extract');
-        
+
         // Remove buttons
         document.getElementById('removeContainer').addEventListener('click', () => this.removeFile('container'));
         document.getElementById('removeData').addEventListener('click', () => this.removeFile('data'));
@@ -97,97 +83,105 @@ class StegoProApp {
     }
 
     setupDropZone(element, type) {
+        // Drag events
         element.addEventListener('dragover', (e) => {
             e.preventDefault();
             element.classList.add('dragover');
         });
-        
         element.addEventListener('dragleave', () => {
             element.classList.remove('dragover');
         });
-        
         element.addEventListener('drop', (e) => {
             e.preventDefault();
             element.classList.remove('dragover');
-            
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 this.processFile(files[0], type);
             }
         });
+
+        // CLICK on drop zone → open file input
+        const inputMap = {
+            container: 'containerFile',
+            data: 'dataFile',
+            extract: 'extractFile'
+        };
+        const fileInputId = inputMap[type];
+        if (fileInputId) {
+            element.addEventListener('click', (e) => {
+                // Don't trigger if clicking on the "Select File" button
+                if (e.target.closest('.btn-primary')) return;
+                document.getElementById(fileInputId).click();
+            });
+        }
     }
-async loadGoogleUser() {
-    try {
-        // Больше не передаём session в URL — сервер читает cookie автоматически
-        const res = await fetch('/api/user');
-        const user = await res.json();
 
-        const avatar = document.getElementById('profileAvatar');
-        const nameEl = document.getElementById('profileName');
-        const emailEl = document.getElementById('profileEmail');
-        const loginBtn = document.getElementById('googleLoginBtn');
-        const logoutBtn = document.getElementById('googleLogoutBtn');
-
-        if (user && user.logged_in) {
-            if (user.picture) {
-                avatar.src = user.picture;
-                avatar.classList.remove('hidden');
+    async loadGoogleUser() {
+        try {
+            const res = await fetch('/api/user');
+            const user = await res.json();
+            const avatar = document.getElementById('profileAvatar');
+            const nameEl = document.getElementById('profileName');
+            const emailEl = document.getElementById('profileEmail');
+            const loginBtn = document.getElementById('googleLoginBtn');
+            const logoutBtn = document.getElementById('googleLogoutBtn');
+            if (user && user.logged_in) {
+                if (user.picture) {
+                    avatar.src = user.picture;
+                    avatar.classList.remove('hidden');
+                } else {
+                    avatar.classList.add('hidden');
+                }
+                nameEl.textContent = user.name || 'Пользователь';
+                emailEl.textContent = user.email || '';
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                if (user.stats) {
+                    this.stats = user.stats;
+                    this.achievements = user.stats.achievements || [];
+                    this.saveStats();
+                    this.saveAchievements();
+                    this.updateStats();
+                }
             } else {
                 avatar.classList.add('hidden');
+                nameEl.textContent = 'Пользователь';
+                emailEl.textContent = '';
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
             }
-            nameEl.textContent = user.name || 'Пользователь';
-            emailEl.textContent = user.email || '';
-            loginBtn.classList.add('hidden');
-            logoutBtn.classList.remove('hidden');
-
-            // Загружаем статистику из облака
-            if (user.stats) {
-                this.stats = user.stats;
-                this.achievements = user.stats.achievements || [];
-                this.saveStats(); // сохраняем в localStorage как кэш (не критично)
-                this.saveAchievements();
-                this.updateStats();
-            }
-        } else {
-            // Не авторизован
-            avatar.classList.add('hidden');
-            nameEl.textContent = 'Пользователь';
-            emailEl.textContent = '';
-            loginBtn.classList.remove('hidden');
-            logoutBtn.classList.add('hidden');
+        } catch (e) {
+            console.error("Failed to load Google user", e);
+            const loginBtn = document.getElementById('googleLoginBtn');
+            const logoutBtn = document.getElementById('googleLogoutBtn');
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
         }
-    } catch (e) {
-        console.error("Failed to load Google user", e);
-        const loginBtn = document.getElementById('googleLoginBtn');
-        const logoutBtn = document.getElementById('googleLogoutBtn');
-        if (loginBtn) loginBtn.classList.remove('hidden');
-        if (logoutBtn) logoutBtn.classList.add('hidden');
     }
-}
+
     handleFileSelect(event, type) {
         const file = event.target.files[0];
         if (file) {
             this.processFile(file, type);
         }
     }
+
     async logoutGoogle() {
         try {
-            await fetch('/api/logout', { method: 'POST' }); // или GET — как реализовано
+            await fetch('/api/logout', { method: 'POST' });
         } catch (e) {
             console.error("Logout error", e);
         }
-
-        // Очищаем локальные данные (кэш)
         this.stats = { filesProcessed: 0, dataHidden: 0, successfulOperations: 0 };
         this.achievements = [];
         this.saveStats();
         this.saveAchievements();
         this.updateStats();
-        this.loadGoogleUser(); // обновит UI
+        this.loadGoogleUser();
         this.showToast('Успешно', 'Вы вышли из аккаунта', 'success');
     }
+
     async saveStatsToCloud() {
-        // Больше не нужно передавать session — сервер знает его из cookie
         try {
             const response = await fetch('/api/save-stats', {
                 method: 'POST',
@@ -206,19 +200,18 @@ async loadGoogleUser() {
             console.error("Failed to save stats to cloud", e);
         }
     }
+
     processFile(file, type) {
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
         if (file.size > MAX_FILE_SIZE) {
             this.showToast('Ошибка', 'Файл слишком большой. Максимум 50 МБ.', 'error');
             return;
         }
-
         const validTypes = {
             container: ['.png', '.bmp', '.tiff', '.tif', '.wav'],
             data: null, // Any file
             extract: ['.png', '.bmp', '.tiff', '.tif', '.wav']
         };
-        
         if (type !== 'data') {
             const extension = '.' + file.name.split('.').pop().toLowerCase();
             if (!validTypes[type].includes(extension)) {
@@ -226,7 +219,6 @@ async loadGoogleUser() {
                 return;
             }
         }
-        
         if (type === 'container') {
             this.containerFile = file;
             this.showFileInfo(file, 'container');
@@ -237,22 +229,19 @@ async loadGoogleUser() {
             this.extractFile = file;
             this.showFileInfo(file, 'extract');
         }
-        
         this.updateActionButtons();
     }
-    
+
     showFileInfo(file, type) {
         const infoElement = document.getElementById(type + 'Info');
         const nameElement = document.getElementById(type + 'Name');
         const sizeElement = document.getElementById(type + 'Size');
-        
         nameElement.textContent = file.name;
         sizeElement.textContent = this.formatFileSize(file.size);
-        
         infoElement.classList.remove('hidden');
         infoElement.classList.add('fade-in');
     }
-    
+
     removeFile(type) {
         if (type === 'container') {
             this.containerFile = null;
@@ -267,37 +256,30 @@ async loadGoogleUser() {
             document.getElementById('extractInfo').classList.add('hidden');
             document.getElementById('extractFile').value = '';
         }
-        
         this.updateActionButtons();
     }
-    
+
     updateActionButtons() {
         const hideButton = document.getElementById('startHide');
         const extractButton = document.getElementById('startExtract');
-        
         if (this.currentMethod === 'lsb' || this.currentMethod === 'audio_lsb') {
             hideButton.disabled = !(this.containerFile && this.dataFile);
         }
-        
         extractButton.disabled = !this.extractFile;
     }
-    
+
     selectMethod(method) {
         this.currentMethod = method;
-        
-        // Update UI
         document.querySelectorAll('.method-card').forEach(card => {
             card.classList.remove('selected');
         });
         document.querySelector(`[data-method="${method}"]`).classList.add('selected');
-        
-        // Show appropriate interface
         this.showHideInterface();
     }
-    
+
     showHideInterface() {
         if (!this.currentMethod) {
-            this.selectMethod('lsb'); // Устанавливаем метод по умолчанию
+            this.selectMethod('lsb');
         }
         document.getElementById('methodSelection').classList.add('hidden');
         document.getElementById('extractInterface').classList.add('hidden');
@@ -305,45 +287,36 @@ async loadGoogleUser() {
         document.getElementById('hideInterface').classList.add('fade-in');
         this.updateActionButtons();
     }
-    
+
     showExtractInterface() {
         document.getElementById('methodSelection').classList.add('hidden');
         document.getElementById('hideInterface').classList.add('hidden');
         document.getElementById('extractInterface').classList.remove('hidden');
         document.getElementById('extractInterface').classList.add('fade-in');
-        
         this.updateActionButtons();
     }
-    
+
     cancelOperation() {
         document.getElementById('hideInterface').classList.add('hidden');
         document.getElementById('extractInterface').classList.add('hidden');
         document.getElementById('methodSelection').classList.remove('hidden');
         document.getElementById('resultsSection').classList.add('hidden');
-        
-        // Reset files
         this.containerFile = null;
         this.dataFile = null;
         this.extractFile = null;
-        
-        // Hide file info
         document.getElementById('containerInfo').classList.add('hidden');
         document.getElementById('dataInfo').classList.add('hidden');
         document.getElementById('extractInfo').classList.add('hidden');
-        
         this.updateActionButtons();
     }
-    
+
     async startHiding() {
         if (!this.containerFile || !this.dataFile || !this.currentMethod) {
             this.showToast('Ошибка', 'Не все необходимые файлы выбраны', 'error');
             return;
         }
-        
         const password = document.getElementById('passwordInput').value;
-        
         this.showProgress('hide');
-        
         try {
             const result = await this.hideData(this.containerFile, this.dataFile, password);
             this.hideProgress();
@@ -355,17 +328,14 @@ async loadGoogleUser() {
             this.showToast('Ошибка', 'Не удалось скрыть данные: ' + error.message, 'error');
         }
     }
-    
+
     async startExtracting() {
         if (!this.extractFile) {
             this.showToast('Ошибка', 'Не выбран файл для извлечения', 'error');
             return;
         }
-        
         const password = document.getElementById('extractPassword').value;
-        
         this.showProgress('extract');
-        
         try {
             const result = await this.extractData(this.extractFile, password);
             this.hideProgress();
@@ -377,7 +347,7 @@ async loadGoogleUser() {
             this.showToast('Ошибка', 'Не удалось извлечь данные: ' + error.message, 'error');
         }
     }
-    
+
     async hideData(containerFile, dataFile, password) {
         const containerB64 = await this.fileToBase64(containerFile);
         const secretB64 = await this.fileToBase64(dataFile);
@@ -393,8 +363,6 @@ async loadGoogleUser() {
         });
         const result = await response.json();
         if (!result.success) throw new Error(result.error);
-
-        // Преобразуем snake_case → camelCase для удобства
         return {
             success: true,
             method: result.method,
@@ -415,113 +383,38 @@ async loadGoogleUser() {
         });
         const result = await response.json();
         if (!result.success) throw new Error(result.error);
-
         return {
             success: true,
             method: result.method,
             extracted_data: result.extracted_data,
             extractedSize: result.extracted_size,
-            dataName: 'extracted_data.bin' // или получать из метаданных
+            dataName: 'extracted_data.bin'
         };
     }
 
-    // Вспомогательный метод
     fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]); // убираем data:...
+            reader.onload = () => resolve(reader.result.split(',')[1]);
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
     }
-    
-    createStegoFile(containerData, dataToHide, password) {
-        // Simplified LSB implementation for demonstration
-        // In a real application, this would implement proper steganography algorithms
-        
-        const header = new Uint8Array(16);
-        header[0] = 0x53; // 'S'
-        header[1] = 0x54; // 'T'
-        header[2] = 0x47; // 'G'
-        header[3] = 0x4F; // 'O'
-        
-        // Store data size
-        const sizeBytes = new Uint32Array([dataToHide.length]);
-        const sizeView = new Uint8Array(sizeBytes.buffer);
-        for (let i = 0; i < 4; i++) {
-            header[4 + i] = sizeView[i];
-        }
-        
-        // Combine header + data + original container
-        const result = new Uint8Array(header.length + dataToHide.length + containerData.length);
-        result.set(header, 0);
-        result.set(dataToHide, header.length);
-        result.set(containerData, header.length + dataToHide.length);
-        
-        return result;
-    }
-    
-    extractFromStego(stegoData, password) {
-        // Check header
-        if (stegoData[0] !== 0x53 || stegoData[1] !== 0x54 || stegoData[2] !== 0x47 || stegoData[3] !== 0x4F) {
-            throw new Error('Invalid stego file format');
-        }
-        
-        // Extract data size
-        const sizeBytes = new Uint8Array(4);
-        for (let i = 0; i < 4; i++) {
-            sizeBytes[i] = stegoData[4 + i];
-        }
-        const dataSize = new Uint32Array(sizeBytes.buffer)[0];
-        
-        // Extract hidden data
-        const extractedData = new Uint8Array(dataSize);
-        for (let i = 0; i < dataSize; i++) {
-            extractedData[i] = stegoData[16 + i];
-        }
-        
-        return extractedData;
-    }
-    
-    async simulateProgress() {
-        const steps = 20;
-        for (let i = 0; i <= steps; i++) {
-            const progress = (i / steps) * 100;
-            this.updateProgress(progress);
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-    }
-    
+
     showProgress(type) {
         const progressElement = document.getElementById(type + 'Progress');
         progressElement.classList.remove('hidden');
     }
-    
+
     hideProgress() {
         document.getElementById('hideProgress').classList.add('hidden');
         document.getElementById('extractProgress').classList.add('hidden');
     }
-    
-    updateProgress(percent) {
-        const progressBar = document.querySelector('.progress-bar');
-        const progressPercent = document.getElementById('progressPercent');
-        const extractProgressPercent = document.getElementById('extractProgressPercent');
-        
-        if (progressBar) {
-            progressBar.style.width = percent + '%';
-        }
-        if (progressPercent) {
-            progressPercent.textContent = Math.round(percent) + '%';
-        }
-        if (extractProgressPercent) {
-            extractProgressPercent.textContent = Math.round(percent) + '%';
-        }
-    }
+
     loadTheme() {
         const saved = localStorage.getItem('theme') || 'dark';
         const html = document.documentElement;
         const icon = document.getElementById('themeToggle').querySelector('i');
-
         if (saved === 'light') {
             html.classList.remove('dark');
             icon.className = 'fas fa-sun';
@@ -530,13 +423,12 @@ async loadGoogleUser() {
             icon.className = 'fas fa-moon';
         }
     }
+
     showResults(operation, result) {
         const resultsSection = document.getElementById('resultsSection');
         const resultsContent = document.getElementById('resultsContent');
         let html = '';
-
         if (operation === 'hide') {
-            // Генерируем имя стего-файла на основе оригинального имени контейнера
             let stegoName = this.containerFile.name;
             if (result.file_extension) {
                 const dotIndex = stegoName.lastIndexOf('.');
@@ -549,7 +441,6 @@ async loadGoogleUser() {
                 stegoName += '_stego';
             }
             const stegoUrl = 'data:application/octet-stream;base64,' + result.stego_data;
-
             html = `
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -581,14 +472,12 @@ async loadGoogleUser() {
                 </div>
             `;
         } else if (operation === 'extract') {
-            // Генерируем имя извлечённого файла
             let dataName = 'extracted_data.bin';
             if (this.extractFile) {
                 const baseName = this.extractFile.name.replace(/\.[^/.]+$/, "");
                 dataName = baseName + '_extracted.bin';
             }
             const dataUrl = 'data:application/octet-stream;base64,' + result.extracted_data;
-
             html = `
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -620,16 +509,14 @@ async loadGoogleUser() {
                 </div>
             `;
         }
-
         resultsContent.innerHTML = html;
         resultsSection.classList.remove('hidden');
         resultsSection.classList.add('fade-in');
     }
-    
+
     togglePassword(inputId) {
         const input = document.getElementById(inputId);
         const icon = input.nextElementSibling.querySelector('i');
-        
         if (input.type === 'password') {
             input.type = 'text';
             icon.classList.remove('fa-eye');
@@ -640,23 +527,21 @@ async loadGoogleUser() {
             icon.classList.add('fa-eye');
         }
     }
-    
+
     showProfile() {
         document.getElementById('profileModal').classList.remove('hidden');
         this.updateProfileStats();
         this.loadGoogleUser();
     }
-    
+
     hideProfile() {
         document.getElementById('profileModal').classList.add('hidden');
     }
-    
+
     updateProfileStats() {
         document.getElementById('profileFilesProcessed').textContent = this.stats.filesProcessed;
         document.getElementById('profileDataHidden').textContent = this.formatFileSize(this.stats.dataHidden);
         document.getElementById('profileAchievements').textContent = this.achievements.length;
-        
-        // Update recent achievements
         const achievementsContainer = document.getElementById('recentAchievements');
         if (this.achievements.length > 0) {
             const recentAchievements = this.achievements.slice(-3);
@@ -670,9 +555,8 @@ async loadGoogleUser() {
             achievementsContainer.innerHTML = '<p class="text-gray-400 text-sm">Нет достижений</p>';
         }
     }
-    
+
     initializeAnimations() {
-        // Typed.js for hero text
         new Typed('#typed-text', {
             strings: [
                 'Скрывайте данные в изображениях',
@@ -685,8 +569,6 @@ async loadGoogleUser() {
             backDelay: 2000,
             loop: true
         });
-        
-        // Animate stats cards
         anime({
             targets: '.stats-card',
             translateY: [50, 0],
@@ -696,36 +578,31 @@ async loadGoogleUser() {
             easing: 'easeOutExpo'
         });
     }
-    
+
     updateStats() {
         document.getElementById('filesProcessed').textContent = this.stats.filesProcessed;
         document.getElementById('dataHidden').textContent = this.formatFileSize(this.stats.dataHidden);
         document.getElementById('achievementsCount').textContent = this.achievements.length;
-        
-        const successRate = this.stats.filesProcessed > 0 ? 
+        const successRate = this.stats.filesProcessed > 0 ?
             Math.round((this.stats.successfulOperations / this.stats.filesProcessed) * 100) : 100;
         document.getElementById('successRate').textContent = successRate + '%';
     }
-    
+
     updateStatsAfterOperation(operation, dataSize = 0) {
         this.stats.filesProcessed++;
-        
         if (operation === 'hide') {
             this.stats.dataHidden += dataSize;
             this.stats.successfulOperations++;
         } else if (operation === 'extract') {
             this.stats.successfulOperations++;
         }
-        
         this.saveStats();
         this.updateStats();
         this.saveStatsToCloud();
     }
-    
+
     checkAchievements() {
         const newAchievements = [];
-        
-        // First file achievement
         if (this.stats.filesProcessed === 1 && !this.hasAchievement('first_file')) {
             newAchievements.push({
                 id: 'first_file',
@@ -733,17 +610,13 @@ async loadGoogleUser() {
                 description: 'Обработан первый файл'
             });
         }
-        
-        // Data hider achievement
-        if (this.stats.dataHidden >= 1024 * 1024 && !this.hasAchievement('data_hider')) { // 1MB
+        if (this.stats.dataHidden >= 1024 * 1024 && !this.hasAchievement('data_hider')) {
             newAchievements.push({
                 id: 'data_hider',
                 name: 'Скрыватель данных',
                 description: 'Скрыто более 1MB данных'
             });
         }
-        
-        // Professional achievement
         if (this.stats.filesProcessed >= 10 && !this.hasAchievement('professional')) {
             newAchievements.push({
                 id: 'professional',
@@ -751,34 +624,29 @@ async loadGoogleUser() {
                 description: 'Обработано 10 файлов'
             });
         }
-        
-        // Add new achievements
         newAchievements.forEach(achievement => {
             this.achievements.push(achievement);
             this.showAchievement(achievement);
         });
-        
         if (newAchievements.length > 0) {
             this.saveAchievements();
             this.saveStatsToCloud();
         }
     }
-    
+
     hasAchievement(id) {
         return this.achievements.some(a => a.id === id);
     }
-    
+
     showAchievement(achievement) {
         this.showToast('Достижение разблокировано!', `${achievement.name}: ${achievement.description}`, 'success');
     }
-    
+
     showToast(title, message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastIcon = document.getElementById('toastIcon');
         const toastTitle = document.getElementById('toastTitle');
         const toastMessage = document.getElementById('toastMessage');
-        
-        // Set icon based on type
         toastIcon.className = '';
         if (type === 'success') {
             toastIcon.classList.add('fas', 'fa-check-circle', 'text-green-400', 'text-xl', 'mr-3');
@@ -787,34 +655,27 @@ async loadGoogleUser() {
         } else if (type === 'warning') {
             toastIcon.classList.add('fas', 'fa-exclamation-triangle', 'text-yellow-400', 'text-xl', 'mr-3');
         }
-        
         toastTitle.textContent = title;
         toastMessage.textContent = message;
-        
         toast.classList.add('show');
-        
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3000);
     }
-    
+
     toggleTheme() {
         const html = document.documentElement;
         const isCurrentlyDark = html.classList.contains('dark');
         const willBeDark = !isCurrentlyDark;
-
         html.classList.toggle('dark', willBeDark);
         localStorage.setItem('theme', willBeDark ? 'dark' : 'light');
-
-        // Обновляем иконку напрямую по ID или по селектору
         const icon = document.querySelector('#themeToggle i');
         if (icon) {
             icon.className = willBeDark ? 'fas fa-moon' : 'fas fa-sun';
         }
-
         this.showToast('Успех', `Тема: ${willBeDark ? 'Темная' : 'Светлая'}`, 'success');
     }
-    
+
     formatFileSize(bytes) {
         if (bytes === 0) return '0 B';
         const k = 1024;
@@ -822,7 +683,7 @@ async loadGoogleUser() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-    
+
     loadStats() {
         const saved = localStorage.getItem('stegopro_stats');
         return saved ? JSON.parse(saved) : {
@@ -831,20 +692,19 @@ async loadGoogleUser() {
             successfulOperations: 0
         };
     }
-    
+
     saveStats() {
         localStorage.setItem('stegopro_stats', JSON.stringify(this.stats));
     }
-    
+
     loadAchievements() {
         const saved = localStorage.getItem('stegopro_achievements');
         return saved ? JSON.parse(saved) : [];
     }
-    
+
     saveAchievements() {
         localStorage.setItem('stegopro_achievements', JSON.stringify(this.achievements));
     }
 }
 
-// Initialize the application
 const app = new StegoProApp();
