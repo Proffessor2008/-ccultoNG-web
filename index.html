@@ -154,6 +154,11 @@
           background: rgba(var(--secondary), 0.3);
           position: relative;
           overflow: hidden;
+          min-height: 180px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
         .file-drop-zone::before {
             content: '';
@@ -180,6 +185,11 @@
           height: 4px;
           border-radius: 2px;
           transition: width 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+          background-size: 200% 100%;
+        }
+        @keyframes progressAnimation {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
         }
         .toast {
           position: fixed;
@@ -546,6 +556,31 @@
         .nav-icon:hover {
             transform: translateY(-2px);
         }
+        /* Стили для кнопки отмены операции */
+        .cancelling {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%) !important;
+            border-color: #FF6B6B !important;
+        }
+        /* Стили для превью файлов */
+        .file-preview {
+            transition: all 0.3s ease;
+        }
+        .file-preview img {
+            transition: transform 0.3s ease;
+        }
+        .file-preview:hover img {
+            transform: scale(1.05);
+        }
+        /* Анимация прогресс-бара загрузки */
+        @keyframes progressAnimation {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .upload-progress {
+            background: linear-gradient(90deg, #4C8DFF 0%, #6AA8FF 25%, #4C8DFF 50%, #6AA8FF 75%, #4C8DFF 100%);
+            background-size: 200% 100%;
+            animation: progressAnimation 2s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -560,7 +595,6 @@
 <div class="floating-orb orb-7"></div>
 <div class="floating-orb orb-8"></div>
 <div class="floating-orb orb-9"></div>
-
 
 <!-- Navigation -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4 backdrop-blur-md">
@@ -579,7 +613,7 @@
                 <i class="fas fa-question-circle help-icon text-xl"></i>
             </button>
             <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors nav-icon">
-                <i class="fas fa-moon text-gray-    400 icon-hover"></i>
+                <i class="fas fa-moon text-gray-400 icon-hover"></i>
             </button>
             <button id="userProfile"
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors nav-icon">
@@ -595,6 +629,7 @@
         </div>
     </div>
 </nav>
+
 <!-- Main Content -->
 <main class="pt-24 pb-12">
     <!-- Hero Section -->
@@ -627,6 +662,7 @@
             </button>
         </div>
     </section>
+
     <!-- Quick Stats -->
     <section class="mb-16 px-4">
         <div class="max-w-6xl mx-auto floating-grid">
@@ -648,6 +684,7 @@
             </div>
         </div>
     </section>
+
     <!-- Main Interface -->
     <section class="max-w-6xl mx-auto px-4">
         <!-- Method Selection -->
@@ -694,6 +731,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Hide Interface -->
         <div id="hideInterface" class="hidden interface-transition">
             <div class="glass-card p-8 mb-8">
@@ -708,7 +746,7 @@
                                     class="btn-primary px-6 py-2 rounded-lg text-sm shine btn-hover-animation">
                                 Выбрать файл
                             </button>
-                            <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
+                            <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.tif,.wav">
                         </div>
                         <div id="containerInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg file-upload-animation">
                             <div class="flex items-center justify-between">
@@ -771,15 +809,17 @@
                 </div>
                 <div id="hideProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-gray-400">Процесс сокрытия</span>
-                        <span id="progressPercent" class="text-sm text-blue-400">0%</span>
+                        <span class="text-sm text-gray-400">Процесс сокрытия данных</span>
+                        <span class="text-sm text-blue-400">Обработка...</span>
                     </div>
                     <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="progressBar" class="progress-bar w-0 rounded-full progress-pulse"></div>
+                        <div class="progress-bar w-full rounded-full upload-progress"></div>
                     </div>
+                    <p class="text-xs text-gray-400 mt-2">Это может занять несколько минут для больших файлов</p>
                 </div>
             </div>
         </div>
+
         <!-- Extract Interface -->
         <div id="extractInterface" class="hidden interface-transition">
             <div class="glass-card p-8 mb-8">
@@ -793,7 +833,7 @@
                                 class="btn-primary px-6 py-2 rounded-lg text-sm shine btn-hover-animation">
                             Выбрать файл
                         </button>
-                        <input type="file" id="extractFile" class="hidden" accept=".png,.bmp,.tiff,.wav">
+                        <input type="file" id="extractFile" class="hidden" accept=".png,.bmp,.tiff,.tif,.wav">
                     </div>
                     <div id="extractInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg file-upload-animation">
                         <div class="flex items-center justify-between">
@@ -832,15 +872,17 @@
                 </div>
                 <div id="extractProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-gray-400">Процесс извлечения</span>
-                        <span id="extractProgressPercent" class="text-sm text-blue-400">0%</span>
+                        <span class="text-sm text-gray-400">Процесс извлечения данных</span>
+                        <span class="text-sm text-blue-400">Обработка...</span>
                     </div>
                     <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="extractProgressBar" class="progress-bar w-0 rounded-full progress-pulse"></div>
+                        <div class="progress-bar w-full rounded-full upload-progress"></div>
                     </div>
+                    <p class="text-xs text-gray-400 mt-2">Это может занять несколько минут для больших файлов</p>
                 </div>
             </div>
         </div>
+
         <!-- Results -->
         <div id="resultsSection" class="hidden interface-transition">
             <div class="glass-card p-8">
@@ -850,6 +892,7 @@
         </div>
     </section>
 </main>
+
 <!-- User Profile Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-md w-full p-6 modal-animation">
@@ -893,8 +936,9 @@
         </div>
     </div>
 </div>
+
 <!-- Toast Notification -->
-<div id="toast" class="toast glass-card p-4 max-w-sm toast-animation">
+<div id="toast" class="toast glass-card p-4 max-w-sm">
     <div class="flex items-center">
         <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
         <div>
@@ -903,6 +947,7 @@
         </div>
     </div>
 </div>
+
 <!-- Feedback button -->
 <a href="https://docs.google.com/forms/d/1LrCMmimT_BCiVGekva2sbWgVfAUz6MbbzsPcZ3SgKKA"
    target="_blank"
@@ -916,6 +961,7 @@
         </div>
     </div>
 </a>
+
 <!-- Product Hunt badge -->
 <div class="fixed bottom-4 right-4 z-40">
     <a href="https://www.producthunt.com/products/occultong-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-occultong-web"
@@ -927,12 +973,14 @@
              height="54"/>
     </a>
 </div>
+
 <footer class="text-center py-8 text-gray-400">
     <p>&copy; 2025 OccultoNG Web. Все права защищены.</p>
     <p class="mt-2">
         <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
     </p>
 </footer>
+
 <!-- Help Modal -->
 <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto modal-animation">
