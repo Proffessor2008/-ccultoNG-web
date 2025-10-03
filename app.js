@@ -120,22 +120,38 @@ class StegoProApp {
         try {
             const res = await fetch('/api/user');
             const user = await res.json();
+            const navAvatar = document.getElementById('navAvatar');
+            const navDefaultIcon = document.getElementById('navDefaultIcon');
             const avatar = document.getElementById('profileAvatar');
             const nameEl = document.getElementById('profileName');
             const emailEl = document.getElementById('profileEmail');
             const loginBtn = document.getElementById('googleLoginBtn');
             const logoutBtn = document.getElementById('googleLogoutBtn');
+
             if (user && user.logged_in) {
+                // Обновляем аватар в навбаре
+                if (user.picture) {
+                    navAvatar.src = user.picture;
+                    navAvatar.classList.remove('hidden');
+                    navDefaultIcon.classList.add('hidden');
+                } else {
+                    navAvatar.classList.add('hidden');
+                    navDefaultIcon.classList.remove('hidden');
+                }
+
+                // Обновляем аватар в модалке профиля
                 if (user.picture) {
                     avatar.src = user.picture;
                     avatar.classList.remove('hidden');
                 } else {
                     avatar.classList.add('hidden');
                 }
+
                 nameEl.textContent = user.name || 'Пользователь';
                 emailEl.textContent = user.email || '';
                 loginBtn.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
+
                 if (user.stats) {
                     this.stats = user.stats;
                     this.achievements = user.stats.achievements || [];
@@ -144,6 +160,11 @@ class StegoProApp {
                     this.updateStats();
                 }
             } else {
+                // Сбрасываем аватар в навбаре
+                navAvatar.classList.add('hidden');
+                navDefaultIcon.classList.remove('hidden');
+
+                // Сбрасываем модалку
                 avatar.classList.add('hidden');
                 nameEl.textContent = 'Пользователь';
                 emailEl.textContent = '';
@@ -156,6 +177,12 @@ class StegoProApp {
             const logoutBtn = document.getElementById('googleLogoutBtn');
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (logoutBtn) logoutBtn.classList.add('hidden');
+
+            // На всякий случай скрываем аватар и показываем иконку
+            const navAvatar = document.getElementById('navAvatar');
+            const navDefaultIcon = document.getElementById('navDefaultIcon');
+            if (navAvatar) navAvatar.classList.add('hidden');
+            if (navDefaultIcon) navDefaultIcon.classList.remove('hidden');
         }
     }
 
