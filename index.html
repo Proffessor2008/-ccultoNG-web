@@ -304,6 +304,13 @@
         .orb-1 { top: 10%; left: 5%; width: 300px; height: 300px; background: var(--primary); animation: drift 25s infinite ease-in-out; }
         .orb-2 { top: 60%; right: 10%; width: 200px; height: 200px; background: var(--success); animation: drift 30s infinite ease-in-out reverse; }
         .orb-3 { bottom: 10%; left: 15%; width: 150px; height: 150px; background: var(--warning); animation: drift 35s infinite ease-in-out; }
+        .orb-4 { bottom: 40%; left: 20%; width: 100px; height: 100px; background: var(--warning); animation: drift 15s infinite ease-in-out reverse; }
+        .orb-5 { bottom: 15%; left: 25%; width: 250px; height: 250px; background: var(--success); animation: drift 20s infinite ease-in-out; }
+        .orb-6 { bottom: 20%; left: 45%; width: 150px; height: 150px; background: var(--primary); animation: drift 5s infinite ease-in-out reverse; }
+        .orb-7 { bottom: 4%; left: 65%; width: 125px; height: 125px; background: var(--success); animation: drift 10s infinite ease-in-out; }
+        .orb-8 { top: 10%; right: 5%; width: 350px; height: 350px; background: var(--warning); animation: drift 15s infinite ease-in-out reverse; }
+        .orb-9 { top: 25%; right: 40%; width: 220px; height: 110px; background: var(--primary); animation: drift 10s infinite ease-in-out reverse; }
+
         @keyframes drift {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
           25%  { transform: translate(23px, -34.5px) rotate(5.75deg); }
@@ -547,6 +554,14 @@
 <div class="floating-orb orb-1"></div>
 <div class="floating-orb orb-2"></div>
 <div class="floating-orb orb-3"></div>
+<div class="floating-orb orb-4"></div>
+<div class="floating-orb orb-5"></div>
+<div class="floating-orb orb-6"></div>
+<div class="floating-orb orb-7"></div>
+<div class="floating-orb orb-8"></div>
+<div class="floating-orb orb-9"></div>
+
+
 <!-- Navigation -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4 backdrop-blur-md">
     <div class="flex items-center justify-between">
@@ -564,7 +579,7 @@
                 <i class="fas fa-question-circle help-icon text-xl"></i>
             </button>
             <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors nav-icon">
-                <i class="fas fa-moon text-gray-400 icon-hover"></i>
+                <i class="fas fa-moon text-gray-    400 icon-hover"></i>
             </button>
             <button id="userProfile"
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors nav-icon">
