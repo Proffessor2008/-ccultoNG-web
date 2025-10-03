@@ -568,8 +568,12 @@
             </button>
             <button id="userProfile"
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors nav-icon">
-                <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-white text-sm icon-hover"></i>
+                <div class="relative w-8 h-8 rounded-full overflow-hidden">
+                    <img id="navAvatar" class="w-full h-full object-cover hidden" alt="Аватар"/>
+                    <div id="navDefaultIcon"
+                         class="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                        <i class="fas fa-user text-white text-sm icon-hover"></i>
+                    </div>
                 </div>
                 <span class="text-sm">Профиль</span>
             </button>
