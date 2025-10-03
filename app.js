@@ -363,6 +363,7 @@ class StegoProApp {
         this.updateActionButtons();
     }
     async startHiding() {
+        const hideButton = document.getElementById('startHide');
         if (!this.containerFile || !this.dataFile || !this.currentMethod) {
             this.showToast('Ошибка', 'Не все необходимые файлы выбраны', 'error');
             return;
@@ -370,6 +371,11 @@ class StegoProApp {
         const password = document.getElementById('passwordInput').value;
         this.currentOperationController = new AbortController();
         const signal = this.currentOperationController.signal;
+
+        // 🔒 Блокируем кнопку
+        hideButton.disabled = true;
+        hideButton.textContent = 'Скрытие...';
+
         this.showProgress('hide');
         try {
             const result = await this.hideData(this.containerFile, this.dataFile, password, signal);
@@ -383,10 +389,15 @@ class StegoProApp {
                 this.showToast('Ошибка', 'Не удалось скрыть данные: ' + error.message, 'error');
             }
         } finally {
+            // 🔓 Разблокируем кнопку
+            hideButton.disabled = false;
+            hideButton.textContent = 'Начать сокрытие';
             this.currentOperationController = null;
         }
     }
+
     async startExtracting() {
+        const extractButton = document.getElementById('startExtract');
         if (!this.extractFile) {
             this.showToast('Ошибка', 'Не выбран файл для извлечения', 'error');
             return;
@@ -394,6 +405,11 @@ class StegoProApp {
         const password = document.getElementById('extractPassword').value;
         this.currentOperationController = new AbortController();
         const signal = this.currentOperationController.signal;
+
+        // 🔒 Блокируем кнопку
+        extractButton.disabled = true;
+        extractButton.textContent = 'Извлечение...';
+
         this.showProgress('extract');
         try {
             const result = await this.extractData(this.extractFile, password, signal);
@@ -407,6 +423,9 @@ class StegoProApp {
                 this.showToast('Ошибка', 'Не удалось извлечь данные: ' + error.message, 'error');
             }
         } finally {
+            // 🔓 Разблокируем кнопку
+            extractButton.disabled = false;
+            extractButton.textContent = 'Извлечь данные';
             this.currentOperationController = null;
         }
     }
