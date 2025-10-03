@@ -18,10 +18,11 @@ class LSBImageSteganography:
     """LSB (Least Significant Bit) steganography for images"""
 
     def __init__(self):
-        self.HEADER_SIZE = 64  # bits for metadata
+        self.HEADER_SIZE = 128  # Increased for filename storage
         self.MAGIC_BYTES = b'STGO'  # Magic bytes for identification
 
-    def hide_data(self, image_data: bytes, secret_data: bytes, password: str = "") -> bytes:
+    def hide_data(self, image_data: bytes, secret_data: bytes, password: str = "",
+                  original_filename: str = "") -> bytes:
         """
         Hide secret data in image using LSB method
 
@@ -29,6 +30,7 @@ class LSBImageSteganography:
             image_data: Raw image data
             secret_data: Data to hide
             password: Optional password for encryption
+            original_filename: Original filename to preserve
 
         Returns:
             Modified image data with hidden information
@@ -46,7 +48,7 @@ class LSBImageSteganography:
             flat_pixels = pixels.flatten()
 
             # Prepare data with header
-            data_with_header = self._prepare_data(secret_data, password)
+            data_with_header = self._prepare_data(secret_data, password, original_filename)
 
             # Check capacity
             available_bits = len(flat_pixels) * 3  # 3 channels per pixel
@@ -70,7 +72,7 @@ class LSBImageSteganography:
         except Exception as e:
             raise StegoException(f"Failed to hide data: {str(e)}")
 
-    def extract_data(self, stego_image_data: bytes, password: str = "") -> bytes:
+    def extract_data(self, stego_image_data: bytes, password: str = "") -> tuple:
         """
         Extract hidden data from stego image
 
@@ -79,7 +81,7 @@ class LSBImageSteganography:
             password: Password for decryption
 
         Returns:
-            Extracted secret data
+            Tuple of (extracted_data, original_filename)
         """
         try:
             # Load image
@@ -100,8 +102,14 @@ class LSBImageSteganography:
             if header_bytes[:4] != self.MAGIC_BYTES:
                 raise StegoException("No hidden data found or invalid format")
 
-            # Extract data size
+            # Extract data size and filename
             data_size = struct.unpack('>I', header_bytes[4:8])[0]
+
+            # Extract filename length and filename
+            filename_length = struct.unpack('>H', header_bytes[8:10])[0]
+            original_filename = ""
+            if filename_length > 0:
+                original_filename = header_bytes[10:10 + filename_length].decode('utf-8', errors='ignore')
 
             # Extract actual data
             total_bits = self.HEADER_SIZE + (data_size * 8)
@@ -112,28 +120,36 @@ class LSBImageSteganography:
             extracted_data = self._bits_to_bytes(data_bits)
             extracted_data = extracted_data[:data_size]  # Truncate to exact size
 
-            # Verify integrity (temporarily disabled for testing)
-            stored_hash = header_bytes[8:40]  # 32 bytes for SHA256
+            # Verify integrity
+            stored_hash_start = 10 + filename_length
+            stored_hash = header_bytes[stored_hash_start:stored_hash_start + 32]  # 32 bytes for SHA256
             calculated_hash = hashlib.sha256(extracted_data).digest()
 
-            # Debug info
-            print(f"Stored hash: {stored_hash.hex()[:16]}...")
-            print(f"Calculated hash: {calculated_hash.hex()[:16]}...")
+            if stored_hash != calculated_hash:
+                print(
+                    f"WARNING: Hash mismatch - stored: {stored_hash.hex()[:16]}..., calculated: {calculated_hash.hex()[:16]}...")
 
-            # For now, return data even if hash check fails
-            return extracted_data
+            return extracted_data, original_filename
 
         except Exception as e:
             raise StegoException(f"Failed to extract data: {str(e)}")
 
-    def _prepare_data(self, secret_data: bytes, password: str) -> bytes:
+    def _prepare_data(self, secret_data: bytes, password: str, original_filename: str) -> bytes:
         """Prepare data with header and integrity check"""
         # Calculate data hash
         data_hash = hashlib.sha256(secret_data).digest()
 
-        # Create header
+        # Prepare filename
+        filename_bytes = original_filename.encode('utf-8') if original_filename else b''
+        filename_length = len(filename_bytes)
+
+        # Create header with filename support
         data_size = len(secret_data)
-        header = self.MAGIC_BYTES + struct.pack('>I', data_size) + data_hash
+        header = (self.MAGIC_BYTES +
+                  struct.pack('>I', data_size) +
+                  struct.pack('>H', filename_length) +
+                  filename_bytes +
+                  data_hash)
 
         # Pad header to fixed size
         header = header.ljust(self.HEADER_SIZE // 8, b'\x00')
@@ -183,16 +199,16 @@ class LSBImageSteganography:
 
 
 class LSBAudioSteganography:
-    """LSB steganography for WAV audio files"""
+    """LSB steganography for WAV audio files with stereo support"""
 
     def __init__(self):
-        self.HEADER_SIZE = 64  # bits for metadata
+        self.HEADER_SIZE = 128  # Increased for filename storage
         self.MAGIC_BYTES = b'STGA'  # Magic bytes for audio
 
-    def hide_data(self, audio_data: bytes, secret_data: bytes, password: str = "") -> bytes:
+    def hide_data(self, audio_data: bytes, secret_data: bytes, password: str = "",
+                  original_filename: str = "") -> bytes:
         """
-        Hide secret data in WAV audio file using LSB
-        ИСПРАВЛЕНО: теперь работает с байтами, а не с int16 сэмплами
+        Hide secret data in WAV audio file using LSB with stereo support
         """
         try:
             # Parse WAV file
@@ -200,25 +216,24 @@ class LSBAudioSteganography:
                 params = wav_file.getparams()
                 frames = wav_file.readframes(wav_file.getnframes())
 
-            # ИСПРАВЛЕНИЕ: работаем с байтами напрямую, как в десктопной версии
+            # Convert to byte array for manipulation
             frames_array = bytearray(frames)
 
             # Prepare data with header
-            data_with_header = self._prepare_data(secret_data, password)
+            data_with_header = self._prepare_data(secret_data, password, original_filename)
 
             # Convert data to bits
             data_bits = self._bytes_to_bits(data_with_header)
 
-            # Check capacity (каждый БАЙТ может хранить 1 бит)
-            available_bits = len(frames_array)
+            # Calculate available capacity considering stereo
+            available_bits = self._calculate_audio_capacity(frames_array, params)
             required_bits = len(data_bits)
 
             if required_bits > available_bits:
                 raise StegoException("Audio file too small to hide data")
 
-            # Hide data in LSB of each BYTE (не int16!)
-            for i, bit in enumerate(data_bits):
-                frames_array[i] = (frames_array[i] & 0xFE) | bit
+            # Hide data in LSB with stereo consideration
+            self._hide_audio_bits(frames_array, data_bits, params)
 
             # Create new WAV file
             output = io.BytesIO()
@@ -231,71 +246,179 @@ class LSBAudioSteganography:
         except Exception as e:
             raise StegoException(f"Failed to hide data in audio: {str(e)}")
 
-    def extract_data(self, stego_audio_data: bytes, password: str = "") -> bytes:
+    def extract_data(self, stego_audio_data: bytes, password: str = "") -> tuple:
         """
-        Extract hidden data from stego audio file
-        ИСПРАВЛЕНО: теперь работает с байтами, совместимо с hide_data
+        Extract hidden data from stego audio file with stereo support
         """
         try:
             # Parse WAV file
             with wave.open(io.BytesIO(stego_audio_data), 'rb') as wav_file:
+                params = wav_file.getparams()
                 frames = wav_file.readframes(wav_file.getnframes())
 
-            # ИСПРАВЛЕНИЕ: работаем с байтами напрямую
+            # Convert to byte array for extraction
             frames_array = bytearray(frames)
 
-            # Extract header bits from LSB of each BYTE
-            header_bits_len = self.HEADER_SIZE  # 64 bits
+            # Extract header bits
+            header_bits_len = self.HEADER_SIZE
             if len(frames_array) < header_bits_len:
                 raise StegoException("Недостаточно данных для заголовка.")
 
-            header_bits = [frames_array[i] & 1 for i in range(header_bits_len)]
+            header_bits = self._extract_audio_bits(frames_array, header_bits_len, params)
             header_bytes = self._bits_to_bytes(header_bits)
 
             # Verify magic bytes
             if header_bytes[:4] != self.MAGIC_BYTES:
                 raise StegoException("No hidden audio data found or invalid format")
 
-            # Extract data size
+            # Extract data size and filename
             data_size = struct.unpack('>I', header_bytes[4:8])[0]
+
+            # Extract filename length and filename
+            filename_length = struct.unpack('>H', header_bytes[8:10])[0]
+            original_filename = ""
+            if filename_length > 0:
+                original_filename = header_bytes[10:10 + filename_length].decode('utf-8', errors='ignore')
 
             # Calculate total bits needed
             total_bits_needed = header_bits_len + (data_size * 8)
 
-            if len(frames_array) < total_bits_needed:
-                raise StegoException("Недостаточно данных для извлечения.")
-
-            # Extract all bits (header + data)
-            all_bits = [frames_array[i] & 1 for i in range(total_bits_needed)]
+            # Extract all bits
+            all_bits = self._extract_audio_bits(frames_array, total_bits_needed, params)
 
             # Get only data bits (skip header)
             data_bits = all_bits[header_bits_len:]
 
             # Convert bits to bytes
             extracted_data = self._bits_to_bytes(data_bits)
+            extracted_data = extracted_data[:data_size]  # Truncate to exact size
 
-            # Truncate to exact data size
-            extracted_data = extracted_data[:data_size]
-
-            # Verify integrity - ВРЕМЕННО ОТКЛЮЧЕНО для отладки
-            stored_hash = header_bytes[8:40]  # 32 bytes for SHA256
+            # Verify integrity
+            stored_hash_start = 10 + filename_length
+            stored_hash = header_bytes[stored_hash_start:stored_hash_start + 32]
             calculated_hash = hashlib.sha256(extracted_data).digest()
 
             if stored_hash != calculated_hash:
-                # НЕ выбрасываем исключение, только предупреждение
                 print(
                     f"WARNING: Hash mismatch - stored: {stored_hash.hex()[:16]}..., calculated: {calculated_hash.hex()[:16]}...")
 
-            return extracted_data
+            return extracted_data, original_filename
 
         except Exception as e:
             raise StegoException(f"Failed to extract audio data: {str(e)}")
 
-    def _prepare_data(self, secret_data: bytes, password: str) -> bytes:
+    def _calculate_audio_capacity(self, frames_array: bytearray, params) -> int:
+        """Calculate available bits considering stereo configuration"""
+        nchannels = params.nchannels
+        sampwidth = params.sampwidth
+
+        if nchannels == 1:
+            # Mono: use all bytes
+            return len(frames_array)
+        elif nchannels == 2:
+            # Stereo: use only left channel to minimize distortion
+            # For 16-bit stereo, use every 4th byte (left channel low byte)
+            if sampwidth == 2:
+                return len(frames_array) // 4
+            else:
+                # For 8-bit stereo, use every 2nd byte
+                return len(frames_array) // 2
+        else:
+            # Multi-channel: use only first channel
+            return len(frames_array) // nchannels
+
+    def _hide_audio_bits(self, frames_array: bytearray, data_bits: list, params):
+        """Hide bits in audio data considering stereo configuration"""
+        nchannels = params.nchannels
+        sampwidth = params.sampwidth
+
+        bit_index = 0
+        data_length = len(data_bits)
+
+        if nchannels == 1:
+            # Mono: use all bytes
+            for i in range(len(frames_array)):
+                if bit_index >= data_length:
+                    break
+                frames_array[i] = (frames_array[i] & 0xFE) | data_bits[bit_index]
+                bit_index += 1
+
+        elif nchannels == 2 and sampwidth == 2:
+            # 16-bit stereo: use only left channel low bytes (every 4th byte starting from 0)
+            for i in range(0, len(frames_array), 4):
+                if bit_index >= data_length:
+                    break
+                # Use the low byte of left channel (position i)
+                frames_array[i] = (frames_array[i] & 0xFE) | data_bits[bit_index]
+                bit_index += 1
+
+        elif nchannels == 2:
+            # 8-bit stereo: use only left channel (every 2nd byte)
+            for i in range(0, len(frames_array), 2):
+                if bit_index >= data_length:
+                    break
+                frames_array[i] = (frames_array[i] & 0xFE) | data_bits[bit_index]
+                bit_index += 1
+
+        else:
+            # Multi-channel: use only first channel
+            bytes_per_sample = nchannels * sampwidth
+            for i in range(0, len(frames_array), bytes_per_sample):
+                if bit_index >= data_length:
+                    break
+                # Use first byte of first channel
+                frames_array[i] = (frames_array[i] & 0xFE) | data_bits[bit_index]
+                bit_index += 1
+
+    def _extract_audio_bits(self, frames_array: bytearray, num_bits: int, params) -> list:
+        """Extract bits from audio data considering stereo configuration"""
+        nchannels = params.nchannels
+        sampwidth = params.sampwidth
+        bits = []
+
+        if nchannels == 1:
+            # Mono: extract from all bytes
+            for i in range(min(num_bits, len(frames_array))):
+                bits.append(frames_array[i] & 1)
+
+        elif nchannels == 2 and sampwidth == 2:
+            # 16-bit stereo: extract from left channel low bytes
+            for i in range(0, min(num_bits * 4, len(frames_array)), 4):
+                if len(bits) >= num_bits:
+                    break
+                bits.append(frames_array[i] & 1)
+
+        elif nchannels == 2:
+            # 8-bit stereo: extract from left channel
+            for i in range(0, min(num_bits * 2, len(frames_array)), 2):
+                if len(bits) >= num_bits:
+                    break
+                bits.append(frames_array[i] & 1)
+
+        else:
+            # Multi-channel: extract from first channel
+            bytes_per_sample = nchannels * sampwidth
+            for i in range(0, min(num_bits * bytes_per_sample, len(frames_array)), bytes_per_sample):
+                if len(bits) >= num_bits:
+                    break
+                bits.append(frames_array[i] & 1)
+
+        return bits[:num_bits]
+
+    def _prepare_data(self, secret_data: bytes, password: str, original_filename: str) -> bytes:
         """Prepare data with header and integrity check"""
         data_hash = hashlib.sha256(secret_data).digest()
+
+        # Prepare filename
+        filename_bytes = original_filename.encode('utf-8') if original_filename else b''
+        filename_length = len(filename_bytes)
+
         data_size = len(secret_data)
-        header = self.MAGIC_BYTES + struct.pack('>I', data_size) + data_hash
+        header = (self.MAGIC_BYTES +
+                  struct.pack('>I', data_size) +
+                  struct.pack('>H', filename_length) +
+                  filename_bytes +
+                  data_hash)
         header = header.ljust(self.HEADER_SIZE // 8, b'\x00')
         return header + secret_data
 
@@ -325,7 +448,8 @@ class StegoProBackend:
         self.audio_stego = LSBAudioSteganography()
 
     def process_hide_request(self, container_data: bytes, secret_data: bytes,
-                             method: str, password: str = "") -> dict:
+                             method: str, password: str = "", original_filename: str = "",
+                             file_extension: str = "") -> dict:
         """
         Process hide data request
         Args:
@@ -333,28 +457,32 @@ class StegoProBackend:
             secret_data: Data to hide
             method: Steganography method ('lsb' or 'audio_lsb')
             password: Optional password
+            original_filename: Original filename to preserve
+            file_extension: Original file extension
         Returns:
             Dictionary with result information
         """
         try:
             if method == 'lsb':
-                stego_data = self.image_stego.hide_data(container_data, secret_data, password)
-                file_extension = '.png'
+                stego_data = self.image_stego.hide_data(container_data, secret_data, password, original_filename)
+                output_extension = '.png'
             elif method == 'audio_lsb':
-                stego_data = self.audio_stego.hide_data(container_data, secret_data, password)
-                file_extension = '.wav'
+                stego_data = self.audio_stego.hide_data(container_data, secret_data, password, original_filename)
+                output_extension = '.wav'
             else:
                 raise StegoException(f"Unsupported method: {method}")
+
             # Encode to base64 for web transfer
             stego_base64 = base64.b64encode(stego_data).decode('utf-8')
             return {
                 'success': True,
-                'method': method,  # в†ђ Р”РћР‘РђР’Р›Р•РќРћ
+                'method': method,
                 'stego_data': stego_base64,
-                'file_extension': file_extension,
+                'file_extension': output_extension,
                 'original_size': len(container_data),
                 'hidden_size': len(secret_data),
-                'stego_size': len(stego_data)
+                'stego_size': len(stego_data),
+                'original_filename': original_filename
             }
         except Exception as e:
             return {
@@ -366,18 +494,30 @@ class StegoProBackend:
                                 password: str = "") -> dict:
 
         try:
+            extracted_data = None
+            original_filename = ""
+            detected_method = method
+
             if method == 'lsb':
-                extracted_data = self.image_stego.extract_data(stego_data, password)
+                extracted_data, original_filename = self.image_stego.extract_data(stego_data, password)
             elif method == 'audio_lsb':
-                extracted_data = self.audio_stego.extract_data(stego_data, password)
+                extracted_data, original_filename = self.audio_stego.extract_data(stego_data, password)
             else:
                 # Auto-detect method
                 try:
-                    extracted_data = self.image_stego.extract_data(stego_data, password)
-                    method = 'lsb'
-                except:
-                    extracted_data = self.audio_stego.extract_data(stego_data, password)
-                    method = 'audio_lsb'
+                    extracted_data, original_filename = self.image_stego.extract_data(stego_data, password)
+                    detected_method = 'lsb'
+                except Exception as e1:
+                    try:
+                        extracted_data, original_filename = self.audio_stego.extract_data(stego_data, password)
+                        detected_method = 'audio_lsb'
+                    except Exception as e2:
+                        raise StegoException(f"Auto-detection failed: Image - {e1}, Audio - {e2}")
+
+            # Determine file extension from original filename
+            file_extension = 'bin'
+            if original_filename and '.' in original_filename:
+                file_extension = original_filename.split('.')[-1]
 
             # Encode to base64
             data_base64 = base64.b64encode(extracted_data).decode('utf-8')
@@ -385,8 +525,10 @@ class StegoProBackend:
             return {
                 'success': True,
                 'extracted_data': data_base64,
-                'method': method,
-                'extracted_size': len(extracted_data)
+                'method': detected_method,
+                'extracted_size': len(extracted_data),
+                'original_filename': original_filename,
+                'file_extension': file_extension
             }
 
         except Exception as e:
@@ -413,6 +555,11 @@ class StegoProBackend:
                 }
             elif file_extension == 'wav':
                 with wave.open(io.BytesIO(file_data), 'rb') as wav_file:
+                    params = wav_file.getparams()
+                    capacity = self.audio_stego._calculate_audio_capacity(
+                        bytearray(wav_file.readframes(wav_file.getnframes())),
+                        params
+                    )
                     return {
                         'type': 'audio',
                         'format': 'WAV',
@@ -420,7 +567,7 @@ class StegoProBackend:
                         'channels': wav_file.getnchannels(),
                         'sample_rate': wav_file.getframerate(),
                         'duration': wav_file.getnframes() / wav_file.getframerate(),
-                        'capacity_estimate': wav_file.getnframes() * 16 // 8  # Rough estimate
+                        'capacity_estimate': capacity // 8  # Convert bits to bytes
                     }
             else:
                 return {
@@ -439,13 +586,15 @@ backend = StegoProBackend()
 
 
 # Flask-like interface for the backend
-def process_hide(container_b64: str, secret_b64: str, method: str, password: str = "") -> dict:
+def process_hide(container_b64: str, secret_b64: str, method: str, password: str = "",
+                 original_filename: str = "", file_extension: str = "") -> dict:
     """Process hide request from frontend"""
     try:
         container_data = base64.b64decode(container_b64)
         secret_data = base64.b64decode(secret_b64)
 
-        result = backend.process_hide_request(container_data, secret_data, method, password)
+        result = backend.process_hide_request(container_data, secret_data, method, password,
+                                              original_filename, file_extension)
         return result
 
     except Exception as e:
