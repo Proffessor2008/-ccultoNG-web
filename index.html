@@ -132,7 +132,6 @@
         .btn-primary:hover::before {
           left: 100%;
         }
-        /* Убраны классы gradient-text, text-glow, neon-text */
         .floating-animation {
           animation: float 8s ease-in-out infinite;
         }
@@ -295,15 +294,6 @@
           from { transform: translateX(-100%); }
           to { transform: translateX(0); }
         }
-        /* Параллакс-эффект для hero */
-        .parallax-layer {
-          transform-style: preserve-3d;
-          perspective: 1000px;
-        }
-        .parallax-layer > * {
-          transform: translateZ(0);
-        }
-        /* Плавающие элементы фона */
         .floating-orb {
           position: absolute;
           border-radius: 50%;
@@ -320,14 +310,12 @@
         .orb-7 { bottom: 4%; left: 65%; width: 125px; height: 125px; background: var(--success); animation: drift 10s infinite ease-in-out; }
         .orb-8 { top: 10%; right: 5%; width: 350px; height: 350px; background: var(--warning); animation: drift 15s infinite ease-in-out reverse; }
         .orb-9 { top: 25%; right: 40%; width: 220px; height: 110px; background: var(--primary); animation: drift 10s infinite ease-in-out reverse; }
-
         @keyframes drift {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
           25%  { transform: translate(23px, -34.5px) rotate(5.75deg); }
           50%  { transform: translate(-23px, 23px) rotate(-5.75deg); }
           75%  { transform: translate(11.5px, 34.5px) rotate(3.45deg); }
         }
-        /* Улучшенный hover для иконок */
         .icon-hover {
           transition: transform 0.3s ease, color 0.3s ease;
         }
@@ -345,7 +333,6 @@
           transform: scale(1.15);
           color: var(--primary) !important;
         }
-        /* Общий стиль для больших плавающих орбов */
         .large-floating-orb {
             position: absolute;
             border-radius: 50%;
@@ -354,7 +341,6 @@
             opacity: 0.15;
             animation: drift 25s infinite ease-in-out;
         }
-        /* Новые анимации */
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -444,8 +430,6 @@
         .hover-lift:hover {
             transform: translateY(-8px) scale(1.02);
         }
-        /* НОВЫЕ АНИМАЦИИ И ЭФФЕКТЫ */
-        /* Анимация появления страницы */
         @keyframes pageLoad {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -453,7 +437,6 @@
         main {
             animation: pageLoad 1s ease-out;
         }
-        /* Анимация для переключения интерфейсов */
         .interface-transition {
             animation: interfaceFade 0.5s ease-out;
         }
@@ -461,7 +444,6 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Улучшенная анимация для карточек методов */
         .method-card {
             transform-origin: center;
         }
@@ -473,7 +455,6 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
-        /* Анимация для загрузки файлов */
         .file-upload-animation {
             animation: fileUpload 0.6s ease-out;
         }
@@ -481,7 +462,6 @@
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        /* Анимация для прогресс-бара */
         .progress-pulse {
             animation: progressPulse 1.5s ease-in-out infinite;
         }
@@ -489,7 +469,6 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-        /* Анимация для модальных окон */
         .modal-animation {
             animation: modalAppear 0.3s ease-out;
         }
@@ -497,7 +476,6 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        /* Анимация для уведомлений */
         .toast-animation {
             animation: toastSlide 0.5s ease-out;
         }
@@ -505,7 +483,6 @@
             from { transform: translateX(400px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        /* Анимация для кнопок при наведении */
         .btn-hover-animation {
             position: relative;
             overflow: hidden;
@@ -536,11 +513,9 @@
                 opacity: 0;
             }
         }
-        /* Анимация для элементов статистики */
         .stat-counter {
             transition: all 0.5s ease-out;
         }
-        /* Анимация для перетаскивания файлов */
         .drag-over-effect {
             animation: dragPulse 1s infinite;
         }
@@ -549,19 +524,16 @@
             70% { box-shadow: 0 0 0 10px rgba(76, 141, 255, 0); }
             100% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0); }
         }
-        /* Анимация для иконок в навигации */
         .nav-icon {
             transition: all 0.3s ease;
         }
         .nav-icon:hover {
             transform: translateY(-2px);
         }
-        /* Стили для кнопки отмены операции */
         .cancelling {
             background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%) !important;
             border-color: #FF6B6B !important;
         }
-        /* Стили для превью файлов */
         .file-preview {
             transition: all 0.3s ease;
         }
@@ -571,7 +543,6 @@
         .file-preview:hover img {
             transform: scale(1.05);
         }
-        /* Анимация прогресс-бара загрузки */
         @keyframes progressAnimation {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
@@ -580,6 +551,62 @@
             background: linear-gradient(90deg, #4C8DFF 0%, #6AA8FF 25%, #4C8DFF 50%, #6AA8FF 75%, #4C8DFF 100%);
             background-size: 200% 100%;
             animation: progressAnimation 2s linear infinite;
+        }
+
+        /* === НОВЫЕ СТИЛИ ДЛЯ УРОВНЕЙ И ДОСТИЖЕНИЙ === */
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+        }
+        .achievement-card {
+            background: rgba(var(--card-rgb), 0.6);
+            border: 1px solid rgba(var(--border-rgb), 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .achievement-info {
+            flex: 1;
+        }
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .achievement-desc {
+            font-size: 12px;
+            color: var(--fg);
+            opacity: 0.7;
+        }
+        .achievement-locked {
+            opacity: 0.5;
+        }
+        .achievement-locked .achievement-icon {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9CA3AF;
+        }
+        .achievement-unlocked .achievement-icon {
+            background: linear-gradient(135deg, #3FDA87, #22c55e);
+            color: white;
         }
     </style>
 </head>
@@ -595,7 +622,6 @@
 <div class="floating-orb orb-7"></div>
 <div class="floating-orb orb-8"></div>
 <div class="floating-orb orb-9"></div>
-
 <!-- Navigation -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 px-6 py-4 backdrop-blur-md">
     <div class="flex items-center justify-between">
@@ -629,7 +655,6 @@
         </div>
     </div>
 </nav>
-
 <!-- Main Content -->
 <main class="pt-24 pb-12">
     <!-- Hero Section -->
@@ -662,7 +687,6 @@
             </button>
         </div>
     </section>
-
     <!-- Quick Stats -->
     <section class="mb-16 px-4">
         <div class="max-w-6xl mx-auto floating-grid">
@@ -684,7 +708,6 @@
             </div>
         </div>
     </section>
-
     <!-- Main Interface -->
     <section class="max-w-6xl mx-auto px-4">
         <!-- Method Selection -->
@@ -731,7 +754,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Hide Interface -->
         <div id="hideInterface" class="hidden interface-transition">
             <div class="glass-card p-8 mb-8">
@@ -819,7 +841,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Extract Interface -->
         <div id="extractInterface" class="hidden interface-transition">
             <div class="glass-card p-8 mb-8">
@@ -882,7 +903,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Results -->
         <div id="resultsSection" class="hidden interface-transition">
             <div class="glass-card p-8">
@@ -892,7 +912,6 @@
         </div>
     </section>
 </main>
-
 <!-- User Profile Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-md w-full p-6 modal-animation">
@@ -906,6 +925,10 @@
             <img id="profileAvatar" class="w-20 h-20 rounded-full mx-auto mb-4 hidden"/>
             <h4 id="profileName" class="text-lg font-semibold">Пользователь</h4>
             <p id="profileEmail" class="text-gray-400 text-sm"></p>
+            <div id="profileLevel" class="mt-2 level-badge">
+                <i class="fas fa-star"></i>
+                <span id="levelText">Новичок</span>
+            </div>
             <button id="googleLoginBtn"
                     class="mt-4 w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg hidden btn-hover-animation">
                 <i class="fab fa-google"></i> Войти через Google
@@ -914,7 +937,7 @@
                 Выйти из аккаунта
             </button>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 mb-6">
             <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg glow-border">
                 <span class="text-sm">Файлов обработано</span>
                 <span class="font-semibold text-blue-400" id="profileFilesProcessed">0</span>
@@ -929,14 +952,13 @@
             </div>
         </div>
         <div class="mt-6">
-            <h5 class="text-sm font-medium mb-3">Недавние достижения</h5>
-            <div id="recentAchievements" class="space-y-2">
-                <!-- Achievements will be populated here -->
+            <h5 class="text-sm font-medium mb-3">Достижения</h5>
+            <div id="achievementsList" class="space-y-2">
+                <!-- All achievements will be rendered here -->
             </div>
         </div>
     </div>
 </div>
-
 <!-- Toast Notification -->
 <div id="toast" class="toast glass-card p-4 max-w-sm">
     <div class="flex items-center">
@@ -947,7 +969,6 @@
         </div>
     </div>
 </div>
-
 <!-- Feedback button -->
 <a href="https://docs.google.com/forms/d/1LrCMmimT_BCiVGekva2sbWgVfAUz6MbbzsPcZ3SgKKA"
    target="_blank"
@@ -961,7 +982,6 @@
         </div>
     </div>
 </a>
-
 <!-- Product Hunt badge -->
 <div class="fixed bottom-4 right-4 z-40">
     <a href="https://www.producthunt.com/products/occultong-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-occultong-web"
@@ -973,14 +993,12 @@
              height="54"/>
     </a>
 </div>
-
 <footer class="text-center py-8 text-gray-400">
     <p>&copy; 2025 OccultoNG Web. Все права защищены.</p>
     <p class="mt-2">
         <a href="/privacy.html" class="text-blue-400 hover:underline">Политика конфиденциальности</a>
     </p>
 </footer>
-
 <!-- Help Modal -->
 <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto modal-animation">
@@ -1019,7 +1037,6 @@
         </div>
     </div>
 </div>
-
 <script src="app.js"></script>
 </body>
 </html>
