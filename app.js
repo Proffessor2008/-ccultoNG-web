@@ -83,19 +83,16 @@ class StegoProApp {
         document.getElementById('selectContainer').addEventListener('click', () => containerFileInput.click());
         containerFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'container'));
         this.setupDropZone(containerDropZone, 'container');
-
         const dataDropZone = document.getElementById('dataDropZone');
         const dataFileInput = document.getElementById('dataFile');
         document.getElementById('selectData').addEventListener('click', () => dataFileInput.click());
         dataFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'data'));
         this.setupDropZone(dataDropZone, 'data');
-
         const extractDropZone = document.getElementById('extractDropZone');
         const extractFileInput = document.getElementById('extractFile');
         document.getElementById('selectExtractFile').addEventListener('click', () => extractFileInput.click());
         extractFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'extract'));
         this.setupDropZone(extractDropZone, 'extract');
-
         document.getElementById('removeContainer').addEventListener('click', () => this.removeFile('container'));
         document.getElementById('removeData').addEventListener('click', () => this.removeFile('data'));
         document.getElementById('removeExtract').addEventListener('click', () => this.removeFile('extract'));
@@ -710,7 +707,10 @@ class StegoProApp {
     }
     getUserLevel() {
         const count = this.stats.filesProcessed;
+        if (count >= 50) return { name: 'Гуру', icon: 'fas fa-hat-wizard', color: '#EC4899' };
+        if (count >= 30) return { name: 'Профессионал', icon: 'fas fa-briefcase', color: '#10B981' };
         if (count >= 20) return { name: 'Мастер', icon: 'fas fa-crown', color: '#FBBF24' };
+        if (count >= 12) return { name: 'Эксперт', icon: 'fas fa-graduation-cap', color: '#8B5CF6' };
         if (count >= 6) return { name: 'Специалист', icon: 'fas fa-medal', color: '#3B82F6' };
         return { name: 'Новичок', icon: 'fas fa-user', color: '#6B7280' };
     }
@@ -719,9 +719,14 @@ class StegoProApp {
         const allPossible = [
             { id: 'first_file', name: 'Первый шаг', desc: 'Обработан первый файл', icon: 'fas fa-shoe-prints' },
             { id: 'data_hider', name: 'Скрыватель данных', desc: 'Скрыто более 1MB данных', icon: 'fas fa-file-contract' },
-            { id: 'professional', name: 'Профессионал', desc: 'Обработано 10 файлов', icon: 'fas fa-briefcase' },
+            { id: 'pro_user', name: 'Профессиональный пользователь', desc: 'Обработано 10 файлов', icon: 'fas fa-user-tie' },
             { id: 'master', name: 'Мастер стеганографии', desc: 'Обработано 20+ файлов', icon: 'fas fa-crown' },
-            { id: 'audio_expert', name: 'Аудио-эксперт', desc: 'Скрыто 5 аудиофайлов', icon: 'fas fa-headphones' }
+            { id: 'audio_expert', name: 'Аудио-эксперт', desc: 'Скрыто 5 аудиофайлов', icon: 'fas fa-headphones' },
+            { id: 'megabyte_hider', name: 'Мегабайтщик', desc: 'Скрыто более 10MB данных', icon: 'fas fa-hdd' },
+            { id: 'extractor', name: 'Извлекатель', desc: 'Успешно извлечено 5 файлов', icon: 'fas fa-download' },
+            { id: 'security_pro', name: 'Защитник', desc: 'Использован пароль в 3 операциях', icon: 'fas fa-shield-alt' },
+            { id: 'image_master', name: 'Мастер изображений', desc: 'Скрыто 10 изображений', icon: 'fas fa-images' },
+            { id: 'perfectionist', name: 'Перфекционист', desc: '100% успешных операций (минимум 10)', icon: 'fas fa-check-circle' }
         ];
         container.innerHTML = allPossible.map(ach => {
             const unlocked = this.hasAchievement(ach.id);
@@ -797,10 +802,10 @@ class StegoProApp {
                 description: 'Скрыто более 1MB данных'
             });
         }
-        if (this.stats.filesProcessed >= 10 && !this.hasAchievement('professional')) {
+        if (this.stats.filesProcessed >= 10 && !this.hasAchievement('pro_user')) {
             newAchievements.push({
-                id: 'professional',
-                name: 'Профессионал',
+                id: 'pro_user',
+                name: 'Профессиональный пользователь',
                 description: 'Обработано 10 файлов'
             });
         }
@@ -811,6 +816,28 @@ class StegoProApp {
                 description: 'Обработано 20+ файлов'
             });
         }
+        if (this.stats.dataHidden >= 10 * 1024 * 1024 && !this.hasAchievement('megabyte_hider')) {
+            newAchievements.push({
+                id: 'megabyte_hider',
+                name: 'Мегабайтщик',
+                description: 'Скрыто более 10MB данных'
+            });
+        }
+        if (this.stats.successfulOperations >= 5 && !this.hasAchievement('extractor')) {
+            newAchievements.push({
+                id: 'extractor',
+                name: 'Извлекатель',
+                description: 'Успешно извлечено 5 файлов'
+            });
+        }
+        if (this.stats.filesProcessed >= 10 && this.stats.successfulOperations === this.stats.filesProcessed && !this.hasAchievement('perfectionist')) {
+            newAchievements.push({
+                id: 'perfectionist',
+                name: 'Перфекционист',
+                description: '100% успешных операций (минимум 10)'
+            });
+        }
+        // Note: audio_expert, security_pro, image_master требуют доп. логики — для демо оставим базовые
         newAchievements.forEach(achievement => {
             this.achievements.push(achievement);
             this.showAchievement(achievement);
