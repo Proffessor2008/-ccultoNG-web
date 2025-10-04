@@ -7,6 +7,7 @@ class StegoProApp {
         this.stats = this.loadStats();
         this.achievements = this.loadAchievements();
         this.currentOperationController = null;
+        this.anonOperationCount = parseInt(localStorage.getItem('stegopro_anon_ops') || '0');
         this.init();
     }
     init() {
@@ -22,6 +23,10 @@ class StegoProApp {
     }
     hideHelp() {
         document.getElementById('helpModal').classList.add('hidden');
+    }
+    isUserLoggedIn() {
+        const navAvatar = document.getElementById('navAvatar');
+        return navAvatar && !navAvatar.classList.contains('hidden');
     }
     setupEventListeners() {
         // Navigation
@@ -163,6 +168,9 @@ class StegoProApp {
                     this.saveAchievements();
                     this.updateStats();
                 }
+                // Сброс анонимного счётчика при входе
+                this.anonOperationCount = 0;
+                localStorage.removeItem('stegopro_anon_ops');
             } else {
                 navAvatar.classList.add('hidden');
                 navDefaultIcon.classList.remove('hidden');
@@ -362,8 +370,15 @@ class StegoProApp {
         }
         this.updateActionButtons();
     }
+
+    // === ОБНОВЛЁННЫЕ МЕТОДЫ С ОГРАНИЧЕНИЯМИ ===
     async startHiding() {
-        const hideButton = document.getElementById('startHide');
+        if (!this.isUserLoggedIn()) {
+            if (this.anonOperationCount >= 10) {
+                this.showLoginPrompt();
+                return;
+            }
+        }
         if (!this.containerFile || !this.dataFile || !this.currentMethod) {
             this.showToast('Ошибка', 'Не все необходимые файлы выбраны', 'error');
             return;
@@ -371,11 +386,6 @@ class StegoProApp {
         const password = document.getElementById('passwordInput').value;
         this.currentOperationController = new AbortController();
         const signal = this.currentOperationController.signal;
-
-        // 🔒 Блокируем кнопку
-        hideButton.disabled = true;
-        hideButton.textContent = 'Скрытие...';
-
         this.showProgress('hide');
         try {
             const result = await this.hideData(this.containerFile, this.dataFile, password, signal);
@@ -383,21 +393,28 @@ class StegoProApp {
             this.showResults('hide', result);
             this.updateStatsAfterOperation('hide', this.dataFile.size);
             this.checkAchievements();
+            // Увеличиваем счётчик ТОЛЬКО для гостей и ТОЛЬКО при успехе
+            if (!this.isUserLoggedIn()) {
+                this.anonOperationCount++;
+                localStorage.setItem('stegopro_anon_ops', this.anonOperationCount.toString());
+            }
         } catch (error) {
             this.hideProgress();
             if (error.name !== 'AbortError') {
                 this.showToast('Ошибка', 'Не удалось скрыть данные: ' + error.message, 'error');
             }
         } finally {
-            // 🔓 Разблокируем кнопку
-            hideButton.disabled = false;
-            hideButton.textContent = 'Начать сокрытие';
             this.currentOperationController = null;
         }
     }
 
     async startExtracting() {
-        const extractButton = document.getElementById('startExtract');
+        if (!this.isUserLoggedIn()) {
+            if (this.anonOperationCount >= 10) {
+                this.showLoginPrompt();
+                return;
+            }
+        }
         if (!this.extractFile) {
             this.showToast('Ошибка', 'Не выбран файл для извлечения', 'error');
             return;
@@ -405,11 +422,6 @@ class StegoProApp {
         const password = document.getElementById('extractPassword').value;
         this.currentOperationController = new AbortController();
         const signal = this.currentOperationController.signal;
-
-        // 🔒 Блокируем кнопку
-        extractButton.disabled = true;
-        extractButton.textContent = 'Извлечение...';
-
         this.showProgress('extract');
         try {
             const result = await this.extractData(this.extractFile, password, signal);
@@ -417,18 +429,21 @@ class StegoProApp {
             this.showResults('extract', result);
             this.updateStatsAfterOperation('extract');
             this.checkAchievements();
+            // Увеличиваем счётчик ТОЛЬКО для гостей и ТОЛЬКО при успехе
+            if (!this.isUserLoggedIn()) {
+                this.anonOperationCount++;
+                localStorage.setItem('stegopro_anon_ops', this.anonOperationCount.toString());
+            }
         } catch (error) {
             this.hideProgress();
             if (error.name !== 'AbortError') {
                 this.showToast('Ошибка', 'Не удалось извлечь данные: ' + error.message, 'error');
             }
         } finally {
-            // 🔓 Разблокируем кнопку
-            extractButton.disabled = false;
-            extractButton.textContent = 'Извлечь данные';
             this.currentOperationController = null;
         }
     }
+
     async hideData(containerFile, dataFile, password, signal) {
         const containerB64 = await this.fileToBase64(containerFile);
         const secretB64 = await this.fileToBase64(dataFile);
@@ -709,7 +724,17 @@ class StegoProApp {
         document.getElementById('profileModal').classList.remove('hidden');
         this.updateProfileStats();
         this.updateProfileLevel();
-        this.renderAllAchievements();
+        // === ПОКАЗ ДОСТИЖЕНИЙ ТОЛЬКО ДЛЯ ЗАЛОГИНЕННЫХ ===
+        if (this.isUserLoggedIn()) {
+            this.renderAllAchievements();
+        } else {
+            document.getElementById('achievementsList').innerHTML = `
+                <div class="col-span-full text-center py-4 text-gray-400">
+                    <i class="fas fa-lock mr-2"></i>
+                    Достижения и полная статистика доступны только после входа через Google.
+                </div>
+            `;
+        }
         this.loadGoogleUser();
     }
     hideProfile() {
@@ -928,6 +953,34 @@ class StegoProApp {
     }
     saveAchievements() {
         localStorage.setItem('stegopro_achievements', JSON.stringify(this.achievements));
+    }
+
+    // === НОВЫЙ МЕТОД: ПОДСКАЗКА ДЛЯ ВХОДА ===
+    showLoginPrompt() {
+        const existing = document.querySelector('.login-prompt-modal');
+        if (existing) return;
+
+        const modal = document.createElement('div');
+        modal.className = 'login-prompt-modal fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+            <div class="glass-card p-6 max-w-md text-center modal-animation">
+                <i class="fas fa-lock text-yellow-400 text-4xl mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Достигнуто ограничение</h3>
+                <p class="text-gray-300 mb-4">
+                    Вы выполнили 10 операций как гость. Войдите через Google, чтобы:
+                </p>
+                <ul class="text-left text-sm text-gray-400 mb-6 space-y-1">
+                    <li>• Снимать все ограничения</li>
+                    <li>• Использовать парольную защиту</li>
+                    <li>• Сохранять статистику и получать достижения</li>
+                </ul>
+                <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('googleLoginBtn').click();"
+                        class="btn-primary w-full py-2 rounded-lg">
+                    Войти через Google
+                </button>
+            </div>
+        `;
+        document.body.appendChild(modal);
     }
 }
 const app = new StegoProApp();
