@@ -410,7 +410,7 @@ class StegoProApp {
 
     async startExtracting() {
         if (!this.isUserLoggedIn()) {
-            if (this.anonOperationCount >= 10) {
+            if (this.anonOperationCount >= 2) {
                 this.showLoginPrompt();
                 return;
             }
@@ -967,11 +967,10 @@ class StegoProApp {
                 <i class="fas fa-lock text-yellow-400 text-4xl mb-4"></i>
                 <h3 class="text-xl font-bold mb-2">Достигнуто ограничение</h3>
                 <p class="text-gray-300 mb-4">
-                    Вы выполнили 10 операций как гость. Войдите через Google, чтобы:
+                    Вы выполнили 2 операций как гость. Войдите через Google, чтобы:
                 </p>
                 <ul class="text-left text-sm text-gray-400 mb-6 space-y-1">
                     <li>• Снимать все ограничения</li>
-                    <li>• Использовать парольную защиту</li>
                     <li>• Сохранять статистику и получать достижения</li>
                 </ul>
                 <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('googleLoginBtn').click();"
