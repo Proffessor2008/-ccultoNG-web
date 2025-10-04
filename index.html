@@ -575,6 +575,9 @@
             align-items: center;
             gap: 12px;
         }
+        .bg-card-solid {
+            background: var(--card) !important;
+        }
         .achievement-icon {
             width: 40px;
             height: 40px;
@@ -606,6 +609,14 @@
         .achievement-unlocked .achievement-icon {
             background: linear-gradient(135deg, #3FDA87, #22c55e);
             color: white;
+        }
+        /* === ИСПРАВЛЕНИЕ ФОНА МОДАЛКИ ПРОФИЛЯ === */
+        .bg-card-solid {
+            background: var(--card) !important;
+        }
+        .no-backdrop-filter {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
     </style>
 </head>
@@ -913,7 +924,7 @@
 </main>
 <!-- User Profile Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card max-w-3xl w-full p-6 modal-animation">
+    <div class="glass-card bg-card-solid no-backdrop-filter max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 modal-animation">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold">Личный кабинет</h3>
             <button id="closeProfile" class="text-gray-400 hover:text-gray-200">
