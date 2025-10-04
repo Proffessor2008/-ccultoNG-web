@@ -64,10 +64,15 @@ class StegoProApp {
             if (e.key === 'Escape') {
                 this.hideHelp();
                 this.hideProfile();
+                this.hideLoginPrompt();
             }
         });
         // Progress bar animation
         this.setupProgressAnimation();
+    }
+    hideLoginPrompt() {
+        const modal = document.querySelector('.login-prompt-modal');
+        if (modal) modal.remove();
     }
     setupProgressAnimation() {
         const progressBars = document.querySelectorAll('.progress-bar');
@@ -370,11 +375,10 @@ class StegoProApp {
         }
         this.updateActionButtons();
     }
-
     // === ОБНОВЛЁННЫЕ МЕТОДЫ С ОГРАНИЧЕНИЯМИ ===
     async startHiding() {
         if (!this.isUserLoggedIn()) {
-            if (this.anonOperationCount >= 10) {
+            if (this.anonOperationCount >= 2) {
                 this.showLoginPrompt();
                 return;
             }
@@ -407,7 +411,6 @@ class StegoProApp {
             this.currentOperationController = null;
         }
     }
-
     async startExtracting() {
         if (!this.isUserLoggedIn()) {
             if (this.anonOperationCount >= 2) {
@@ -443,7 +446,6 @@ class StegoProApp {
             this.currentOperationController = null;
         }
     }
-
     async hideData(containerFile, dataFile, password, signal) {
         const containerB64 = await this.fileToBase64(containerFile);
         const secretB64 = await this.fileToBase64(dataFile);
@@ -954,32 +956,45 @@ class StegoProApp {
     saveAchievements() {
         localStorage.setItem('stegopro_achievements', JSON.stringify(this.achievements));
     }
-
     // === НОВЫЙ МЕТОД: ПОДСКАЗКА ДЛЯ ВХОДА ===
     showLoginPrompt() {
         const existing = document.querySelector('.login-prompt-modal');
         if (existing) return;
-
         const modal = document.createElement('div');
         modal.className = 'login-prompt-modal fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4';
         modal.innerHTML = `
-            <div class="glass-card p-6 max-w-md text-center modal-animation">
+            <div class="glass-card p-6 max-w-md w-full text-center modal-animation relative">
+                <button class="absolute top-3 right-3 text-gray-400 hover:text-gray-200 z-10">
+                    <i class="fas fa-times icon-hover"></i>
+                </button>
                 <i class="fas fa-lock text-yellow-400 text-4xl mb-4"></i>
                 <h3 class="text-xl font-bold mb-2">Достигнуто ограничение</h3>
                 <p class="text-gray-300 mb-4">
-                    Вы выполнили 2 операций как гость. Войдите через Google, чтобы:
+                    Вы выполнили ${this.anonOperationCount} операций как гость. Войдите через Google, чтобы:
                 </p>
                 <ul class="text-left text-sm text-gray-400 mb-6 space-y-1">
                     <li>• Снимать все ограничения</li>
                     <li>• Сохранять статистику и получать достижения</li>
                 </ul>
-                <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('googleLoginBtn').click();"
-                        class="btn-primary w-full py-2 rounded-lg">
-                    Войти через Google
+                <button id="loginPromptGoogleBtn" class="btn-primary w-full py-2 rounded-lg btn-hover-animation">
+                    <i class="fab fa-google mr-2"></i> Войти через Google
                 </button>
             </div>
         `;
         document.body.appendChild(modal);
+
+        // Обработчики
+        const closeBtn = modal.querySelector('button:first-child');
+        const loginBtn = modal.querySelector('#loginPromptGoogleBtn');
+
+        closeBtn.addEventListener('click', () => {
+            modal.remove();
+        });
+
+        loginBtn.addEventListener('click', () => {
+            modal.remove();
+            document.getElementById('googleLoginBtn').click();
+        });
     }
 }
 const app = new StegoProApp();
