@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
+from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for, abort
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Инициализация Flask
@@ -242,9 +242,14 @@ def index():
 
 @app.route('/<path:filename>')
 def static_files(filename):
-    if os.path.exists(filename):
+    if os.path.isfile(filename):
         return send_from_directory('.', filename)
-    return "404", 404
+    abort(404)
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory('.', '404.html'), 404
 
 
 # === Запуск ===
