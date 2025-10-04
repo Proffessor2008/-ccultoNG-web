@@ -1,20 +1,45 @@
-<!-- 404.html -->
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="transition-colors duration-500 ease-in-out">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>404 — Страница не найдена | OccultoNG Web</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' }
+        tailwind.config = {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              keyframes: {
+                float: {
+                  '0%, 100%': { transform: 'translateY(0)' },
+                  '50%': { transform: 'translateY(-20px)' }
+                },
+                pulseGlow: {
+                  '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+                  '50%': { opacity: 0.6, transform: 'scale(1.1)' }
+                },
+                scan: {
+                  '0%': { transform: 'translateY(-100%)' },
+                  '100%': { transform: 'translateY(100vh)' }
+                }
+              },
+              animation: {
+                float: 'float 6s ease-in-out infinite',
+                pulseGlow: 'pulseGlow 4s ease-in-out infinite',
+                scan: 'scan 8s linear infinite'
+              }
+            }
+          }
+        }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet">
+          rel="stylesheet"/>
     <style>
         :root {
           --primary: #4C8DFF;
+          --accent: #00FFA4;
           --fg: #1f2937;
           --card: #f9fafb;
           --border: #e5e7eb;
@@ -31,6 +56,8 @@
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
+          perspective: 1000px;
         }
         .dark body {
           --fg: #E6EDF6;
@@ -40,78 +67,235 @@
           --border-rgb: 37, 48, 68;
           --bg-rgb: 11, 18, 32;
           background: linear-gradient(135deg, #0B1220 0%, #1a2332 100%);
-          color: var(--fg);
         }
-        .floating-orb {
-            position: absolute;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.15;
-        }
-        .orb-1 { top: 10%; left: 5%; width: 300px; height: 300px; background: var(--primary); animation: drift 25s infinite ease-in-out; }
-        .orb-2 { bottom: 10%; right: 10%; width: 200px; height: 200px; background: #3FDA87; animation: drift 30s infinite ease-in-out reverse; }
-        .orb-3 { bottom: 50%; right: 35%; width: 150px; height: 150px; background: #3FDA11; animation: drift 3s infinite ease-in-out reverse; }
-        .orb-4 { top: 30%; left: 10%; width: 100px; height: 100px; background: #3FDA99; animation: drift 10s infinite ease-in-out; }
 
-        @keyframes drift {
-            0%, 100% { transform: translate(0, 0); }
-            25%  { transform: translate(20px, -30px); }
-            50%  { transform: translate(-20px, 20px); }
-            75%  { transform: translate(10px, 30px); }
+        /* Анимированные орбы с улучшенным свечением */
+        .floating-orb {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: -1;
+          opacity: 0.15;
+          mix-blend-mode: screen;
+          box-shadow: 0 0 60px var(--primary);
+          animation: driftInfinite 35s alternate ease-in-out infinite;
         }
+        .orb-1 { top: 10%; left: 5%; width: 400px; height: 400px; background: var(--primary); animation-delay: 0s; }
+        .orb-2 { bottom: 15%; right: 10%; width: 300px; height: 300px; background: #3FDA87; animation-delay: 12s; }
+        .orb-3 { bottom: 50%; right: 35%; width: 220px; height: 220px; background: #3FDA11; animation-delay: 22s; }
+        .orb-4 { top: 30%; left: 15%; width: 150px; height: 150px; background: #3FDA99; animation-delay: 7s; }
+
+        @keyframes driftInfinite {
+          0% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(30px, -30px) rotate(5deg); }
+          100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* Улучшенная стеклянная карта с глубиной */
         .glass-card {
-            background: rgba(var(--card-rgb), 0.75);
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(var(--border-rgb), 0.25);
-            border-radius: 16px;
-            padding: 2.5rem;
-            text-align: center;
-            max-width: 600px;
-            margin: 4rem auto;
+          background: rgba(var(--card-rgb), 0.85);
+          backdrop-filter: blur(20px) contrast(1.1);
+          border-radius: 24px;
+          padding: 3rem;
+          max-width: 750px;
+          margin: 4rem auto;
+          box-shadow:
+            0 10px 40px rgba(0,0,0,0.25),
+            0 0 30px rgba(var(--primary), 0.1);
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+          border: 1px solid rgba(var(--border-rgb), 0.2);
         }
+
+        .glass-card:hover {
+          transform: translateY(-12px) scale(1.02);
+          box-shadow:
+            0 25px 60px rgba(0,0,0,0.35),
+            0 0 50px rgba(var(--primary), 0.2);
+        }
+
+        /* Анимированный градиентный текст */
+        .animated-text {
+          font-size: 8rem;
+          font-weight: 800;
+          letter-spacing: -6px;
+          background: linear-gradient(135deg, #4C8DFF, #00FFA4, #4C8DFF);
+          background-size: 200% 200%;
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+          animation: gradientShift 4s ease infinite alternate;
+          text-shadow: 0 0 20px rgba(76, 141, 255, 0.3);
+        }
+
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+
+        /* Кнопка с неоновым эффектом */
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #6AA8FF 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: transform 0.3s, box-shadow 0.3s;
+          background: linear-gradient(135deg, var(--primary), #6AA8FF);
+          padding: 1.2rem 2.5rem;
+          border-radius: 24px;
+          font-weight: 600;
+          color: white;
+          display: inline-block;
+          font-size: 1.3rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 0 15px rgba(var(--primary), 0.4);
+          position: relative;
+          overflow: hidden;
         }
+
+        .btn-primary::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+          transform: translateX(-100%);
+          transition: transform 0.6s;
+        }
+
+        .btn-primary:hover::before {
+          transform: translateX(100%);
+        }
+
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(76, 141, 255, 0.4);
+          transform: scale(1.08);
+          box-shadow: 0 12px 30px rgba(76, 141, 255, 0.5);
+        }
+
+        /* Анимированный сканирующий луч */
+        .scan-line {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: linear-gradient(90deg, transparent, rgba(0,255,164,0.6), transparent);
+          pointer-events: none;
+          z-index: 10;
+          animation: scan 6s linear infinite;
+        }
+
+        /* Частицы в фоне */
+        .particles {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        .particle {
+          position: absolute;
+          width: 2px; height: 2px;
+          background: var(--accent);
+          border-radius: 50%;
+          opacity: 0.6;
+          animation: float 4s infinite ease-in-out;
+        }
+
+        /* Эффект "цифровой дождь" */
+        .matrix-bg {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          pointer-events: none;
+          z-index: -2;
+          background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 255, 164, 0.03),
+            rgba(0, 255, 164, 0.03) 2px,
+            transparent 2px,
+            transparent 4px
+          );
+        }
+
+        /* Анимация цифрового дождя */
+        .matrix-rain {
+          position: absolute;
+          top: -100px;
+          font-family: 'JetBrains Mono', monospace;
+          color: rgba(0, 255, 164, 0.6);
+          font-size: 14px;
+          opacity: 0;
+          animation: rain 8s linear infinite;
+        }
+
+        @keyframes rain {
+          0% { transform: translateY(-100px); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
         }
     </style>
 </head>
-<body>
+<body class="relative flex items-center justify-center min-h-screen">
+
+<!-- Сканирующий луч -->
+<div class="scan-line"></div>
+
+<!-- Орбы -->
 <div class="floating-orb orb-1"></div>
 <div class="floating-orb orb-2"></div>
 <div class="floating-orb orb-3"></div>
 <div class="floating-orb orb-4"></div>
 
-<div class="glass-card">
-    <div class="text-6xl font-bold mb-4">404</div>
-    <h1 class="text-2xl font-semibold mb-2">Страница не найдена</h1>
-    <p class="text-gray-400 mb-6">
-        Кажется, вы попали в пустоту. Данные здесь не спрятаны.
+<!-- Фон с цифровым дождём -->
+<div class="matrix-bg"></div>
+<div id="matrix-container"></div>
+
+<!-- Частицы -->
+<div class="particles" id="particles"></div>
+
+<!-- Центральный блок -->
+<div class="glass-card text-center px-6 py-8 relative z-10">
+    <div class="animated-text mb-4">404</div>
+    <h1 class="text-4xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-400">
+        Страница не найдена
+    </h1>
+    <p class="text-gray-500 dark:text-gray-300 mb-8 text-lg leading-relaxed">
+        Кажется, вы попали в цифровую пустоту. Но не волнуйтесь — <br>наш агент уже ищет путь обратно в систему.
     </p>
-    <a href="/" class="btn-primary">
-        <i class="fas fa-arrow-left mr-2"></i> Вернуться на главную
+    <a href="/" class="btn-primary hover:scale-105 transition-transform relative group">
+        <i class="fas fa-arrow-left mr-3"></i> Вернуться на главную
+        <span class="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 group-hover:animate-pulseGlow"></span>
     </a>
 </div>
 
-<footer class="text-center py-6 text-gray-400 text-sm">
-    &copy; 2025 OccultoNG Web. Все права защищены.
-</footer>
-
+<!-- Скрипт для частиц и цифрового дождя -->
 <script>
+    // Генерация частиц
+    const particles = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.top = `${Math.random() * 100}%`;
+      p.style.animationDelay = `${Math.random() * 4}s`;
+      particles.appendChild(p);
+    }
+
+    // Генерация цифрового дождя
+    const container = document.getElementById('matrix-container');
+    const chars = '01';
+    for (let i = 0; i < 50; i++) {
+      const rain = document.createElement('div');
+      rain.classList.add('matrix-rain');
+      rain.style.left = `${Math.random() * 100}%`;
+      rain.style.animationDelay = `${Math.random() * 8}s`;
+      rain.textContent = Array.from({ length: 20 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      container.appendChild(rain);
+    }
+
+    // Переключение темы
     if (localStorage.getItem('theme') === 'dark' ||
         (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
+      document.documentElement.classList.add('dark');
     }
 </script>
 </body>
