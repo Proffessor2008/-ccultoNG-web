@@ -30,33 +30,33 @@ class StegoProApp {
     }
     setupEventListeners() {
         // Navigation
-        document.getElementById('startHiding')?.addEventListener('click', () => this.showHideInterface());
-        document.getElementById('startExtracting')?.addEventListener('click', () => this.showExtractInterface());
-        document.getElementById('userProfile')?.addEventListener('click', () => this.showProfile());
-        document.getElementById('closeProfile')?.addEventListener('click', () => this.hideProfile());
-        document.getElementById('googleLogoutBtn')?.addEventListener('click', () => {
+        document.getElementById('startHiding').addEventListener('click', () => this.showHideInterface());
+        document.getElementById('startExtracting').addEventListener('click', () => this.showExtractInterface());
+        document.getElementById('userProfile').addEventListener('click', () => this.showProfile());
+        document.getElementById('closeProfile').addEventListener('click', () => this.hideProfile());
+        document.getElementById('googleLogoutBtn').addEventListener('click', () => {
             this.logoutGoogle();
         });
         // Method selection
         document.querySelectorAll('.method-card').forEach(card => {
             card.addEventListener('click', () => this.selectMethod(card.dataset.method));
         });
-        document.getElementById('helpButton')?.addEventListener('click', () => this.showHelp());
-        document.getElementById('closeHelp')?.addEventListener('click', () => this.hideHelp());
+        document.getElementById('helpButton').addEventListener('click', () => this.showHelp());
+        document.getElementById('closeHelp').addEventListener('click', () => this.hideHelp());
         // File handling
         this.setupFileHandling();
         // Password toggle
-        document.getElementById('togglePassword')?.addEventListener('click', () => this.togglePassword('passwordInput'));
-        document.getElementById('toggleExtractPassword')?.addEventListener('click', () => this.togglePassword('extractPassword'));
+        document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword('passwordInput'));
+        document.getElementById('toggleExtractPassword').addEventListener('click', () => this.togglePassword('extractPassword'));
         // Actions
-        document.getElementById('startHide')?.addEventListener('click', () => this.startHiding());
-        document.getElementById('startExtract')?.addEventListener('click', () => this.startExtracting());
-        document.getElementById('cancelHide')?.addEventListener('click', () => this.cancelOperation());
-        document.getElementById('cancelExtract')?.addEventListener('click', () => this.cancelOperation());
+        document.getElementById('startHide').addEventListener('click', () => this.startHiding());
+        document.getElementById('startExtract').addEventListener('click', () => this.startExtracting());
+        document.getElementById('cancelHide').addEventListener('click', () => this.cancelOperation());
+        document.getElementById('cancelExtract').addEventListener('click', () => this.cancelOperation());
         // Theme toggle
-        document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTheme());
+        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
         // Google login
-        document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
+        document.getElementById('googleLoginBtn').addEventListener('click', () => {
             window.location.href = '/auth/google';
         });
         // Escape key for modals
@@ -85,25 +85,24 @@ class StegoProApp {
     setupFileHandling() {
         const containerDropZone = document.getElementById('containerDropZone');
         const containerFileInput = document.getElementById('containerFile');
-        document.getElementById('selectContainer')?.addEventListener('click', () => containerFileInput?.click());
-        containerFileInput?.addEventListener('change', (e) => this.handleFileSelect(e, 'container'));
+        document.getElementById('selectContainer').addEventListener('click', () => containerFileInput.click());
+        containerFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'container'));
         this.setupDropZone(containerDropZone, 'container');
         const dataDropZone = document.getElementById('dataDropZone');
         const dataFileInput = document.getElementById('dataFile');
-        document.getElementById('selectData')?.addEventListener('click', () => dataFileInput?.click());
-        dataFileInput?.addEventListener('change', (e) => this.handleFileSelect(e, 'data'));
+        document.getElementById('selectData').addEventListener('click', () => dataFileInput.click());
+        dataFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'data'));
         this.setupDropZone(dataDropZone, 'data');
         const extractDropZone = document.getElementById('extractDropZone');
         const extractFileInput = document.getElementById('extractFile');
-        document.getElementById('selectExtractFile')?.addEventListener('click', () => extractFileInput?.click());
-        extractFileInput?.addEventListener('change', (e) => this.handleFileSelect(e, 'extract'));
+        document.getElementById('selectExtractFile').addEventListener('click', () => extractFileInput.click());
+        extractFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'extract'));
         this.setupDropZone(extractDropZone, 'extract');
-        document.getElementById('removeContainer')?.addEventListener('click', () => this.removeFile('container'));
-        document.getElementById('removeData')?.addEventListener('click', () => this.removeFile('data'));
-        document.getElementById('removeExtract')?.addEventListener('click', () => this.removeFile('extract'));
+        document.getElementById('removeContainer').addEventListener('click', () => this.removeFile('container'));
+        document.getElementById('removeData').addEventListener('click', () => this.removeFile('data'));
+        document.getElementById('removeExtract').addEventListener('click', () => this.removeFile('extract'));
     }
     setupDropZone(element, type) {
-        if (!element) return;
         element.addEventListener('dragover', (e) => {
             e.preventDefault();
             element.classList.add('dragover', 'drag-over-effect');
@@ -128,7 +127,7 @@ class StegoProApp {
         if (fileInputId) {
             element.addEventListener('click', (e) => {
                 if (e.target.closest('.btn-primary')) return;
-                document.getElementById(fileInputId)?.click();
+                document.getElementById(fileInputId).click();
             });
         }
     }
@@ -144,24 +143,24 @@ class StegoProApp {
             const loginBtn = document.getElementById('googleLoginBtn');
             const logoutBtn = document.getElementById('googleLogoutBtn');
             if (user && user.logged_in) {
-                if (user.picture && navAvatar) {
+                if (user.picture) {
                     navAvatar.src = user.picture;
                     navAvatar.classList.remove('hidden');
-                    navDefaultIcon?.classList.add('hidden');
+                    navDefaultIcon.classList.add('hidden');
                 } else {
-                    navAvatar?.classList.add('hidden');
-                    navDefaultIcon?.classList.remove('hidden');
+                    navAvatar.classList.add('hidden');
+                    navDefaultIcon.classList.remove('hidden');
                 }
-                if (user.picture && avatar) {
+                if (user.picture) {
                     avatar.src = user.picture;
                     avatar.classList.remove('hidden');
                 } else {
-                    avatar?.classList.add('hidden');
+                    avatar.classList.add('hidden');
                 }
                 nameEl.textContent = user.name || 'Пользователь';
                 emailEl.textContent = user.email || '';
-                loginBtn?.classList.add('hidden');
-                logoutBtn?.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
                 if (user.stats) {
                     this.stats = user.stats;
                     this.achievements = user.stats.achievements || [];
@@ -169,19 +168,28 @@ class StegoProApp {
                     this.saveAchievements();
                     this.updateStats();
                 }
+                // Сброс анонимного счётчика при входе
                 this.anonOperationCount = 0;
                 localStorage.removeItem('stegopro_anon_ops');
             } else {
-                navAvatar?.classList.add('hidden');
-                navDefaultIcon?.classList.remove('hidden');
-                avatar?.classList.add('hidden');
+                navAvatar.classList.add('hidden');
+                navDefaultIcon.classList.remove('hidden');
+                avatar.classList.add('hidden');
                 nameEl.textContent = 'Пользователь';
                 emailEl.textContent = '';
-                loginBtn?.classList.remove('hidden');
-                logoutBtn?.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
             }
         } catch (e) {
             console.error("Failed to load Google user", e);
+            const loginBtn = document.getElementById('googleLoginBtn');
+            const logoutBtn = document.getElementById('googleLogoutBtn');
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
+            const navAvatar = document.getElementById('navAvatar');
+            const navDefaultIcon = document.getElementById('navDefaultIcon');
+            if (navAvatar) navAvatar.classList.add('hidden');
+            if (navDefaultIcon) navDefaultIcon.classList.remove('hidden');
         }
     }
     handleFileSelect(event, type) {
@@ -258,7 +266,6 @@ class StegoProApp {
         const nameElement = document.getElementById(type + 'Name');
         const sizeElement = document.getElementById(type + 'Size');
         const dropZone = document.getElementById(type + 'DropZone');
-        if (!infoElement || !nameElement || !sizeElement || !dropZone) return;
         nameElement.textContent = file.name;
         sizeElement.textContent = this.formatFileSize(file.size);
         infoElement.classList.remove('hidden');
@@ -295,15 +302,15 @@ class StegoProApp {
         this.clearPreview(dropZone);
         if (type === 'container') {
             this.containerFile = null;
-            document.getElementById('containerInfo')?.classList.add('hidden');
+            document.getElementById('containerInfo').classList.add('hidden');
             document.getElementById('containerFile').value = '';
         } else if (type === 'data') {
             this.dataFile = null;
-            document.getElementById('dataInfo')?.classList.add('hidden');
+            document.getElementById('dataInfo').classList.add('hidden');
             document.getElementById('dataFile').value = '';
         } else if (type === 'extract') {
             this.extractFile = null;
-            document.getElementById('extractInfo')?.classList.add('hidden');
+            document.getElementById('extractInfo').classList.add('hidden');
             document.getElementById('extractFile').value = '';
         }
         this.updateActionButtons();
@@ -311,33 +318,34 @@ class StegoProApp {
     updateActionButtons() {
         const hideButton = document.getElementById('startHide');
         const extractButton = document.getElementById('startExtract');
-        if (hideButton) hideButton.disabled = !(this.containerFile && this.dataFile);
-        if (extractButton) extractButton.disabled = !this.extractFile;
+        if (this.currentMethod === 'lsb' || this.currentMethod === 'audio_lsb') {
+            hideButton.disabled = !(this.containerFile && this.dataFile);
+        }
+        extractButton.disabled = !this.extractFile;
     }
     selectMethod(method) {
         this.currentMethod = method;
         document.querySelectorAll('.method-card').forEach(card => {
             card.classList.remove('selected');
         });
-        const selectedCard = document.querySelector(`[data-method="${method}"]`);
-        if (selectedCard) selectedCard.classList.add('selected');
+        document.querySelector(`[data-method="${method}"]`).classList.add('selected');
         this.showHideInterface();
     }
     showHideInterface() {
         if (!this.currentMethod) {
             this.selectMethod('lsb');
         }
-        document.getElementById('methodSelection')?.classList.add('hidden');
-        document.getElementById('extractInterface')?.classList.add('hidden');
-        document.getElementById('hideInterface')?.classList.remove('hidden');
-        document.getElementById('hideInterface')?.classList.add('fade-in');
+        document.getElementById('methodSelection').classList.add('hidden');
+        document.getElementById('extractInterface').classList.add('hidden');
+        document.getElementById('hideInterface').classList.remove('hidden');
+        document.getElementById('hideInterface').classList.add('fade-in');
         this.updateActionButtons();
     }
     showExtractInterface() {
-        document.getElementById('methodSelection')?.classList.add('hidden');
-        document.getElementById('hideInterface')?.classList.add('hidden');
-        document.getElementById('extractInterface')?.classList.remove('hidden');
-        document.getElementById('extractInterface')?.classList.add('fade-in');
+        document.getElementById('methodSelection').classList.add('hidden');
+        document.getElementById('hideInterface').classList.add('hidden');
+        document.getElementById('extractInterface').classList.remove('hidden');
+        document.getElementById('extractInterface').classList.add('fade-in');
         this.updateActionButtons();
     }
     cancelOperation() {
@@ -345,23 +353,25 @@ class StegoProApp {
             this.currentOperationController.abort();
             this.currentOperationController = null;
         }
-        document.getElementById('hideInterface')?.classList.add('hidden');
-        document.getElementById('extractInterface')?.classList.add('hidden');
-        document.getElementById('methodSelection')?.classList.remove('hidden');
-        document.getElementById('resultsSection')?.classList.add('hidden');
+        document.getElementById('hideInterface').classList.add('hidden');
+        document.getElementById('extractInterface').classList.add('hidden');
+        document.getElementById('methodSelection').classList.remove('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
         this.containerFile = null;
         this.dataFile = null;
         this.extractFile = null;
         this.currentOperationController = null;
-        document.getElementById('containerInfo')?.classList.add('hidden');
-        document.getElementById('dataInfo')?.classList.add('hidden');
-        document.getElementById('extractInfo')?.classList.add('hidden');
+        document.getElementById('containerInfo').classList.add('hidden');
+        document.getElementById('dataInfo').classList.add('hidden');
+        document.getElementById('extractInfo').classList.add('hidden');
         const resultsContent = document.getElementById('resultsContent');
         if (resultsContent) {
             resultsContent.innerHTML = '';
         }
         this.updateActionButtons();
     }
+
+    // === ОБНОВЛЁННЫЕ МЕТОДЫ С ОГРАНИЧЕНИЯМИ ===
     async startHiding() {
         if (!this.isUserLoggedIn()) {
             if (this.anonOperationCount >= 10) {
@@ -383,6 +393,7 @@ class StegoProApp {
             this.showResults('hide', result);
             this.updateStatsAfterOperation('hide', this.dataFile.size);
             this.checkAchievements();
+            // Увеличиваем счётчик ТОЛЬКО для гостей и ТОЛЬКО при успехе
             if (!this.isUserLoggedIn()) {
                 this.anonOperationCount++;
                 localStorage.setItem('stegopro_anon_ops', this.anonOperationCount.toString());
@@ -396,6 +407,7 @@ class StegoProApp {
             this.currentOperationController = null;
         }
     }
+
     async startExtracting() {
         if (!this.isUserLoggedIn()) {
             if (this.anonOperationCount >= 2) {
@@ -417,6 +429,7 @@ class StegoProApp {
             this.showResults('extract', result);
             this.updateStatsAfterOperation('extract');
             this.checkAchievements();
+            // Увеличиваем счётчик ТОЛЬКО для гостей и ТОЛЬКО при успехе
             if (!this.isUserLoggedIn()) {
                 this.anonOperationCount++;
                 localStorage.setItem('stegopro_anon_ops', this.anonOperationCount.toString());
@@ -430,6 +443,7 @@ class StegoProApp {
             this.currentOperationController = null;
         }
     }
+
     async hideData(containerFile, dataFile, password, signal) {
         const containerB64 = await this.fileToBase64(containerFile);
         const secretB64 = await this.fileToBase64(dataFile);
@@ -500,9 +514,9 @@ class StegoProApp {
     }
     showProgress(type) {
         const progressElement = document.getElementById(type + 'Progress');
-        const progressBar = progressElement?.querySelector('.progress-bar');
-        if (progressElement) progressElement.classList.remove('hidden');
-        if (progressBar) this.animateProgressBar(progressBar, 2);
+        const progressBar = progressElement.querySelector('.progress-bar');
+        progressElement.classList.remove('hidden');
+        this.animateProgressBar(progressBar, 2);
         const cancelButton = document.getElementById(`cancel${type.charAt(0).toUpperCase() + type.slice(1)}`);
         if (cancelButton) {
             cancelButton.textContent = 'Отменить операцию';
@@ -510,8 +524,8 @@ class StegoProApp {
         }
     }
     hideProgress() {
-        document.getElementById('hideProgress')?.classList.add('hidden');
-        document.getElementById('extractProgress')?.classList.add('hidden');
+        document.getElementById('hideProgress').classList.add('hidden');
+        document.getElementById('extractProgress').classList.add('hidden');
         const cancelButtons = document.querySelectorAll('[id^="cancel"]');
         cancelButtons.forEach(btn => {
             btn.textContent = 'Отмена';
@@ -521,19 +535,18 @@ class StegoProApp {
     loadTheme() {
         const saved = localStorage.getItem('theme') || 'dark';
         const html = document.documentElement;
-        const icon = document.getElementById('themeToggle')?.querySelector('i');
+        const icon = document.getElementById('themeToggle').querySelector('i');
         if (saved === 'light') {
             html.classList.remove('dark');
-            if (icon) icon.className = 'fas fa-sun';
+            icon.className = 'fas fa-sun';
         } else {
             html.classList.add('dark');
-            if (icon) icon.className = 'fas fa-moon';
+            icon.className = 'fas fa-moon';
         }
     }
     showResults(operation, result) {
         const resultsSection = document.getElementById('resultsSection');
         const resultsContent = document.getElementById('resultsContent');
-        if (!resultsSection || !resultsContent) return;
         let html = '';
         if (operation === 'hide') {
             let stegoName = this.containerFile.name;
@@ -572,10 +585,10 @@ class StegoProApp {
                     </div>
                 </div>
                 <div class="flex gap-4 justify-center">
-                    <a href="${stegoUrl}" download="${stegoName}" class="btn-primary px-6 py-3 rounded-lg download-link" aria-label="Скачать стего-файл">
+                    <a href="${stegoUrl}" download="${stegoName}" class="btn-primary px-6 py-3 rounded-lg download-link">
                         <i class="fas fa-download mr-2"></i>Скачать стего-файл
                     </a>
-                    <button onclick="app.cancelOperation()" class="px-6 py-3 rounded-lg border border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all" aria-label="Новая операция">
+                    <button onclick="app.cancelOperation()" class="px-6 py-3 rounded-lg border border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all">
                         Новая операция
                     </button>
                 </div>
@@ -618,10 +631,10 @@ class StegoProApp {
                     </div>
                 </div>
                 <div class="flex gap-4 justify-center">
-                    <a href="${dataUrl}" download="${dataName}" class="btn-primary px-6 py-3 rounded-lg download-link" aria-label="Скачать извлечённые данные">
+                    <a href="${dataUrl}" download="${dataName}" class="btn-primary px-6 py-3 rounded-lg download-link">
                         <i class="fas fa-download mr-2"></i>Скачать данные
                     </a>
-                    <button onclick="app.cancelOperation()" class="px-6 py-3 rounded-lg border border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all" aria-label="Новая операция">
+                    <button onclick="app.cancelOperation()" class="px-6 py-3 rounded-lg border border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all">
                         Новая операция
                     </button>
                 </div>
@@ -696,8 +709,7 @@ class StegoProApp {
     }
     togglePassword(inputId) {
         const input = document.getElementById(inputId);
-        const icon = input?.nextElementSibling?.querySelector('i');
-        if (!input || !icon) return;
+        const icon = input.nextElementSibling.querySelector('i');
         if (input.type === 'password') {
             input.type = 'text';
             icon.classList.remove('fa-eye');
@@ -709,9 +721,10 @@ class StegoProApp {
         }
     }
     showProfile() {
-        document.getElementById('profileModal')?.classList.remove('hidden');
+        document.getElementById('profileModal').classList.remove('hidden');
         this.updateProfileStats();
         this.updateProfileLevel();
+        // === ПОКАЗ ДОСТИЖЕНИЙ ТОЛЬКО ДЛЯ ЗАЛОГИНЕННЫХ ===
         if (this.isUserLoggedIn()) {
             this.renderAllAchievements();
         } else {
@@ -725,7 +738,7 @@ class StegoProApp {
         this.loadGoogleUser();
     }
     hideProfile() {
-        document.getElementById('profileModal')?.classList.add('hidden');
+        document.getElementById('profileModal').classList.add('hidden');
     }
     updateProfileStats() {
         document.getElementById('profileFilesProcessed').textContent = this.stats.filesProcessed;
@@ -747,7 +760,6 @@ class StegoProApp {
     }
     renderAllAchievements() {
         const container = document.getElementById('achievementsList');
-        if (!container) return;
         const allPossible = [
             { id: 'first_file', name: 'Первый шаг', desc: 'Обработан первый файл', icon: 'fas fa-shoe-prints' },
             { id: 'data_hider', name: 'Скрыватель данных', desc: 'Скрыто более 1MB данных', icon: 'fas fa-file-contract' },
@@ -777,30 +789,26 @@ class StegoProApp {
         }).join('');
     }
     initializeAnimations() {
-        if (typeof Typed !== 'undefined') {
-            new Typed('#typed-text', {
-                strings: [
-                    'Скрывайте данные в изображениях',
-                    'Извлекайте скрытую информацию',
-                    'Защищайте конфиденциальные файлы',
-                    'Используйте продвинутую стеганографию'
-                ],
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
-        }
-        if (typeof anime !== 'undefined') {
-            anime({
-                targets: '.stats-card',
-                translateY: [50, 0],
-                opacity: [0, 1],
-                delay: anime.stagger(100),
-                duration: 800,
-                easing: 'easeOutExpo'
-            });
-        }
+        new Typed('#typed-text', {
+            strings: [
+                'Скрывайте данные в изображениях',
+                'Извлекайте скрытую информацию',
+                'Защищайте конфиденциальные файлы',
+                'Используйте продвинутую стеганографию'
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            backDelay: 2000,
+            loop: true
+        });
+        anime({
+            targets: '.stats-card',
+            translateY: [50, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100),
+            duration: 800,
+            easing: 'easeOutExpo'
+        });
     }
     updateStats() {
         document.getElementById('filesProcessed').textContent = this.stats.filesProcessed;
@@ -825,26 +833,55 @@ class StegoProApp {
     checkAchievements() {
         const newAchievements = [];
         if (this.stats.filesProcessed === 1 && !this.hasAchievement('first_file')) {
-            newAchievements.push({ id: 'first_file', name: 'Первый шаг', description: 'Обработан первый файл' });
+            newAchievements.push({
+                id: 'first_file',
+                name: 'Первый шаг',
+                description: 'Обработан первый файл'
+            });
         }
         if (this.stats.dataHidden >= 1024 * 1024 && !this.hasAchievement('data_hider')) {
-            newAchievements.push({ id: 'data_hider', name: 'Скрыватель данных', description: 'Скрыто более 1MB данных' });
+            newAchievements.push({
+                id: 'data_hider',
+                name: 'Скрыватель данных',
+                description: 'Скрыто более 1MB данных'
+            });
         }
         if (this.stats.filesProcessed >= 10 && !this.hasAchievement('pro_user')) {
-            newAchievements.push({ id: 'pro_user', name: 'Профессиональный пользователь', description: 'Обработано 10 файлов' });
+            newAchievements.push({
+                id: 'pro_user',
+                name: 'Профессиональный пользователь',
+                description: 'Обработано 10 файлов'
+            });
         }
         if (this.stats.filesProcessed >= 20 && !this.hasAchievement('master')) {
-            newAchievements.push({ id: 'master', name: 'Мастер стеганографии', description: 'Обработано 20+ файлов' });
+            newAchievements.push({
+                id: 'master',
+                name: 'Мастер стеганографии',
+                description: 'Обработано 20+ файлов'
+            });
         }
         if (this.stats.dataHidden >= 10 * 1024 * 1024 && !this.hasAchievement('megabyte_hider')) {
-            newAchievements.push({ id: 'megabyte_hider', name: 'Мегабайтщик', description: 'Скрыто более 10MB данных' });
+            newAchievements.push({
+                id: 'megabyte_hider',
+                name: 'Мегабайтщик',
+                description: 'Скрыто более 10MB данных'
+            });
         }
         if (this.stats.successfulOperations >= 5 && !this.hasAchievement('extractor')) {
-            newAchievements.push({ id: 'extractor', name: 'Извлекатель', description: 'Успешно извлечено 5 файлов' });
+            newAchievements.push({
+                id: 'extractor',
+                name: 'Извлекатель',
+                description: 'Успешно извлечено 5 файлов'
+            });
         }
         if (this.stats.filesProcessed >= 10 && this.stats.successfulOperations === this.stats.filesProcessed && !this.hasAchievement('perfectionist')) {
-            newAchievements.push({ id: 'perfectionist', name: 'Перфекционист', description: '100% успешных операций (минимум 10)' });
+            newAchievements.push({
+                id: 'perfectionist',
+                name: 'Перфекционист',
+                description: '100% успешных операций (минимум 10)'
+            });
         }
+        // Note: audio_expert, security_pro, image_master требуют доп. логики — для демо оставим базовые
         newAchievements.forEach(achievement => {
             this.achievements.push(achievement);
             this.showAchievement(achievement);
@@ -865,7 +902,6 @@ class StegoProApp {
         const toastIcon = document.getElementById('toastIcon');
         const toastTitle = document.getElementById('toastTitle');
         const toastMessage = document.getElementById('toastMessage');
-        if (!toast || !toastIcon || !toastTitle || !toastMessage) return;
         toastIcon.className = '';
         if (type === 'success') {
             toastIcon.classList.add('fas', 'fa-check-circle', 'text-green-400', 'text-xl', 'mr-3');
@@ -918,9 +954,12 @@ class StegoProApp {
     saveAchievements() {
         localStorage.setItem('stegopro_achievements', JSON.stringify(this.achievements));
     }
+
+    // === НОВЫЙ МЕТОД: ПОДСКАЗКА ДЛЯ ВХОДА ===
     showLoginPrompt() {
         const existing = document.querySelector('.login-prompt-modal');
         if (existing) return;
+
         const modal = document.createElement('div');
         modal.className = 'login-prompt-modal fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4';
         modal.innerHTML = `
@@ -935,7 +974,7 @@ class StegoProApp {
                     <li>• Сохранять статистику и получать достижения</li>
                 </ul>
                 <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('googleLoginBtn').click();"
-                        class="btn-primary w-full py-2 rounded-lg" aria-label="Войти через Google">
+                        class="btn-primary w-full py-2 rounded-lg">
                     Войти через Google
                 </button>
             </div>
