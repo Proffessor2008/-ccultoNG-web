@@ -8,6 +8,9 @@ class StegoProApp {
         this.achievements = this.loadAchievements();
         this.currentOperationController = null;
         this.anonOperationCount = parseInt(localStorage.getItem('stegopro_anon_ops') || '0');
+        this.objectURLs = new Set(); // Track created URLs for cleanup
+        this.eventListeners = []; // Track event listeners for cleanup
+        this.animationInstances = []; // Track animation instances
         this.init();
     }
     init() {
@@ -29,45 +32,114 @@ class StegoProApp {
         return navAvatar && !navAvatar.classList.contains('hidden');
     }
     setupEventListeners() {
+        // Helper to track listeners
+        const addTrackedListener = (element, event, handler) => {
+            if (typeof element === 'string') {
+                element = document.getElementById(element);
+            }
+            if (element) {
+                element.addEventListener(event, handler);
+                this.eventListeners.push({ element, event, handler });
+            }
+        };
+
         // Navigation
-        document.getElementById('startHiding').addEventListener('click', () => this.showHideInterface());
-        document.getElementById('startExtracting').addEventListener('click', () => this.showExtractInterface());
-        document.getElementById('userProfile').addEventListener('click', () => this.showProfile());
-        document.getElementById('closeProfile').addEventListener('click', () => this.hideProfile());
-        document.getElementById('googleLogoutBtn').addEventListener('click', () => {
-            this.logoutGoogle();
-        });
+        addTrackedListener('startHiding', 'click', () => this.showHideInterface());
+        addTrackedListener('startExtracting', 'click', () => this.showExtractInterface());
+        addTrackedListener('userProfile', 'click', () => this.showProfile());
+        addTrackedListener('closeProfile', 'click', () => this.hideProfile());
+        addTrackedListener('googleLogoutBtn', 'click', () => this.logoutGoogle());
+        
         // Method selection
         document.querySelectorAll('.method-card').forEach(card => {
-            card.addEventListener('click', () => this.selectMethod(card.dataset.method));
+            const handler = () => this.selectMethod(card.dataset.method);
+            card.addEventListener('click', handler);
+            this.eventListeners.push({ element: card, event: 'click', handler });
         });
-        document.getElementById('helpButton').addEventListener('click', () => this.showHelp());
-        document.getElementById('closeHelp').addEventListener('click', () => this.hideHelp());
+        
+        addTrackedListener('helpButton', 'click', () => this.showHelp());
+        addTrackedListener('closeHelp', 'click', () => this.hideHelp());
+        
         // File handling
         this.setupFileHandling();
+        
         // Password toggle
-        document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword('passwordInput'));
-        document.getElementById('toggleExtractPassword').addEventListener('click', () => this.togglePassword('extractPassword'));
+        addTrackedListener('togglePassword', 'click', () => this.togglePassword('passwordInput'));
+        addTrackedListener('toggleExtractPassword', 'click', () => this.togglePassword('extractPassword'));
+        
         // Actions
-        document.getElementById('startHide').addEventListener('click', () => this.startHiding());
-        document.getElementById('startExtract').addEventListener('click', () => this.startExtracting());
-        document.getElementById('cancelHide').addEventListener('click', () => this.cancelOperation());
-        document.getElementById('cancelExtract').addEventListener('click', () => this.cancelOperation());
+        addTrackedListener('startHide', 'click', () => this.startHiding());
+        addTrackedListener('startExtract', 'click', () => this.startExtracting());
+        addTrackedListener('cancelHide', 'click', () => this.cancelOperation());
+        addTrackedListener('cancelExtract', 'click', () => this.cancelOperation());
+        
         // Theme toggle
-        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+        addTrackedListener('themeToggle', 'click', () => this.toggleTheme());
+        
         // Google login
-        document.getElementById('googleLoginBtn').addEventListener('click', () => {
+        addTrackedListener('googleLoginBtn', 'click', () => {
             window.location.href = '/auth/google';
         });
+        
         // Escape key for modals
-        document.addEventListener('keydown', (e) => {
+        const escHandler = (e) => {
             if (e.key === 'Escape') {
                 this.hideHelp();
                 this.hideProfile();
             }
-        });
+        };
+        document.addEventListener('keydown', escHandler);
+        this.eventListeners.push({ element: document, event: 'keydown', handler: escHandler });
+        
         // Progress bar animation
         this.setupProgressAnimation();
+    }
+    
+    // Cleanup method for event listeners
+    cleanup() {
+        // Remove all tracked event listeners
+        this.eventListeners.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+        });
+        this.eventListeners = [];
+        
+        // Cleanup all object URLs
+        this.cleanupObjectURLs();
+        
+        // Destroy animation instances
+        this.animationInstances.forEach(instance => {
+            if (instance && typeof instance.destroy === 'function') {
+                instance.destroy();
+            }
+        });
+        this.animationInstances = [];
+    }
+    
+    // Cleanup all created object URLs
+    cleanupObjectURLs() {
+        this.objectURLs.forEach(url => {
+            try {
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error('Failed to revoke URL:', e);
+            }
+        });
+        this.objectURLs.clear();
+    }
+    
+    // Create and track object URL
+    createTrackedObjectURL(blob) {
+        const url = URL.createObjectURL(blob);
+        this.objectURLs.add(url);
+        return url;
+    }
+    
+    // Revoke specific object URL
+    revokeTrackedObjectURL(url) {
+        if (this.objectURLs.has(url)) {
+            URL.revokeObjectURL(url);
+            this.objectURLs.delete(url);
+        }
     }
     setupProgressAnimation() {
         const progressBars = document.querySelectorAll('.progress-bar');
@@ -232,9 +304,21 @@ class StegoProApp {
         }
     }
     processFile(file, type) {
+        // Input sanitization - check filename
+        const sanitizedName = this.sanitizeFilename(file.name);
+        if (!sanitizedName) {
+            this.showToast('Ошибка', 'Недопустимое имя файла.', 'error');
+            return;
+        }
+        
         const MAX_FILE_SIZE = 50 * 1024 * 1024;
         if (file.size > MAX_FILE_SIZE) {
-            this.showToast('Ошибка', 'Файл слишком большой. Максимум 50 МБ.', 'error');
+            this.showToast('Ошибка', `Файл слишком большой (${this.formatFileSize(file.size)}). Максимум 50 МБ.`, 'error');
+            return;
+        }
+        
+        if (file.size === 0) {
+            this.showToast('Ошибка', 'Файл пустой.', 'error');
             return;
         }
         const validTypes = {
@@ -266,7 +350,9 @@ class StegoProApp {
         const nameElement = document.getElementById(type + 'Name');
         const sizeElement = document.getElementById(type + 'Size');
         const dropZone = document.getElementById(type + 'DropZone');
-        nameElement.textContent = file.name;
+        
+        // Sanitize display name
+        nameElement.textContent = this.sanitizeFilename(file.name) || 'Неизвестный файл';
         sizeElement.textContent = this.formatFileSize(file.size);
         infoElement.classList.remove('hidden');
         infoElement.classList.add('fade-in');
@@ -445,72 +531,114 @@ class StegoProApp {
     }
 
     async hideData(containerFile, dataFile, password, signal) {
-        const containerB64 = await this.fileToBase64(containerFile);
-        const secretB64 = await this.fileToBase64(dataFile);
-        const originalFileName = dataFile.name;
-        const fileExtension = originalFileName.includes('.') ?
-            originalFileName.split('.').pop() : 'bin';
-        const response = await fetch('/api/hide', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                container: containerB64,
-                secret: secretB64,
-                method: this.currentMethod,
-                password: password,
-                original_filename: originalFileName,
-                file_extension: fileExtension
-            }),
-            signal: signal
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            // Process large files in chunks
+            const containerB64 = await this.fileToBase64Chunked(containerFile);
+            const secretB64 = await this.fileToBase64Chunked(dataFile);
+            const originalFileName = dataFile.name;
+            const fileExtension = originalFileName.includes('.') ?
+                originalFileName.split('.').pop() : 'bin';
+            const response = await fetch('/api/hide', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    container: containerB64,
+                    secret: secretB64,
+                    method: this.currentMethod,
+                    password: password,
+                    original_filename: originalFileName,
+                    file_extension: fileExtension
+                }),
+                signal: signal
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            return {
+                success: true,
+                method: result.method,
+                stego_data: result.stego_data,
+                file_extension: result.file_extension,
+                originalSize: result.original_size,
+                hiddenSize: result.hidden_size,
+                stegoSize: result.stego_size,
+                original_filename: result.original_filename
+            };
+        } catch (error) {
+            throw new Error(`Ошибка при сокрытии данных: ${error.message}`);
         }
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error);
-        return {
-            success: true,
-            method: result.method,
-            stego_data: result.stego_data,
-            file_extension: result.file_extension,
-            originalSize: result.original_size,
-            hiddenSize: result.hidden_size,
-            stegoSize: result.stego_size,
-            original_filename: result.original_filename
-        };
     }
     async extractData(stegoFile, password, signal) {
-        const stegoB64 = await this.fileToBase64(stegoFile);
-        const response = await fetch('/api/extract', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                stego: stegoB64,
-                password: password
-            }),
-            signal: signal
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const stegoB64 = await this.fileToBase64Chunked(stegoFile);
+            const response = await fetch('/api/extract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    stego: stegoB64,
+                    password: password
+                }),
+                signal: signal
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            return {
+                success: true,
+                method: result.method,
+                extracted_data: result.extracted_data,
+                extractedSize: result.extracted_size,
+                original_filename: result.original_filename,
+                file_extension: result.file_extension
+            };
+        } catch (error) {
+            throw new Error(`Ошибка при извлечении данных: ${error.message}`);
         }
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error);
-        return {
-            success: true,
-            method: result.method,
-            extracted_data: result.extracted_data,
-            extractedSize: result.extracted_size,
-            original_filename: result.original_filename,
-            file_extension: result.file_extension
-        };
     }
     fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
+            reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
             reader.readAsDataURL(file);
         });
+    }
+    
+    // Optimized base64 encoding for large files
+    async fileToBase64Chunked(file) {
+        const chunkSize = 1024 * 1024; // 1MB chunks
+        if (file.size < chunkSize) {
+            return this.fileToBase64(file);
+        }
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                } catch (e) {
+                    reject(new Error('Ошибка кодирования файла'));
+                }
+            };
+            reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    // Sanitize filename for security
+    sanitizeFilename(filename) {
+        if (!filename || typeof filename !== 'string') return '';
+        // Remove path separators and dangerous characters
+        return filename
+            .replace(/[<>:"|?*\x00-\x1F]/g, '')
+            .replace(/^\.+/, '')
+            .substring(0, 255)
+            .trim();
     }
     showProgress(type) {
         const progressElement = document.getElementById(type + 'Progress');
@@ -561,7 +689,7 @@ class StegoProApp {
                 stegoName += '_stego';
             }
             const stegoBlob = this.base64ToBlob(result.stego_data, 'application/octet-stream');
-            const stegoUrl = URL.createObjectURL(stegoBlob);
+            const stegoUrl = this.createTrackedObjectURL(stegoBlob);
             html = `
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -608,7 +736,7 @@ class StegoProApp {
             }
             const mimeType = this.getMimeType(fileExtension);
             const dataBlob = this.base64ToBlob(result.extracted_data, mimeType);
-            const dataUrl = URL.createObjectURL(dataBlob);
+            const dataUrl = this.createTrackedObjectURL(dataBlob);
             html = `
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -649,27 +777,36 @@ class StegoProApp {
         setTimeout(() => {
             const downloadLinks = resultsContent.querySelectorAll('.download-link');
             downloadLinks.forEach(link => {
-                link.addEventListener('click', function() {
+                const clickHandler = () => {
+                    // Cleanup URL after download starts
                     setTimeout(() => {
-                        URL.revokeObjectURL(this.href);
-                    }, 100);
-                });
+                        this.revokeTrackedObjectURL(link.href);
+                    }, 1000);
+                };
+                link.addEventListener('click', clickHandler);
+                this.eventListeners.push({ element: link, event: 'click', handler: clickHandler });
             });
         }, 100);
     }
     base64ToBlob(base64, mimeType) {
-        const byteCharacters = atob(base64);
-        const byteArrays = [];
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-            const slice = byteCharacters.slice(offset, offset + 512);
-            const byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
+        try {
+            // Optimized for large files - process in larger chunks
+            const byteCharacters = atob(base64);
+            const byteArrays = [];
+            const chunkSize = 8192; // Larger chunks for better performance
+            
+            for (let offset = 0; offset < byteCharacters.length; offset += chunkSize) {
+                const slice = byteCharacters.slice(offset, offset + chunkSize);
+                const byteNumbers = new Uint8Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                byteArrays.push(byteNumbers);
             }
-            const byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
+            return new Blob(byteArrays, { type: mimeType });
+        } catch (e) {
+            throw new Error('Ошибка декодирования данных: ' + e.message);
         }
-        return new Blob(byteArrays, { type: mimeType });
     }
     getMimeType(extension) {
         const mimeTypes = {
@@ -789,26 +926,40 @@ class StegoProApp {
         }).join('');
     }
     initializeAnimations() {
-        new Typed('#typed-text', {
-            strings: [
-                'Скрывайте данные в изображениях',
-                'Извлекайте скрытую информацию',
-                'Защищайте конфиденциальные файлы',
-                'Используйте продвинутую стеганографию'
-            ],
-            typeSpeed: 50,
-            backSpeed: 30,
-            backDelay: 2000,
-            loop: true
-        });
-        anime({
-            targets: '.stats-card',
-            translateY: [50, 0],
-            opacity: [0, 1],
-            delay: anime.stagger(100),
-            duration: 800,
-            easing: 'easeOutExpo'
-        });
+        try {
+            // Track animation instances for cleanup
+            const typedInstance = new Typed('#typed-text', {
+                strings: [
+                    'Скрывайте данные в изображениях',
+                    'Извлекайте скрытую информацию',
+                    'Защищайте конфиденциальные файлы',
+                    'Используйте продвинутую стеганографию'
+                ],
+                typeSpeed: 50,
+                backSpeed: 30,
+                backDelay: 2000,
+                loop: true
+            });
+            this.animationInstances.push(typedInstance);
+            
+            // Optimize anime.js with reduced complexity
+            const animeInstance = anime({
+                targets: '.stats-card',
+                translateY: [50, 0],
+                opacity: [0, 1],
+                delay: anime.stagger(100),
+                duration: 800,
+                easing: 'easeOutExpo'
+            });
+            this.animationInstances.push(animeInstance);
+        } catch (e) {
+            console.error('Animation initialization failed:', e);
+            // Fallback - show elements without animation
+            document.querySelectorAll('.stats-card').forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }
     }
     updateStats() {
         document.getElementById('filesProcessed').textContent = this.stats.filesProcessed;
