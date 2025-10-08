@@ -255,7 +255,8 @@ def not_found(e):
     return send_from_directory('.', '404.html'), 404
 
 
-# === Запуск ===
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+if __name__ == "__main__":
+    # Берём порт из переменной окружения PORT или используем 8000 по умолчанию
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
 
