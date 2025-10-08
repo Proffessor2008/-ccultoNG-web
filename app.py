@@ -17,23 +17,18 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
-        "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://lh3.googleusercontent.com https://api.producthunt.com; "
-        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
-        "connect-src 'self' https://www.google-analytics.com https://accounts.google.com; "
-        "frame-src https://accounts.google.com https://docs.google.com; "
+        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "img-src 'self' data: https: https://cdnjs.cloudflare.com; "
+        "font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
+        "connect-src 'self'; "
         "object-src 'none'; "
-        "base-uri 'self'; "
-        "form-action 'self' https://accounts.google.com; "
-        "frame-ancestors 'none'; "
-        "upgrade-insecure-requests;"
+        "frame-ancestors 'none';"
     )
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
     return response
 
 
@@ -56,12 +51,10 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    conn = psycopg2.connect(
-        host="5.129.252.252",
-        database="default_db",
-        user="gen_user",
-        password=r"vd^*~6Z8;FC5S|"
-        , cursor_factory=RealDictCursor)
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not DATABASE_URL:
+        raise Exception("DATABASE_URL не задан в переменных окружения!")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
 
@@ -259,8 +252,6 @@ def not_found(e):
     return send_from_directory('.', '404.html'), 404
 
 
+# === Запуск ===
 if __name__ == '__main__':
-    import os
-
-    port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
