@@ -51,11 +51,14 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    if not DATABASE_URL:
-        raise Exception("DATABASE_URL не задан в переменных окружения!")
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    conn = psycopg2.connect(
+        host="5.129.252.252",
+        database="default_db",
+        user="gen_user",
+        password=r"vd^*~6Z8;FC5S|"
+    , cursor_factory=RealDictCursor)
     return conn
+
 
 
 def init_db():
@@ -255,3 +258,4 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
