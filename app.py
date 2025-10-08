@@ -2,7 +2,6 @@
 import json
 import os
 from datetime import datetime
-import base64
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for, abort
@@ -57,10 +56,12 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    if not DATABASE_URL:
-        raise Exception("DATABASE_URL не задан в переменных окружения!")
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    conn = psycopg2.connect(
+        host="5.129.252.252",
+        database="default_db",
+        user="gen_user",
+        password=r"vd^*~6Z8;FC5S|"
+        , cursor_factory=RealDictCursor)
     return conn
 
 
@@ -260,7 +261,6 @@ def not_found(e):
 
 if __name__ == '__main__':
     import os
+
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=False)
-
-
