@@ -257,7 +257,8 @@ def not_found(e):
 
 if __name__ == "__main__":
     # Берём порт из переменной окружения PORT или используем 8000 по умолчанию
-    port = int(os.environ.get("PORT", 8888))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
+
 
 
