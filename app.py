@@ -2,6 +2,7 @@
 import json
 import os
 from datetime import datetime
+import base64
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for, abort
@@ -260,3 +261,4 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
