@@ -17,18 +17,23 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; "
-        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
-        "img-src 'self' data: https: https://cdnjs.cloudflare.com; "
-        "font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
-        "connect-src 'self'; "
+        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
+        "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://lh3.googleusercontent.com https://api.producthunt.com; "
+        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
+        "connect-src 'self' https://www.google-analytics.com https://accounts.google.com; "
+        "frame-src https://accounts.google.com https://docs.google.com; "
         "object-src 'none'; "
-        "frame-ancestors 'none';"
+        "base-uri 'self'; "
+        "form-action 'self' https://accounts.google.com; "
+        "frame-ancestors 'none'; "
+        "upgrade-insecure-requests;"
     )
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
     return response
 
 
@@ -51,34 +56,19 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        # Если строка подключения из переменной окружения
-        if 'sslmode' not in database_url:
-            database_url += '?sslmode=require'
-        conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
-    else:
-        conn = psycopg2.connect(
-            dbname="occultong_db",
-            user="occultong_db_user",
-            password="OCAxevVLpOCBQzm8TJGtH5MwCMGKgNz5",
-            host="dpg-d3dnm8a4d50c7391kh6g-a.oregon-postgres.render.com",
-            port="5432",
-            sslmode="require",  # <-- Вот эта строка важна!
-            cursor_factory=RealDictCursor
-        )
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not DATABASE_URL:
+        raise Exception("DATABASE_URL не задан в переменных окружения!")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
 
-
 def init_db():
-    """Инициализация базы данных с добавлением поля provider"""
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
-            provider TEXT NOT NULL DEFAULT 'google',
             name TEXT,
             email TEXT UNIQUE,
             picture TEXT,
@@ -90,15 +80,6 @@ def init_db():
             updated_at TIMESTAMP
         )
     """)
-
-    # Добавляем поле provider, если его нет (для существующих таблиц)
-    try:
-        cur.execute("""
-            ALTER TABLE users ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'google'
-        """)
-    except Exception as e:
-        print(f"Column provider already exists or error: {e}")
-
     conn.commit()
     cur.close()
     conn.close()
@@ -276,7 +257,6 @@ def not_found(e):
     return send_from_directory('.', '404.html'), 404
 
 
-if __name__ == "__main__":
-    # Берём порт из переменной окружения PORT или используем 8000 по умолчанию
-    port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port)
+# === Запуск ===
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
