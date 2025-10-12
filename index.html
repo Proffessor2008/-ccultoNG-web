@@ -10,61 +10,212 @@
         gtag('config', 'G-W3XW86HV7M');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#4C8DFF">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="OccultoNG">
-    <meta name="msapplication-TileColor" content="#4C8DFF">
-    <meta name="description"
-          content="Профессиональная платформа для стеганографии с поддержкой множества форматов и продвинутыми методами сокрытия данных">
-    <meta name="keywords" content="стеганография, сокрытие данных, безопасность, приватность">
-    <meta name="author" content="OccultoNG Web">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="/">
-    <meta property="og:title" content="OccultoNG Web - Стеганография нового поколения">
-    <meta property="og:description"
-          content="Профессиональная платформа для стеганографии с продвинутыми методами сокрытия данных">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="OccultoNG Web - Стеганография нового поколения">
-    <meta property="twitter:description" content="Профессиональная платформа для стеганографии">
-
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://cdnjs.cloudflare.com https://*.googleusercontent.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://www.googleapis.com https://accounts.google.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OccultoNG Web - Стеганография нового поколения</title>
-    <!-- Оптимизированная загрузка ресурсов с fallback -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-             darkMode: 'class',
-         }
+            darkMode: 'class',
+        }
     </script>
-
-    <!-- Локальные ресурсы с fallback на CDN -->
-    <script src="assets/js/anime.min.js"
-            onerror="this.src='https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js'"></script>
-    <script src="assets/js/typed.min.js"
-            onerror="this.src='https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js'"></script>
-
-    <!-- Оптимизированные иконки с версионированием -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"/>
-    <link rel="preload" href="assets/css/font-awesome.min.css?v=2.0.0" as="style">
-
-    <!-- Оптимизированные шрифты с preload и версионированием -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-              rel="stylesheet">
-    </noscript>
+          rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* === Фон с параллакс-частицами === */
+        /* Additional custom styles for specific animations */
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        .interface-transition {
+            animation: interfaceFade 0.5s ease-out;
+        }
+        @keyframes interfaceFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .method-card.selected {
+            animation: cardSelect 0.4s ease-out;
+        }
+        @keyframes cardSelect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .file-upload-animation {
+            animation: fileUpload 0.6s ease-out;
+        }
+        @keyframes fileUpload {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .progress-pulse {
+            animation: progressPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .modal-animation {
+            animation: modalAppear 0.3s ease-out;
+        }
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .toast-animation {
+            animation: toastSlide 0.5s ease-out;
+        }
+        @keyframes toastSlide {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .btn-hover-animation {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-hover-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        .btn-hover-animation:hover::after {
+            animation: ripple 1s ease-out;
+        }
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        .stat-counter {
+            transition: all 0.5s ease-out;
+        }
+        .drag-over-effect {
+            animation: dragPulse 1s infinite;
+        }
+        @keyframes dragPulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 141, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0); }
+        }
+        .nav-icon {
+            transition: all 0.3s ease;
+        }
+        .nav-icon:hover {
+            transform: translateY(-2px);
+        }
+        .shine {
+            position: relative;
+        }
+        .shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background-size: 200% 100%;
+            background-position: -200% 0;
+            transition: background-position 0.3s ease;
+            border-radius: inherit;
+            z-index: -1;
+        }
+        .shine:hover::before {
+            background-position: 200% 0;
+            animation: shine 0.5s ease;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--success), var(--warning));
+            background-size: 400% 400%;
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .glow-border:hover::after {
+            opacity: 1;
+        }
+        .parallax-scroll {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        .floating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            animation: floatGrid 12s ease-in-out infinite;
+        }
+        @keyframes floatGrid {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-icon {
+            animation: pulseIcon 2s infinite;
+        }
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--success), var(--warning));
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+        .achievement-info {
+            flex: 1;
+        }
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .achievement-desc {
+            font-size: 12px;
+            color: var(--fg);
+            opacity: 0.7;
+        }
         #particles-js {
             position: fixed;
             width: 100%;
@@ -726,17 +877,13 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button id="startHiding"
-                    class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold shine btn-hover-animation focus:outline-none focus:ring-4 focus:ring-blue-500/30"
-                    aria-label="Начать процесс сокрытия данных в файлах"
-                    role="button">
-                <i class="fas fa-eye-slash mr-2" aria-hidden="true"></i>
+                    class="btn-primary px-8 py-4 rounded-xl text-lg font-semibold shine btn-hover-animation">
+                <i class="fas fa-eye-slash mr-2"></i>
                 Начать сокрытие
             </button>
             <button id="startExtracting"
-                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all shine btn-hover-animation focus:outline-none focus:ring-4 focus:ring-blue-500/30"
-                    aria-label="Начать процесс извлечения данных из файлов"
-                    role="button">
-                <i class="fas fa-eye mr-2" aria-hidden="true"></i>
+                    class="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:border-blue-500 hover:text-blue-500 transition-all shine btn-hover-animation">
+                <i class="fas fa-eye mr-2"></i>
                 Извлечь данные
             </button>
         </div>
@@ -763,11 +910,10 @@
         </div>
     </section>
     <!-- Main Interface -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="max-w-6xl mx-auto px-4">
         <!-- Method Selection -->
         <div id="methodSelection" class="mb-12 interface-transition">
-            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8" role="heading" aria-level="2">Выберите
-                метод стеганографии</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Выберите метод стеганографии</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="method-card p-6 glow-border" data-method="lsb">
                     <div class="flex items-center mb-4">
@@ -816,19 +962,14 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
                         <label class="block text-sm font-medium mb-3">Контейнер (изображение/аудио)</label>
-                        <div id="containerDropZone" class="file-drop-zone p-8 text-center glow-border" role="region"
-                             aria-label="Зона загрузки контейнера">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4 icon-hover pulse-icon"
-                               aria-hidden="true"></i>
-                            <p class="text-gray-400 mb-2" id="containerDropText">Перетащите файл сюда или</p>
+                        <div id="containerDropZone" class="file-drop-zone p-8 text-center glow-border">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4 icon-hover pulse-icon"></i>
+                            <p class="text-gray-400 mb-2">Перетащите файл сюда или</p>
                             <button id="selectContainer"
-                                    class="btn-primary px-6 py-2 rounded-lg text-sm shine btn-hover-animation focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                                    aria-describedby="containerDropText"
-                                    type="button">
+                                    class="btn-primary px-6 py-2 rounded-lg text-sm shine btn-hover-animation">
                                 Выбрать файл
                             </button>
-                            <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.tif,.wav"
-                                   aria-label="Выбор файла-контейнера">
+                            <input type="file" id="containerFile" class="hidden" accept=".png,.bmp,.tiff,.tif,.wav">
                         </div>
                         <div id="containerInfo" class="hidden mt-4 p-4 bg-gray-800 rounded-lg file-upload-animation">
                             <div class="flex items-center justify-between">
@@ -892,14 +1033,12 @@
                 <div id="hideProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm text-gray-400">Процесс сокрытия данных</span>
-                        <span class="text-sm text-blue-400 progress-text">0%</span>
+                        <span class="text-sm text-blue-400">Обработка...</span>
                     </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 mb-2">
-                        <div class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                             style="width: 0%"></div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="progress-bar w-full rounded-full upload-progress"></div>
                     </div>
-                    <div class="text-xs text-gray-500 processing-stage mb-2">Этап: Ожидание начала обработки</div>
-                    <p class="text-xs text-gray-400">Это может занять несколько минут для больших файлов</p>
+                    <p class="text-xs text-gray-400 mt-2">Это может занять несколько минут для больших файлов</p>
                 </div>
             </div>
         </div>
@@ -956,14 +1095,12 @@
                 <div id="extractProgress" class="hidden mt-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm text-gray-400">Процесс извлечения данных</span>
-                        <span class="text-sm text-blue-400 progress-text">0%</span>
+                        <span class="text-sm text-blue-400">Обработка...</span>
                     </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 mb-2">
-                        <div class="progress-bar bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-300"
-                             style="width: 0%"></div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="progress-bar w-full rounded-full upload-progress"></div>
                     </div>
-                    <div class="text-xs text-gray-500 processing-stage mb-2">Этап: Ожидание начала обработки</div>
-                    <p class="text-xs text-gray-400">Это может занять несколько минут для больших файлов</p>
+                    <p class="text-xs text-gray-400 mt-2">Это может занять несколько минут для больших файлов</p>
                 </div>
             </div>
         </div>
@@ -1023,27 +1160,14 @@
         </div>
     </div>
 </div>
-<!-- Улучшенное Toast Notification -->
-<div id="toast" class="toast glass-card p-4 max-w-sm" role="alert" aria-live="polite">
+<!-- Toast Notification -->
+<div id="toast" class="toast glass-card p-4 max-w-sm">
     <div class="flex items-center">
-        <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl mr-3" aria-hidden="true"></i>
-        <div class="flex-1">
+        <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
+        <div>
             <p id="toastTitle" class="font-semibold">Успешно!</p>
             <p id="toastMessage" class="text-sm text-gray-400"></p>
         </div>
-        <button id="closeToast"
-                class="ml-2 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-                aria-label="Закрыть уведомление">
-            <i class="fas fa-times text-sm" aria-hidden="true"></i>
-        </button>
-    </div>
-</div>
-
-<!-- Индикатор загрузки страницы -->
-<div id="pageLoader" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center hidden">
-    <div class="glass-card p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p class="text-gray-300">Загрузка OccultoNG Web...</p>
     </div>
 </div>
 <!-- Feedback button -->
@@ -1114,20 +1238,6 @@
         </div>
     </div>
 </div>
-<!-- Оптимизированная загрузка скриптов с версионированием -->
-<script src="app.js?v=2.0.0" defer></script>
-<script src="assets/js/particles.js?v=2.0.0" defer></script>
-
-<!-- Предзагрузка критических ресурсов -->
-<link rel="preload" href="app.js?v=2.0.0" as="script">
-<link rel="preload" href="assets/js/particles.js?v=2.0.0" as="script">
-
-<!-- Манифест для PWA готовности -->
-<link rel="manifest" href="/manifest.json">
-
-<!-- DNS prefetch для внешних ресурсов -->
-<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="//fonts.googleapis.com">
-<link rel="dns-prefetch" href="//fonts.gstatic.com">
+<script src="app.js"></script>
 </body>
 </html>
