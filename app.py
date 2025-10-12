@@ -51,22 +51,34 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    conn = psycopg2.connect(
-        host="5.129.252.252",
-        database="default_db",
-        user="gen_user",
-        password=r"vd^*~6Z8;FC5S|"
-    , cursor_factory=RealDictCursor)
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Если строка подключения из переменной окружения
+        if 'sslmode' not in database_url:
+            database_url += '?sslmode=require'
+        conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+    else:
+        conn = psycopg2.connect(
+            dbname="occultong_db",
+            user="occultong_db_user",
+            password="OCAxevVLpOCBQzm8TJGtH5MwCMGKgNz5",
+            host="dpg-d3dnm8a4d50c7391kh6g-a.oregon-postgres.render.com",
+            port="5432",
+            sslmode="require",  # <-- Вот эта строка важна!
+            cursor_factory=RealDictCursor
+        )
     return conn
 
 
 
 def init_db():
+    """Инициализация базы данных с добавлением поля provider"""
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
+            provider TEXT NOT NULL DEFAULT 'google',
             name TEXT,
             email TEXT UNIQUE,
             picture TEXT,
@@ -78,6 +90,15 @@ def init_db():
             updated_at TIMESTAMP
         )
     """)
+
+    # Добавляем поле provider, если его нет (для существующих таблиц)
+    try:
+        cur.execute("""
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'google'
+        """)
+    except Exception as e:
+        print(f"Column provider already exists or error: {e}")
+
     conn.commit()
     cur.close()
     conn.close()
@@ -259,6 +280,7 @@ if __name__ == "__main__":
     # Берём порт из переменной окружения PORT или используем 8000 по умолчанию
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
