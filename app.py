@@ -1,4 +1,5 @@
 # app.py (обновлённая версия с PostgreSQL)
+
 import json
 import os
 from datetime import datetime
@@ -8,16 +9,20 @@ from flask import Flask, request, jsonify, send_from_directory, session, redirec
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Инициализация Flask
+
 app = Flask(__name__, static_folder='.')
+
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 
+# Безопасность (остаётся без изменений)
+
 @app.after_request
 def add_security_headers(response):
-    csp = (
+    response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com; "
-        "style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
+        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
         "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://lh3.googleusercontent.com https://api.producthunt.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
         "connect-src 'self' https://www.google-analytics.com https://accounts.google.com; "
@@ -26,22 +31,28 @@ def add_security_headers(response):
         "base-uri 'self'; "
         "form-action 'self' https://accounts.google.com; "
         "frame-ancestors 'none'; "
-        "upgrade-insecure-requests"
+        "upgrade-insecure-requests;"
     )
-    response.headers['Content-Security-Policy'] = csp
-    response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
-    response.headers['X-Frame-Options'] = "DENY"
-    response.headers['X-Content-Type-Options'] = "nosniff"
-    response.headers['Referrer-Policy'] = "strict-origin-when-cross-origin"
-    response.headers['Cross-Origin-Resource-Policy'] = "same-origin"
-    response.headers['Permissions-Policy'] = "geolocation=(), microphone=(), camera=()"
+
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+    response.headers['X-Frame-Options'] = 'DENY'
+
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+
     return response
 
 
 # Секретный ключ
+
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # OAuth (без изменений)
+
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
@@ -52,12 +63,14 @@ google = oauth.register(
 )
 
 # === Подключение к PostgreSQL ===
+
 import psycopg2
+
 from psycopg2.extras import RealDictCursor
 
 
 def get_db_connection():
-    DATABASE_URL = os.environ.get('DATABASE_URL')
+    DATABASE_URL = 'postgresql://postgres.dzzlkunmoleijfguteuv:JK.Ay%2F%4064THjmC3@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
     if not DATABASE_URL:
         raise Exception("DATABASE_URL не задан в переменных окружения!")
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
@@ -68,18 +81,18 @@ def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            email TEXT UNIQUE,
-            picture TEXT,
-            files_processed INTEGER DEFAULT 0,
-            data_hidden INTEGER DEFAULT 0,
-            successful_operations INTEGER DEFAULT 0,
-            achievements TEXT,
-            created_at TIMESTAMP,
-            updated_at TIMESTAMP
-        )
+    CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        email TEXT UNIQUE,
+        picture TEXT,
+        files_processed INTEGER DEFAULT 0,
+        data_hidden INTEGER DEFAULT 0,
+        successful_operations INTEGER DEFAULT 0,
+        achievements TEXT,
+        created_at TIMESTAMP,
+        updated_at TIMESTAMP
+    )
     """)
     conn.commit()
     cur.close()
@@ -110,22 +123,20 @@ def auth_callback():
         email = user_info.get('email', '')
         picture = user_info.get('picture', '')
         now = datetime.utcnow()
-
         db = get_db_connection()
         cur = db.cursor()
         cur.execute("""
-            INSERT INTO users (id, name, email, picture, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, 0, 0, 0, %s, %s, %s)
-            ON CONFLICT (id) DO UPDATE SET
-                name = EXCLUDED.name,
-                email = EXCLUDED.email,
-                picture = EXCLUDED.picture,
-                updated_at = EXCLUDED.updated_at
+        INSERT INTO users (id, name, email, picture, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
+        VALUES (%s, %s, %s, %s, 0, 0, 0, %s, %s, %s)
+        ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            email = EXCLUDED.email,
+            picture = EXCLUDED.picture,
+            updated_at = EXCLUDED.updated_at
         """, (user_id, name, email, picture, '[]', now, now))
         db.commit()
         cur.close()
         db.close()
-
         session['user_id'] = user_id
         session['user'] = {
             'id': user_id,
@@ -192,17 +203,16 @@ def save_stats():
     except:
         achievements_json = '[]'
     now = datetime.utcnow()
-
     db = get_db_connection()
     cur = db.cursor()
     cur.execute("""
-        UPDATE users
-        SET files_processed = %s,
-            data_hidden = %s,
-            successful_operations = %s,
-            achievements = %s,
-            updated_at = %s
-        WHERE id = %s
+    UPDATE users
+    SET files_processed = %s,
+        data_hidden = %s,
+        successful_operations = %s,
+        achievements = %s,
+        updated_at = %s
+    WHERE id = %s
     """, (files_processed, data_hidden, successful_operations, achievements_json, now, user_id))
     db.commit()
     cur.close()
@@ -211,6 +221,7 @@ def save_stats():
 
 
 # === Stego API (без изменений) ===
+
 from stego_backend import process_hide, process_extract, get_file_info
 
 
@@ -241,6 +252,7 @@ def file_info():
 
 
 # === Static files ===
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -259,5 +271,6 @@ def not_found(e):
 
 
 # === Запуск ===
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
