@@ -12,13 +12,12 @@ app = Flask(__name__, static_folder='.')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 
-# Безопасность (остаётся без изменений)
 @app.after_request
 def add_security_headers(response):
-    response.headers['Content-Security-Policy'] = (
+    csp = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
+        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com; "
+        "style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
         "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://lh3.googleusercontent.com https://api.producthunt.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
         "connect-src 'self' https://www.google-analytics.com https://accounts.google.com; "
@@ -27,13 +26,15 @@ def add_security_headers(response):
         "base-uri 'self'; "
         "form-action 'self' https://accounts.google.com; "
         "frame-ancestors 'none'; "
-        "upgrade-insecure-requests;"
+        "upgrade-insecure-requests"
     )
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+    response.headers['Content-Security-Policy'] = csp
+    response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
+    response.headers['X-Frame-Options'] = "DENY"
+    response.headers['X-Content-Type-Options'] = "nosniff"
+    response.headers['Referrer-Policy'] = "strict-origin-when-cross-origin"
+    response.headers['Cross-Origin-Resource-Policy'] = "same-origin"
+    response.headers['Permissions-Policy'] = "geolocation=(), microphone=(), camera=()"
     return response
 
 
