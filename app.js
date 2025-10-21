@@ -1,5 +1,6 @@
 class StegoProApp {
     constructor() {
+        this.currentProvider = null;
         this.currentMethod = null;
         this.containerFile = null;
         this.dataFile = null;
@@ -18,7 +19,7 @@ class StegoProApp {
         this.initializeAnimations();
         this.updateStats();
         this.checkAchievements();
-        this.loadGoogleUser();
+        this.loadYandexUser();
         this.loadTheme();
     }
     showHelp() {
@@ -48,7 +49,7 @@ class StegoProApp {
         addTrackedListener('startExtracting', 'click', () => this.showExtractInterface());
         addTrackedListener('userProfile', 'click', () => this.showProfile());
         addTrackedListener('closeProfile', 'click', () => this.hideProfile());
-        addTrackedListener('googleLogoutBtn', 'click', () => this.logoutGoogle());
+        addTrackedListener('yandexLogoutBtn', 'click', () => this.logoutYandex());
         
         // Method selection
         document.querySelectorAll('.method-card').forEach(card => {
@@ -77,8 +78,8 @@ class StegoProApp {
         addTrackedListener('themeToggle', 'click', () => this.toggleTheme());
         
         // Google login
-        addTrackedListener('googleLoginBtn', 'click', () => {
-            window.location.href = '/auth/google';
+        addTrackedListener('yandexLoginBtn', 'click', () => {
+            window.location.href = '/auth/yandex';
         });
         
         // Escape key for modals
@@ -203,7 +204,7 @@ class StegoProApp {
             });
         }
     }
-    async loadGoogleUser() {
+    async loadYandexUser() {
         try {
             const res = await fetch('/api/user');
             const user = await res.json();
@@ -212,9 +213,12 @@ class StegoProApp {
             const avatar = document.getElementById('profileAvatar');
             const nameEl = document.getElementById('profileName');
             const emailEl = document.getElementById('profileEmail');
-            const loginBtn = document.getElementById('googleLoginBtn');
-            const logoutBtn = document.getElementById('googleLogoutBtn');
+            const loginBtn = document.getElementById('yandexLoginBtn');
+            const logoutBtn = document.getElementById('yandexLogoutBtn');
+
             if (user && user.logged_in) {
+                this.currentProvider = user.provider || 'yandex';
+
                 if (user.picture) {
                     navAvatar.src = user.picture;
                     navAvatar.classList.remove('hidden');
@@ -223,16 +227,19 @@ class StegoProApp {
                     navAvatar.classList.add('hidden');
                     navDefaultIcon.classList.remove('hidden');
                 }
+
                 if (user.picture) {
                     avatar.src = user.picture;
                     avatar.classList.remove('hidden');
                 } else {
                     avatar.classList.add('hidden');
                 }
+
                 nameEl.textContent = user.name || 'Пользователь';
                 emailEl.textContent = user.email || '';
                 loginBtn.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
+
                 if (user.stats) {
                     this.stats = user.stats;
                     this.achievements = user.stats.achievements || [];
@@ -240,6 +247,7 @@ class StegoProApp {
                     this.saveAchievements();
                     this.updateStats();
                 }
+
                 // Сброс анонимного счётчика при входе
                 this.anonOperationCount = 0;
                 localStorage.removeItem('stegopro_anon_ops');
@@ -251,17 +259,19 @@ class StegoProApp {
                 emailEl.textContent = '';
                 loginBtn.classList.remove('hidden');
                 logoutBtn.classList.add('hidden');
+                this.currentProvider = null;
             }
         } catch (e) {
-            console.error("Failed to load Google user", e);
-            const loginBtn = document.getElementById('googleLoginBtn');
-            const logoutBtn = document.getElementById('googleLogoutBtn');
+            console.error("Failed to load Yandex user", e);
+            const loginBtn = document.getElementById('yandexLoginBtn');
+            const logoutBtn = document.getElementById('yandexLogoutBtn');
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (logoutBtn) logoutBtn.classList.add('hidden');
             const navAvatar = document.getElementById('navAvatar');
             const navDefaultIcon = document.getElementById('navDefaultIcon');
             if (navAvatar) navAvatar.classList.add('hidden');
             if (navDefaultIcon) navDefaultIcon.classList.remove('hidden');
+            this.currentProvider = null;
         }
     }
     handleFileSelect(event, type) {
@@ -270,7 +280,7 @@ class StegoProApp {
             this.processFile(file, type);
         }
     }
-    async logoutGoogle() {
+    async logoutYandex() {
         try {
             await fetch('/api/logout', { method: 'POST' });
         } catch (e) {
@@ -281,7 +291,7 @@ class StegoProApp {
         this.saveStats();
         this.saveAchievements();
         this.updateStats();
-        this.loadGoogleUser();
+        this.loadYandexUser();
         this.showToast('Успешно', 'Вы вышли из аккаунта', 'success');
     }
     async saveStatsToCloud() {
@@ -868,11 +878,11 @@ class StegoProApp {
             document.getElementById('achievementsList').innerHTML = `
                 <div class="col-span-full text-center py-4 text-gray-400">
                     <i class="fas fa-lock mr-2"></i>
-                    Достижения и полная статистика доступны только после входа через Google.
+                    Достижения и полная статистика доступны только после входа через Yandex.
                 </div>
             `;
         }
-        this.loadGoogleUser();
+        this.loadYandexUser();
     }
     hideProfile() {
         document.getElementById('profileModal').classList.add('hidden');
@@ -1118,15 +1128,15 @@ class StegoProApp {
                 <i class="fas fa-lock text-yellow-400 text-4xl mb-4"></i>
                 <h3 class="text-xl font-bold mb-2">Достигнуто ограничение</h3>
                 <p class="text-gray-300 mb-4">
-                    Вы выполнили 2 операций как гость. Войдите через Google, чтобы:
+                    Вы выполнили 2 операций как гость. Войдите через Yandex, чтобы:
                 </p>
                 <ul class="text-left text-sm text-gray-400 mb-6 space-y-1">
                     <li>• Снимать все ограничения</li>
                     <li>• Сохранять статистику и получать достижения</li>
                 </ul>
-                <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('googleLoginBtn').click();"
+                <button onclick="document.querySelector('.login-prompt-modal').remove(); document.getElementById('yandexLoginBtn').click();"
                         class="btn-primary w-full py-2 rounded-lg">
-                    Войти через Google
+                    Войти через Yandex
                 </button>
             </div>
         `;
