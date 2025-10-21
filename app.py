@@ -1,4 +1,4 @@
-# app.py (обновлённая версия с PostgreSQL)
+# app.py (обновлённая версия с Яндекс OAuth)
 
 import json
 import os
@@ -9,63 +9,53 @@ from flask import Flask, request, jsonify, send_from_directory, session, redirec
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Инициализация Flask
-
 app = Flask(__name__, static_folder='.')
-
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 
 # Безопасность (остаётся без изменений)
-
 @app.after_request
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://accounts.google.com 'unsafe-inline'; "
+        "script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://oauth.yandex.ru 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tailwindcss.com; "
-        "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://lh3.googleusercontent.com https://api.producthunt.com; "
+        "img-src 'self' data: https: blob: https://cdnjs.cloudflare.com https://avatars.yandex.net https://api.producthunt.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
-        "connect-src 'self' https://www.google-analytics.com https://accounts.google.com; "
-        "frame-src https://accounts.google.com https://docs.google.com; "
+        "connect-src 'self' https://www.google-analytics.com https://oauth.yandex.ru; "
+        "frame-src https://oauth.yandex.ru https://docs.google.com; "
         "object-src 'none'; "
         "base-uri 'self'; "
-        "form-action 'self' https://accounts.google.com; "
+        "form-action 'self' https://oauth.yandex.ru; "
         "frame-ancestors 'none'; "
         "upgrade-insecure-requests;"
     )
-
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-
     response.headers['X-Frame-Options'] = 'DENY'
-
     response.headers['X-Content-Type-Options'] = 'nosniff'
-
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-
     response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
-
     return response
 
 
 # Секретный ключ
-
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# OAuth (без изменений)
-
+# OAuth для Яндекс
 oauth = OAuth(app)
-google = oauth.register(
-    name='google',
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
+
+yandex = oauth.register(
+    name='yandex',
+    client_id='925cccfe3c984eeb8864e9f61a19858b',
+    client_secret='08ffb1c6d9f844b1b262b7af46d22f44',
+    access_token_url='https://oauth.yandex.ru/token',
+    authorize_url='https://oauth.yandex.ru/authorize',
+    api_base_url='https://login.yandex.ru/',
+    client_kwargs={'scope': 'login:email login:info'}
 )
 
 # === Подключение к PostgreSQL ===
-
 import psycopg2
-
 from psycopg2.extras import RealDictCursor
 
 
@@ -84,14 +74,16 @@ def init_db():
     CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         name TEXT,
-        email TEXT UNIQUE,
+        email TEXT,
         picture TEXT,
+        provider TEXT DEFAULT 'yandex',
         files_processed INTEGER DEFAULT 0,
         data_hidden INTEGER DEFAULT 0,
         successful_operations INTEGER DEFAULT 0,
         achievements TEXT,
         created_at TIMESTAMP,
-        updated_at TIMESTAMP
+        updated_at TIMESTAMP,
+        UNIQUE(email, provider)
     )
     """)
     conn.commit()
@@ -103,50 +95,69 @@ def init_db():
 init_db()
 
 
-# === Google Auth и API (почти без изменений) ===
-
-@app.route('/auth/google')
+# === Яндекс Auth и API ===
+@app.route('/auth/yandex')
 def login():
     redirect_uri = url_for('auth_callback', _external=True)
-    return google.authorize_redirect(redirect_uri)
+    return yandex.authorize_redirect(redirect_uri)
 
 
-@app.route('/auth/google/callback')
+@app.route('/auth/yandex/callback')
 def auth_callback():
     try:
-        token = google.authorize_access_token()
-        user_info = token.get('userinfo')
-        if not user_info:
-            return "Ошибка: нет данных пользователя", 400
-        user_id = user_info['sub']
-        name = user_info.get('name', '')
-        email = user_info.get('email', '')
-        picture = user_info.get('picture', '')
+        token = yandex.authorize_access_token()
+
+        # Получаем информацию о пользователе через Яндекс API
+        userinfo_response = yandex.get('info', token=token)
+        if userinfo_response.status_code != 200:
+            return "Ошибка: не удалось получить данные пользователя", 400
+
+        user_info = userinfo_response.json()
+
+        # Формируем данные пользователя
+        user_id = user_info.get('id')
+        name = user_info.get('real_name') or user_info.get('display_name') or 'Пользователь'
+        email = user_info.get('default_email', '')
+
+        # Получаем аватар
+        avatar_response = yandex.get('info', params={'format': 'json'}, token=token)
+        avatar_data = avatar_response.json() if avatar_response.status_code == 200 else {}
+        picture = avatar_data.get('default_avatar_id')
+        if picture:
+            picture = f"https://avatars.yandex.net/get-yapic/{picture}/islands-200"
+
         now = datetime.utcnow()
         db = get_db_connection()
         cur = db.cursor()
+
+        # Вставляем или обновляем пользователя
         cur.execute("""
-        INSERT INTO users (id, name, email, picture, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
-        VALUES (%s, %s, %s, %s, 0, 0, 0, %s, %s, %s)
+        INSERT INTO users (id, name, email, picture, provider, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
+        VALUES (%s, %s, %s, %s, 'yandex', 0, 0, 0, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             email = EXCLUDED.email,
             picture = EXCLUDED.picture,
             updated_at = EXCLUDED.updated_at
         """, (user_id, name, email, picture, '[]', now, now))
+
         db.commit()
         cur.close()
         db.close()
+
         session['user_id'] = user_id
         session['user'] = {
             'id': user_id,
             'name': name,
             'email': email,
-            'picture': picture
+            'picture': picture,
+            'provider': 'yandex'
         }
+
         return redirect('/')
+
     except Exception as e:
-        print(f"Google Auth Error: {e}")
+        print(f"Yandex Auth Error: {e}")
         return "Ошибка авторизации", 500
 
 
@@ -155,23 +166,28 @@ def user_info():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'logged_in': False})
+
     db = get_db_connection()
     cur = db.cursor()
     cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
     user_row = cur.fetchone()
     cur.close()
     db.close()
+
     if not user_row:
         return jsonify({'logged_in': False})
+
     try:
         achievements = json.loads(user_row['achievements']) if user_row['achievements'] else []
     except:
         achievements = []
+
     return jsonify({
         'logged_in': True,
         'name': user_row['name'],
         'email': user_row['email'],
         'picture': user_row['picture'],
+        'provider': user_row.get('provider', 'yandex'),
         'stats': {
             'filesProcessed': user_row['files_processed'],
             'dataHidden': user_row['data_hidden'],
@@ -193,18 +209,22 @@ def save_stats():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'error': 'Not logged in'}), 401
+
     data = request.json
     files_processed = data.get('filesProcessed', 0)
     data_hidden = data.get('dataHidden', 0)
     successful_operations = data.get('successfulOperations', 0)
     achievements = data.get('achievements', [])
+
     try:
         achievements_json = json.dumps(achievements)
     except:
         achievements_json = '[]'
+
     now = datetime.utcnow()
     db = get_db_connection()
     cur = db.cursor()
+
     cur.execute("""
     UPDATE users
     SET files_processed = %s,
@@ -214,14 +234,15 @@ def save_stats():
         updated_at = %s
     WHERE id = %s
     """, (files_processed, data_hidden, successful_operations, achievements_json, now, user_id))
+
     db.commit()
     cur.close()
     db.close()
+
     return jsonify({'success': True})
 
 
 # === Stego API (без изменений) ===
-
 from stego_backend import process_hide, process_extract, get_file_info
 
 
@@ -252,7 +273,6 @@ def file_info():
 
 
 # === Static files ===
-
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -271,6 +291,5 @@ def not_found(e):
 
 
 # === Запуск ===
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
