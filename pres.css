@@ -1699,6 +1699,299 @@ body {
     font-size: 0.85rem;
 }
 
+/* Histogram Analysis Slide 10 Styles */
+.histogram-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #8A2BE2;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.experiment-box {
+    background: linear-gradient(135deg, rgba(0, 255, 159, 0.1) 0%, rgba(138, 43, 226, 0.1) 100%);
+    border: 2px solid #00FF9F;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #C8C8DC;
+}
+
+.histogram-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.histogram-section h3,
+.metrics-section h3 {
+    color: #00FF9F;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(0, 255, 159, 0.3);
+}
+
+/* Histogram Observations */
+.histogram-observations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.observation-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 1.2rem;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+}
+
+.observation-item:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.lsb-item {
+    border-left-color: #FFD700;
+}
+
+.noise-item {
+    border-left-color: #FF8C00;
+}
+
+.aelsb-item {
+    border-left-color: #DC143C;
+}
+
+.hill-item {
+    border-left-color: #8A2BE2;
+}
+
+.obs-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.obs-method {
+    font-weight: 600;
+    color: #00FF9F;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.obs-text {
+    color: #C8C8DC;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.metric-card {
+    background: rgba(138, 43, 226, 0.08);
+    border: 1px solid rgba(138, 43, 226, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    border-color: #8A2BE2;
+    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.2);
+}
+
+.metric-card h4 {
+    color: #00FF9F;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.metric-subtitle {
+    color: #8A2BE2;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.metric-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.metric-row {
+    font-size: 0.9rem;
+    color: #C8C8DC;
+    font-family: 'Monaco', 'Menlo', monospace;
+    line-height: 1.3;
+}
+
+.channel {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 8px;
+    color: #12121B;
+    min-width: 18px;
+    text-align: center;
+}
+
+.red-channel {
+    background: #FF6B6B;
+}
+
+.green-channel {
+    background: #51CF66;
+}
+
+.blue-channel {
+    background: #4DABF7;
+}
+
+.best-value {
+    color: #00FF9F;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 255, 159, 0.3);
+}
+
+/* Histogram Conclusions */
+.histogram-conclusions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.conclusion-block {
+    padding: 1.2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    border: 2px solid;
+    transition: all 0.3s ease;
+}
+
+.conclusion-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.conclusion-block.best {
+    background: rgba(0, 255, 159, 0.1);
+    border-color: #00FF9F;
+    color: #00FF9F;
+}
+
+.conclusion-block.good {
+    background: rgba(81, 207, 102, 0.1);
+    border-color: #51CF66;
+    color: #51CF66;
+}
+
+.conclusion-block.ok {
+    background: rgba(255, 140, 0, 0.1);
+    border-color: #FF8C00;
+    color: #FF8C00;
+}
+
+.conclusion-block.warning {
+    background: rgba(255, 107, 107, 0.1);
+    border-color: #FF6B6B;
+    color: #FF6B6B;
+}
+
+/* Mobile responsive for histogram slide */
+@media (max-width: 768px) {
+    .histogram-observations {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .histogram-conclusions {
+        grid-template-columns: 1fr;
+    }
+    
+    .observation-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .obs-method {
+        min-width: auto;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .metric-row {
+        font-size: 0.85rem;
+        word-break: break-all;
+    }
+    
+    .channel {
+        margin-bottom: 4px;
+        display: inline-block;
+    }
+}
+
+@media (max-width: 480px) {
+    .experiment-box {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    
+    .histogram-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .histogram-section h3,
+    .metrics-section h3 {
+        font-size: 1.3rem;
+    }
+    
+    .observation-item {
+        padding: 1rem;
+    }
+    
+    .obs-text {
+        font-size: 0.9rem;
+    }
+    
+    .metric-card h4 {
+        font-size: 1.1rem;
+    }
+    
+    .metric-row {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    .conclusion-block {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
@@ -1716,211 +2009,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #8A2BE2 0%, #00FF9F 100%);
-}
-/* Fix for demo buttons */
-.demo-button {
-    cursor: pointer;
-    position: relative;
-    z-index: 10;
-}
-
-/* Active state for demo buttons */
-.demo-button:active {
-    transform: translateY(2px) !important;
-    transition: transform 0.1s ease !important;
-}
-
-/* Focus states for accessibility */
-.demo-button:focus {
-    outline: 2px solid #00FF9F;
-    outline-offset: 2px;
-}
-
-/* Ensure buttons are above other content */
-.demo-buttons-grid {
-    position: relative;
-    z-index: 100;
-}
-
-/* Specific hover effects for each button type */
-.demo-button-green:active {
-    box-shadow: 0 5px 20px rgba(0, 255, 159, 0.3) !important;
-}
-
-.demo-button-purple:active {
-    animation: none !important;
-    transform: translateY(2px) scale(0.98) !important;
-}
-
-.demo-button-blue:active {
-    animation: none !important;
-    transform: translateY(2px) scale(0.98) !important;
-}
-
-.demo-button-orange:active {
-    animation: none !important;
-    transform: translateY(2px) !important;
-}
-
-/* Make sure download button works */
-.demo-button[href="#download"] {
-    cursor: pointer;
-}
-
-/* Add subtle pulse animation to make buttons more noticeable */
-@keyframes subtle-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.9; }
-}
-
-.demo-button {
-    animation: subtle-pulse 3s ease-in-out infinite;
-}
-
-.demo-button:hover {
-    animation: none;
-}
-/* Fix for demo buttons */
-.demo-buttons-grid {
-    position: relative;
-    z-index: 1000; /* Увеличиваем z-index */
-}
-
-.demo-button {
-    cursor: pointer !important;
-    position: relative;
-    z-index: 1001;
-    pointer-events: auto !important;
-}
-
-/* Убираем возможные перекрытия */
-.slide.demo-slide {
-    z-index: 100;
-}
-
-.slide.demo-slide .slide-content {
-    position: relative;
-    z-index: 101;
-}
-
-/* Гарантируем кликабельность */
-.demo-button * {
-    pointer-events: none; /* Позволяет кликать по всей кнопке */
-}
-
-/* Улучшаем визуальную обратную связь */
-.demo-button:active {
-    transform: translateY(2px) scale(0.98) !important;
-    transition: transform 0.1s ease !important;
-}
-
-.demo-button-green:active {
-    box-shadow: 0 5px 15px rgba(0, 255, 159, 0.3) !important;
-}
-
-.demo-button-purple:active,
-.demo-button-blue:active,
-.demo-button-orange:active {
-    animation: none !important;
-    transform: translateY(2px) scale(0.98) !important;
-}
-/* QR Codes Grid */
-.qr-codes-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    max-width: 900px;
-    margin: 0 auto 2rem auto;
-    align-items: start;
-}
-
-.qr-item {
-    text-align: center;
-    background: rgba(0, 255, 159, 0.05);
-    border: 1px solid rgba(0, 255, 159, 0.2);
-    border-radius: 15px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.qr-item:hover {
-    transform: translateY(-5px);
-    border-color: #00FF9F;
-    box-shadow: 0 10px 30px rgba(0, 255, 159, 0.2);
-}
-
-.qr-code {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 1rem auto;
-    border-radius: 10px;
-    overflow: hidden;
-    background: white;
-    padding: 10px;
-    border: 2px solid rgba(0, 255, 159, 0.3);
-}
-
-.qr-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 5px;
-}
-
-.qr-label {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #00FF9F;
-    margin-bottom: 0.5rem;
-}
-
-.qr-url {
-    font-size: 0.9rem;
-    color: #C8C8DC;
-    word-break: break-word;
-}
-
-.qr-note {
-    font-size: 0.8rem;
-    color: #8A2BE2;
-    font-style: italic;
-    margin-top: 0.5rem;
-}
-
-/* Responsive QR Codes */
-@media (max-width: 768px) {
-    .qr-codes-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        max-width: 400px;
-    }
-    
-    .qr-code {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .qr-label {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .qr-codes-grid {
-        max-width: 300px;
-    }
-    
-    .qr-code {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .qr-label {
-        font-size: 1rem;
-    }
-    
-    .qr-url {
-        font-size: 0.8rem;
-    }
 }
