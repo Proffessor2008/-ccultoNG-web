@@ -2010,3 +2010,103 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #8A2BE2 0%, #00FF9F 100%);
 }
+/* QR Codes Grid */
+.qr-codes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto 2rem auto;
+    align-items: start;
+}
+
+.qr-item {
+    text-align: center;
+    background: rgba(0, 255, 159, 0.05);
+    border: 1px solid rgba(0, 255, 159, 0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.qr-item:hover {
+    transform: translateY(-5px);
+    border-color: #00FF9F;
+    box-shadow: 0 10px 30px rgba(0, 255, 159, 0.2);
+}
+
+.qr-code {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1rem auto;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    padding: 10px;
+    border: 2px solid rgba(0, 255, 159, 0.3);
+}
+
+.qr-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.qr-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #00FF9F;
+    margin-bottom: 0.5rem;
+}
+
+.qr-url {
+    font-size: 0.9rem;
+    color: #C8C8DC;
+    word-break: break-word;
+}
+
+.qr-note {
+    font-size: 0.8rem;
+    color: #8A2BE2;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+/* Responsive QR Codes */
+@media (max-width: 768px) {
+    .qr-codes-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        max-width: 400px;
+    }
+    
+    .qr-code {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .qr-label {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .qr-codes-grid {
+        max-width: 300px;
+    }
+    
+    .qr-code {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .qr-label {
+        font-size: 1rem;
+    }
+    
+    .qr-url {
+        font-size: 0.8rem;
+    }
+}
