@@ -2,7 +2,7 @@
 class PresentationController {
     constructor() {
         this.currentSlide = 1;
-        this.totalSlides = 17;
+        this.totalSlides = 18;
         this.slides = document.querySelectorAll('.slide');
         this.init();
     }
