@@ -753,26 +753,31 @@ body {
     height: 100vh;
 }
 
-/* Presentation Container */
 .presentation-container {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    background: linear-gradient(135deg, #12121B 0%, #1a1a2e 50%, #12121B 100%);
+  width: 100vw;  /* на всю ширину экрана */
+  height: 100vh; /* на всю высоту экрана */
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #12121B 0, #1a1a2e 50%, #12121B 100%);
+  overflow-x: hidden; /* скрыть горизонтальный скролл */
+  overflow-y: auto;   /* вертикальный скролл если нужно */
 }
 
-/* Slide Styles */
+/* Слайды - будут масштабироваться по размеру контейнера */
 .slide {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    padding: 60px;
+  position: absolute;
+  width: 100%;      /* ширина по контейнеру */
+  height: 100%;     /* высота по контейнеру */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 20px;    /* вместо фиксированных 60px */
+  box-sizing: border-box;
+  overflow-wrap: break-word; /* перенос слов для предотвращения выхода за границы */
 }
 
 .slide.active {
@@ -780,11 +785,14 @@ body {
     transform: translateX(0);
 }
 
+/* Контент слайда корректно масштабируется и вписывается */
 .slide-content {
-    max-width: 1200px;
-    width: 100%;
-    text-align: left;
-    animation: fadeInUp 1s ease-out;
+  max-width: 90vw;  /* максимум 90% ширины экрана */
+  max-height: 90vh; /* максимум 90% высоты экрана */
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 @keyframes fadeInUp {
@@ -847,11 +855,13 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* Content Grids */
-.content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+.content-grid, .tech-grid, .comparison-layout, .methods-banners-grid, .demo-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 100%;
+  overflow-x: auto;  /* При слишком маленьком экране будет прокрутка */
+  padding: 0 10px;   /* небольшой отступ слева и справа */
 }
 
 .item-card {
@@ -1613,13 +1623,21 @@ body {
     }
     
     .comparison-table-container {
-        margin: 1rem -20px;
-        border-radius: 0;
-    }
+        overflow-x: auto;
+        max-width: 100%;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 255, 159, 0.2);
+        margin: 1rem 0;
+        }
     
     .comparison-table {
-        font-size: 0.75rem;
-    }
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        min-width: 600px;  /* минимальная ширина для таблицы, чтобы не ломаться */
+        }
     
     .comparison-table thead th {
         padding: 0.6rem 0.3rem;
