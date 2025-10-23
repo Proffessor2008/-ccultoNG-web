@@ -83,7 +83,7 @@
                     <ol>
                         <li>Анализ существующих методов и ПО</li>
                         <li>Разработка архитектуры (веб + десктоп)</li>
-                        <li>Реализация алгоритмов для изображений: LSB, Adaptive-Noise, AELSB++, HILL-CA</li>
+                        <li>Реализация алгоритмов для изображений: LSB, Adaptive-Noise, AELSB, HILL-CA</li>
                         <li>Реализация алгоритма для аудио: WAV-LSB</li>
                         <li>Сравнительный анализ методов</li>
                         <li>Оценка удобства и применимости</li>
@@ -97,7 +97,7 @@
             <div class="slide-content hypothesis-slide">
                 <h2 class="slide-title">Гипотеза исследования</h2>
                 <div class="hypothesis-box">
-                    <em>Интеграция адаптивных методов сокрытия данных (HILL-CA, AELSB++) в интуитивно понятный кроссплатформенный интерфейс позволит создать инструмент, превосходящий существующие аналоги по балансу между вместимостью, скрытностью и удобством использования</em>
+                    <em>Интеграция адаптивных методов сокрытия данных (HILL-CA, AELSB) в интуитивно понятный кроссплатформенный интерфейс позволит создать инструмент, превосходящий существующие аналоги по балансу между вместимостью, скрытностью и удобством использования</em>
                 </div>
             </div>
         </div>
@@ -301,8 +301,100 @@
             </div>
         </div>
 
-        <!-- Slide 10 - Результаты -->
+        <!-- Slide 10 - Анализ гистограмм -->
         <div class="slide" data-slide="10">
+            <div class="slide-content">
+                <h2 class="slide-title">Анализ гистограмм изображений-контейнеров</h2>
+                <div class="histogram-subtitle">Сравнение влияния методов стеганографии на распределение пикселей</div>
+                
+                <div class="experiment-box">
+                    <strong>Эксперимент:</strong> test-original.png (1024×1024, RGB) | Скрытые данные: 150 КБ | Методы: LSB, Adaptive-Noise, AELSB, HILL-CA
+                </div>
+
+                <div class="histogram-sections">
+                    <div class="histogram-section">
+                        <h3>📊 Гистограммы RGB-каналов</h3>
+                        <div class="histogram-observations">
+                            <div class="observation-item lsb-item">
+                                <span class="obs-icon">📊</span>
+                                <span class="obs-method">Классический LSB:</span>
+                                <span class="obs-text">Заметные пики на чётных значениях яркости — индикатор встраивания</span>
+                            </div>
+                            <div class="observation-item noise-item">
+                                <span class="obs-icon">📊</span>
+                                <span class="obs-method">Adaptive-Noise:</span>
+                                <span class="obs-text">Схожая картина с LSB, но более размытые пики</span>
+                            </div>
+                            <div class="observation-item aelsb-item">
+                                <span class="obs-icon">📊</span>
+                                <span class="obs-method">AELSB:</span>
+                                <span class="obs-text">Гистограмма ближе к оригиналу, меньше статистических артефактов</span>
+                            </div>
+                            <div class="observation-item hill-item">
+                                <span class="obs-icon">📊</span>
+                                <span class="obs-method">HILL-CA:</span>
+                                <span class="obs-text">Максимальное сходство с оригиналом, минимальные отклонения</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-section">
+                        <h3>📈 Метрики отклонения от оригинала</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4>Евклидово расстояние</h4>
+                                <div class="metric-subtitle">Чем ниже, тем лучше</div>
+                                <div class="metric-values">
+                                    <div class="metric-row"><span class="channel red-channel">R</span> LSB: 240k | Noise: 330k | AELSB: 280k | <span class="best-value">Hill: 280k</span></div>
+                                    <div class="metric-row"><span class="channel green-channel">G</span> LSB: 290k | Noise: 130k | AELSB: 205k | <span class="best-value">Hill: 205k</span></div>
+                                    <div class="metric-row"><span class="channel blue-channel">B</span> LSB: 300k | Noise: 300k | AELSB: 260k | <span class="best-value">Hill: 145k ⭐</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <h4>Манхэттенское расстояние (×10⁶)</h4>
+                                <div class="metric-subtitle">Чем ниже, тем лучше</div>
+                                <div class="metric-values">
+                                    <div class="metric-row"><span class="channel red-channel">R</span> <span class="best-value">LSB: 0.5</span> | Noise: 1.25 | AELSB: 0.88 | Hill: 0.87</div>
+                                    <div class="metric-row"><span class="channel green-channel">G</span> LSB: 1.0 | <span class="best-value">Noise: 0.5 </span>| AELSB: 0.72 | Hill: 0.72</div>
+                                    <div class="metric-row"><span class="channel blue-channel">B</span> LSB: 1.2 | Noise: 1.15 | AELSB: 0.87 | <span class="best-value">Hill: 0.21 ⭐</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <h4>Корреляция</h4>
+                                <div class="metric-subtitle">Чем ближе к 1, тем лучше</div>
+                                <div class="metric-values">
+                                    <div class="metric-row"><span class="channel red-channel">R</span> <span class="best-value">LSB: 0.85</span> | Noise: 0.71 | AELSB: 0.80 | Hill: 0.80</div>
+                                    <div class="metric-row"><span class="channel green-channel">G</span> LSB: 0.77 | <span class="best-value">Noise: 0.95 ⭐</span> | AELSB: 0.88 | Hill: 0.88</div>
+                                    <div class="metric-row"><span class="channel blue-channel">B</span> LSB: 0.74 | Noise: 0.73 | AELSB: 0.80 | <span class="best-value">Hill: 0.90</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <h4>Расстояние Бхаттачарья</h4>
+                                <div class="metric-subtitle">Чем ниже, тем лучше (0 = идентичны)</div>
+                                <div class="metric-values">
+                                    <div class="metric-row"><span class="channel red-channel">R</span> <span class="best-value">LSB: 0.48</span> | Noise: 0.77 | AELSB: 0.65 | Hill: 0.65</div>
+                                    <div class="metric-row"><span class="channel green-channel">G</span> LSB: 0.69 | <span class="best-value">Noise: 0.48 </span> | AELSB: 0.58 | Hill: 0.58</div>
+                                    <div class="metric-row"><span class="channel blue-channel">B</span> LSB: 0.74 | Noise: 0.73 | AELSB: 0.64 | <span class="best-value">Hill: 0.31 ⭐</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="histogram-conclusions">
+                    <div class="conclusion-block best">✅ HILL-CA демонстрирует наименьшее отклонение гистограмм от оригинала по всем метрикам</div>
+                    <div class="conclusion-block good">✅ AELSB показывает сбалансированные результаты с хорошей незаметностью</div>
+                    <div class="conclusion-block ok">⚖️ Adaptive-Noise улучшает LSB, но всё ещё имеет заметные артефакты</div>
+                    <div class="conclusion-block warning">⚠️ Классический LSB создаёт статистические аномалии, легко обнаруживаемые стегоанализом</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11 - Результаты -->
+        <div class="slide" data-slide="11">
             <div class="slide-content">
                 <h2 class="slide-title">Ключевые результаты бенчмарка</h2>
                 <div class="results-grid">
@@ -312,7 +404,7 @@
                         <div class="cons">❌ Низкая незаметность (PSNR 51.14 дБ)</div>
                     </div>
                     <div class="result-block">
-                        <h4>AELSB++</h4>
+                        <h4>AELSB</h4>
                         <div class="pros">✅ Оптимальный баланс: PSNR 57.16 дБ, надёжность</div>
                         <div class="cons">❌ Вместимость 1.38 МБ, время 3.5 сек</div>
                     </div>
@@ -331,21 +423,21 @@
             </div>
         </div>
 
-        <!-- Slide 11 - Сравнение -->
-        <div class="slide" data-slide="11">
+        <!-- Slide 12 - Сравнение -->
+        <div class="slide" data-slide="12">
             <div class="slide-content">
                 <h2 class="slide-title">Сравнение с аналогами</h2>
                 <div class="comparison-layout">
                     <div class="analogs-section">
                         <h3>Существующие решения:</h3>
                         <div class="analog-item">
-                            <strong>Steghide:</strong> Консольный, устарел, нет PNG/BMP
+                            <strong>Steghide:</strong> старый CLI-инструмент с JPEG, BMP, WAV, устаревший без PNG.
                         </div>
                         <div class="analog-item">
-                            <strong>OpenStego:</strong> Только LSB, нет адаптивных методов
+                            <strong>OpenStego:</strong> простой GUI для изображений, использует LSB-замену, без аудио.
                         </div>
                         <div class="analog-item">
-                            <strong>SilentEye:</strong> Не обновляется, устаревший GUI
+                            <strong>SilentEye:</strong> GUI для изображений и аудио, классический LSB, развитие остановлено.
                         </div>
                     </div>
                     <div class="advantages-section">
@@ -361,12 +453,12 @@
             </div>
         </div>
 
-        <!-- Slide 12 - Функционал -->
-        <div class="slide" data-slide="12">
+        <!-- Slide 13 - Функционал -->
+        <div class="slide" data-slide="13">
             <div class="slide-content">
                 <h2 class="slide-title">Функциональные возможности</h2>
                 <div class="features-grid">
-                    <div class="feature-item">🎨 Интуитивный интерфейс с тёмной темой</div>
+                    <div class="feature-item">🎨 Интуитивный интерфейс со множеством тем оформления</div>
                     <div class="feature-item">🔒 Защита паролем (PBKDF2), проверка целостности (CRC32)</div>
                     <div class="feature-item">📊 Визуализация процесса с прогресс-барами</div>
                     <div class="feature-item">🏆 Система достижений и мотивации</div>
@@ -379,8 +471,8 @@
             </div>
         </div>
 
-        <!-- Slide 13 - Практическая значимость -->
-        <div class="slide" data-slide="13">
+        <!-- Slide 14 - Практическая значимость -->
+        <div class="slide" data-slide="14">
             <div class="slide-content">
                 <h2 class="slide-title">Практическая значимость</h2>
                 <div class="significance-grid">
@@ -393,8 +485,8 @@
             </div>
         </div>
 
-        <!-- Slide 14 - Перспективы -->
-        <div class="slide" data-slide="14">
+        <!-- Slide 15 - Перспективы -->
+        <div class="slide" data-slide="15">
             <div class="slide-content">
                 <h2 class="slide-title">Перспективы развития</h2>
                 <div class="future-grid">
@@ -408,8 +500,8 @@
             </div>
         </div>
 
-        <!-- Slide 15 - Выводы -->
-        <div class="slide" data-slide="15">
+        <!-- Slide 16 - Выводы -->
+        <div class="slide" data-slide="16">
             <div class="slide-content">
                 <h2 class="slide-title">Выводы</h2>
                 <div class="conclusions-grid">
@@ -423,7 +515,7 @@
             </div>
         </div>
 
-        <!-- Slide 16 - Демо -->
+        <!-- Slide 17 - Демо -->
         <div class="slide" data-slide="16">
             <div class="slide-content demo-slide">
                 <h2 class="slide-title">Демонстрация проекта</h2>
@@ -448,15 +540,15 @@
                             <img src="download.png" alt="QR-код для скачивания" class="qr-image">
                         </div>
                         <div class="qr-label">Скачать .exe</div>
-                        <div class="qr-note">Google Drive</div>
+                        <div class="qr-note">(доступно в материалах конференции)</div>
                     </div>
                 </div>
                 <div class="demo-footer">Все репозитории открыты под лицензией MIT</div>
             </div>
         </div>
 
-        <!-- Slide 17 - Финал -->
-        <div class="slide" data-slide="17">
+        <!-- Slide 18 - Финал -->
+        <div class="slide" data-slide="18">
             <div class="slide-content final-slide">
                 <div class="final-title">Спасибо за внимание!</div>
                 <div class="final-subtitle">Вопросы?</div>
@@ -470,7 +562,7 @@
     <div class="navigation">
         <button id="prevBtn" class="nav-btn">← Назад</button>
         <div class="slide-counter">
-            <span id="currentSlide">1</span> / <span id="totalSlides">17</span>
+            <span id="currentSlide">1</span> / <span id="totalSlides">18</span>
         </div>
         <button id="nextBtn" class="nav-btn">Вперед →</button>
         <button id="fullscreenBtn" class="fullscreen-btn">⛶</button>
