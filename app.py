@@ -51,7 +51,7 @@ yandex = oauth.register(
     access_token_url='https://oauth.yandex.ru/token',
     authorize_url='https://oauth.yandex.ru/authorize',
     api_base_url='https://login.yandex.ru/',
-    client_kwargs={'scope': 'login:email login:info'}
+    client_kwargs={'scope': 'login:email login:info login:avatar'}
 )
 
 # === Подключение к PostgreSQL ===
@@ -293,4 +293,5 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
 
