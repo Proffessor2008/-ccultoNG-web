@@ -2128,3 +2128,315 @@ body {
         font-size: 0.8rem;
     }
 }
+.presentation-container {
+  position: relative;
+  background: linear-gradient(-45deg, #12121B, #1a1a2e, #16213e, #0f3460);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 2. Floating Particles Background */
+.particles-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(0, 255, 159, 0.1);
+  border-radius: 50%;
+  animation: float 6s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* 3. Enhanced Slide Transitions */
+.slide {
+  transform: translateX(100px) scale(0.95);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: blur(5px);
+}
+
+.slide.active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* 4. Glass Morphism Effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* 5. Improved Title Animation */
+.title-main {
+  background: linear-gradient(135deg, #00FF9F 0%, #8A2BE2 50%, #4169E1 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+  to { background-position: 200% center; }
+}
+
+/* 6. Enhanced Cards with 3D Effects */
+.item-card, .method-card, .arch-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.item-card:hover, .method-card:hover, .arch-card:hover {
+  transform: translateY(-10px) rotateX(5deg);
+  box-shadow: 0 25px 50px rgba(0, 255, 159, 0.2);
+}
+
+/* 7. Improved Navigation with Progress Bar */
+.navigation {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 159, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.progress-bar {
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00FF9F, #8A2BE2);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 8. Enhanced Buttons with Magnetic Effect */
+.nav-btn, .demo-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.nav-btn::before, .demo-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.nav-btn:hover::before, .demo-button:hover::before {
+  left: 100%;
+}
+
+/* 9. Text Glow Effects */
+.slide-title {
+  text-shadow: 0 0 30px rgba(0, 255, 159, 0.5),
+               0 0 60px rgba(138, 43, 226, 0.3);
+  animation: titlePulse 4s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 159, 0.5), 0 0 60px rgba(138, 43, 226, 0.3); }
+  50% { text-shadow: 0 0 40px rgba(0, 255, 159, 0.8), 0 0 80px rgba(138, 43, 226, 0.5); }
+}
+
+/* 10. Improved Tables with Hover Effects */
+.comparison-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.comparison-table tbody tr:hover {
+  background: rgba(0, 255, 159, 0.1) !important;
+  transform: scale(1.02);
+}
+
+/* 11. Enhanced QR Codes */
+.qr-item {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, rgba(0, 255, 159, 0.1), rgba(138, 43, 226, 0.1));
+}
+
+.qr-item:hover {
+  border: 2px solid #00FF9F;
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 255, 159, 0.3);
+}
+
+/* 12. Floating Animation for Important Elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 13. Improved Focus States */
+.btn:focus-visible, .demo-button:focus-visible {
+  outline: 2px solid #00FF9F;
+  outline-offset: 4px;
+  box-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
+}
+
+/* 14. Enhanced Status Indicators */
+.status {
+  position: relative;
+  overflow: hidden;
+}
+
+.status::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.status:hover::before {
+  left: 100%;
+}
+
+/* 15. Improved Method Banners */
+.method-banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.method-banner::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.5s;
+}
+
+.method-banner:hover::after {
+  left: 100%;
+  top: 100%;
+}
+
+/* 16. Enhanced Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00FF9F, #8A2BE2);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8A2BE2, #00FF9F);
+}
+
+/* 17. Pulse Animation for Important Elements */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 255, 159, 0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(0, 255, 159, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 159, 0); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* 18. Improved Loading States */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  100% { left: 100%; }
+}
+
+/* 19. Enhanced Typography */
+.definition-box, .hypothesis-box {
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 159, 0.1) 0%, 
+    rgba(138, 43, 226, 0.1) 50%, 
+    rgba(65, 105, 225, 0.1) 100%);
+  border: 2px solid transparent;
+  border-image: linear-gradient(135deg, #00FF9F, #8A2BE2, #4169E1) 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 20. Final Touches - Responsive Improvements */
+@media (max-width: 768px) {
+  .slide-title {
+    font-size: 2.5rem;
+  }
+  
+  .title-main {
+    font-size: 3.5rem;
+  }
+  
+  .navigation {
+    padding: 0.8rem 1.5rem;
+    bottom: 20px;
+  }
+  
+  .progress-bar {
+    width: 120px;
+  }
+}
