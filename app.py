@@ -102,7 +102,7 @@ def login():
     return yandex.authorize_redirect(redirect_uri)
 
 
-@app.route('/auth/yandex/callback')
+@app.route('/token.html')
 def auth_callback():
     try:
         token = yandex.authorize_access_token()
@@ -293,3 +293,4 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
