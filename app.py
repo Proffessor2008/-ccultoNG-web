@@ -53,7 +53,7 @@ yandex = oauth.register(
     authorize_url='https://oauth.yandex.ru/authorize',
     api_base_url='https://login.yandex.ru/',
     client_kwargs={
-        'scope': 'login:email login:info',
+        'scope': 'login:email login:info login:avatar',
         'token_endpoint_auth_method': 'client_secret_post'
     }
 )
@@ -303,6 +303,7 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
 
 
 
