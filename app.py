@@ -42,6 +42,7 @@ def add_security_headers(response):
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # OAuth для Яндекс
+# OAuth для Яндекс - ОБНОВЛЕННЫЕ НАСТРОЙКИ
 oauth = OAuth(app)
 
 yandex = oauth.register(
@@ -51,7 +52,10 @@ yandex = oauth.register(
     access_token_url='https://oauth.yandex.ru/token',
     authorize_url='https://oauth.yandex.ru/authorize',
     api_base_url='https://login.yandex.ru/',
-    client_kwargs={'scope': 'login:email login:info login:avatar'}
+    client_kwargs={
+        'scope': 'login:email login:info',
+        'token_endpoint_auth_method': 'client_secret_post'
+    }
 )
 
 # === Подключение к PostgreSQL ===
@@ -293,5 +297,6 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
 
 
