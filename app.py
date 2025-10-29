@@ -103,38 +103,43 @@ init_db()
 @app.route('/auth/yandex')
 def login():
     redirect_uri = url_for('auth_callback', _external=True)
+    print(f"Redirect URI: {redirect_uri}")  # Для отладки
     return yandex.authorize_redirect(redirect_uri)
 
 
-@app.route('/token.html')
+@app.route('/auth/yandex/callback')
 def auth_callback():
     try:
         token = yandex.authorize_access_token()
+        
+        if not token:
+            return "Ошибка: не удалось получить токен", 400
 
-        # Получаем информацию о пользователе через Яндекс API
-        userinfo_response = yandex.get('info', token=token)
-        if userinfo_response.status_code != 200:
-            return "Ошибка: не удалось получить данные пользователя", 400
+        # Получаем информацию о пользователе
+        resp = yandex.get('info', token=token)
+        if resp.status_code != 200:
+            return f"Ошибка API Яндекс: {resp.status_code}", 400
+            
+        user_info = resp.json()
 
-        user_info = userinfo_response.json()
-
-        # Формируем данные пользователя
+        # Извлекаем данные пользователя
         user_id = user_info.get('id')
+        if not user_id:
+            return "Ошибка: не удалось получить ID пользователя", 400
+
         name = user_info.get('real_name') or user_info.get('display_name') or 'Пользователь'
         email = user_info.get('default_email', '')
-
+        
         # Получаем аватар
-        avatar_response = yandex.get('info', params={'format': 'json'}, token=token)
-        avatar_data = avatar_response.json() if avatar_response.status_code == 200 else {}
-        picture = avatar_data.get('default_avatar_id')
-        if picture:
-            picture = f"https://avatars.yandex.net/get-yapic/{picture}/islands-200"
+        picture = None
+        if user_info.get('default_avatar_id'):
+            picture = f"https://avatars.yandex.net/get-yapic/{user_info['default_avatar_id']}/islands-200"
 
+        # Сохраняем/обновляем пользователя в БД
         now = datetime.utcnow()
         db = get_db_connection()
         cur = db.cursor()
 
-        # Вставляем или обновляем пользователя
         cur.execute("""
         INSERT INTO users (id, name, email, picture, provider, files_processed, data_hidden, successful_operations, achievements, created_at, updated_at)
         VALUES (%s, %s, %s, %s, 'yandex', 0, 0, 0, %s, %s, %s)
@@ -149,6 +154,7 @@ def auth_callback():
         cur.close()
         db.close()
 
+        # Сохраняем в сессии
         session['user_id'] = user_id
         session['user'] = {
             'id': user_id,
@@ -162,7 +168,7 @@ def auth_callback():
 
     except Exception as e:
         print(f"Yandex Auth Error: {e}")
-        return "Ошибка авторизации", 500
+        return f"Ошибка авторизации: {str(e)}", 500
 
 
 @app.route('/api/user')
@@ -297,6 +303,7 @@ def not_found(e):
 # === Запуск ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
 
 
 
